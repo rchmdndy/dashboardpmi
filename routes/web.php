@@ -16,12 +16,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-Route::prefix('/api/v1')->name('api.')->group(function (){
-   Route::prefix('room_type')->controller(\App\Http\Controllers\RoomTypeController::class)->name('room_type.')->group(function (){
-     Route::get('/getAll', 'getAll')->name('getAll');
-     Route::get('/getDetail', 'getDetail')->name('getDetail');
-   });
-});
+//
+//Route::prefix('/api/v1')->name('api.')->group(function (){
+//   Route::prefix('room_type')->controller(\App\Http\Controllers\RoomTypeController::class)->name('room_type.')->group(function (){
+//     Route::get('/getAll', 'getAll')->name('getAll');
+//     Route::get('/getDetail', 'getDetail')->name('getDetail');
+//   });
+//});
 
 require __DIR__.'/auth.php';
