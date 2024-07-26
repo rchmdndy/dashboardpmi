@@ -11,7 +11,7 @@ class RoomTypeController extends Controller
 {
     public function getAll(){
         return response()->json($roomTypes = RoomType::all()->map(function ($roomType){
-            $roomType->image = RoomImage::select('image_path')->where('room_type_id', $roomType->id)->first() ?? 'default_image.jpg';
+            $roomType->image = asset('storage/'.RoomImage::select('image_path')->where('room_type_id', $roomType->id)->first()->image_path ?? 'default_image.jpg');
             return $roomType;
         })->all());
 
