@@ -18,8 +18,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::prefix('/api/v1')->name('api.')->group(function (){
-   Route::prefix('room_type')->controller(\App\Http\Controllers\RoomTypeController::class)->name('room_type')->group(function (){
-     Route::get('/getAll', 'getAll');
+   Route::prefix('room_type')->controller(\App\Http\Controllers\RoomTypeController::class)->name('room_type.')->group(function (){
+     Route::get('/getAll', 'getAll')->name('getAll');
+     Route::get('/getDetail', 'getDetail')->name('getDetail');
    });
 });
 

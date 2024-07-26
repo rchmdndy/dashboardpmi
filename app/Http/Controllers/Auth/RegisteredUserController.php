@@ -37,7 +37,6 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'uuid' => \Illuminate\Support\Str::uuid(),
             'name' => $request->name,
             'phone' => $request->phone,
             'email' => $request->email,
