@@ -22,8 +22,8 @@
     {{-- @dd($user) --}}
 
     <form action="{{ route('bookings.store') }}" method="POST">
-        {{-- @csrf --}}
-        <input type="hidden" name="_token" value="{{csrf_token()}}"> // <- token CSRF
+        @csrf
+        
         <!-- Room Type -->
         <div class="mb-4">
             <label for="room_type_id" class="block text-sm font-medium text-gray-700">Room Type</label>
