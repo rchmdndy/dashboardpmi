@@ -14,15 +14,18 @@ class Room extends Model
         'room_type_id',
         'room_name',
         'parent_id',
-        'isAvailable',
     ];
 
     public function roomType()
     {
-        return $this->belongsTo(RoomType::class);
+        return $this->belongsTo(RoomType::class, 'room_type_id', 'id');
     }
 
     public function booking(){
         return $this->hasMany(Booking::class);
+    }
+    public function parentRoom()
+    {
+        return $this->belongsTo(Room::class, 'parent_id', 'id');
     }
 }

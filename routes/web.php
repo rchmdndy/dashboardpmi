@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,13 +16,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/bookings', [BookingController::class, 'bookRoom'])->name('bookings.store');
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
 });
-//
-//Route::prefix('/api/v1')->name('api.')->group(function (){
-//   Route::prefix('room_type')->controller(\App\Http\Controllers\RoomTypeController::class)->name('room_type.')->group(function (){
-//     Route::get('/getAll', 'getAll')->name('getAll');
-//     Route::get('/getDetail', 'getDetail')->name('getDetail');
-//   });
-//});
+
+
+Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+
 
 require __DIR__.'/auth.php';

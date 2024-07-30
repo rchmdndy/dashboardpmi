@@ -15,6 +15,7 @@ class CreateRoomImagesTable extends Migration
     public function up()
     {
         Schema::create('room_images', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('room_type_id');
             $table->string('image_path', 255);
 
