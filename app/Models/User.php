@@ -11,10 +11,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasUuids, HasApiTokens;
-    protected $primaryKey = 'uuid';
-//    public $incrementing = false;
-//    protected $keyType = 'char';
+    use HasFactory, Notifiable, HasApiTokens;
+    protected $primaryKey = 'email';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -22,17 +22,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
+        'name',
         'phone',
         'password'
     ];
-
-    public function uniqueIds()
-    {
-        return ['uuid'];
-    }
-
 
     /**
      * The attributes that should be hidden for serialization.

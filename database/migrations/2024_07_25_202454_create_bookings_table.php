@@ -16,7 +16,7 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->char('user_id', 36);
+            $table->string('user_email');
             $table->unsignedBigInteger('room_id');
             $table->date('start_date');
             $table->date('end_date');
@@ -24,7 +24,7 @@ class CreateBookingsTable extends Migration
             $table->timestamps();
 
             $table->foreign('room_id')->references('id')->on('rooms');
-            $table->foreign('user_id')->references('uuid')->on('users');
+            $table->foreign('user_email')->references('email')->on('users');
         });
     }
 
