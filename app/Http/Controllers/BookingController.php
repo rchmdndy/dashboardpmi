@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\RoomType;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -32,8 +33,13 @@ class BookingController extends Controller
         ]);
 
         $user = Auth::user();
-        $userRequest['user_uuid'] = $user->uuid;
-        // dd($user);
+        if ($user) {
+            $userRequest['user_uuid'] = Auth::user()->uuid;
+        } else {
+            if (!isset($userRequest['user_uuid'])) {
+                return response()->json(['message' => 'User UUID is required'], 400);
+            }
+        }
 
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
             $userRequest['room_type_id'],
@@ -46,6 +52,7 @@ class BookingController extends Controller
         }
 
         try {
+          
             $totalPrice = RoomType::findOrFail($userRequest['room_type_id'])->price;
 
             Booking::create([
@@ -56,9 +63,9 @@ class BookingController extends Controller
                 'total_price' => $totalPrice,
             ]);
 
-            return redirect()->route('bookings.create')->with('success', 'Booking successful!');
+            return response()->json(['message' => 'Room booked successfully'], 201);
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Failed to create booking: ' . $e->getMessage()]);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }
