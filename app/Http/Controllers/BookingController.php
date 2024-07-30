@@ -31,7 +31,8 @@ class BookingController extends Controller
             'amount' => 'required|integer|min:1'
         ]);
 
-        // $user = Auth::user();
+        $user = Auth::user();
+        $userRequest['user_uuid'] = $user->uuid;
         // dd($user);
 
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
