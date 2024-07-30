@@ -16,10 +16,12 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-//        User::factory()->create([
-//            'name' => 'Test User',
-//            'email' => 'test@example.com',
-//        ]);
+        User::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@admin.com',
+            'phone' => '08123456789',
+            'password' => 'adminadmin'
+        ]);
 
         DB::table('room_types')->insert([
             ['id' => 1, 'room_type' => 'kamar_standard', 'capacity' => 2, 'price' => 200000.00, 'description' => 'Kamar dengan kapasitas 2 orang'],
@@ -61,5 +63,27 @@ class DatabaseSeeder extends Seeder
             ['id' => 28, 'room_type_id' => 5, 'room_name' => 'G', 'parent_id' => 27],
             ['id' => 29, 'room_type_id' => 5, 'room_name' => 'H', 'parent_id' => 27],
         ]);
+
+        $roomTypes = [
+            'kamar_standard',
+            'kamar_family',
+            'meeting_room_kecil',
+            'meeting_room_sedang',
+            'meeting_room_besar',
+            'meeting_room_ekstra_besar'
+        ];
+
+        $roomImages = [];
+
+        foreach ($roomTypes as $roomType) {
+            for ($i = 1; $i <= 3; $i++) {
+                $roomImages[] = [
+                    'room_type_id' => DB::table('room_types')->where('room_type', $roomType)->value('id'),
+                    'image_path' => "{$roomType}_{$i}.jpg"
+                ];
+            }
+        }
+
+        DB::table('room_images')->insert($roomImages);
     }
 }

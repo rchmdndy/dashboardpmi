@@ -23,9 +23,10 @@ class BookingController extends Controller
     }
 
     public function bookRoom(Request $request) {
+
         // Validate request
         $userRequest = $request->validate([
-            'user_uuid' => 'required',
+//            'user_email' => 'required|email',
             'room_type_id' => 'required|integer|exists:room_types,id',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -33,13 +34,7 @@ class BookingController extends Controller
         ]);
 
         $user = Auth::user();
-        if ($user) {
-            $userRequest['user_uuid'] = Auth::user()->uuid;
-        } else {
-            if (!isset($userRequest['user_uuid'])) {
-                return response()->json(['message' => 'User UUID is required'], 400);
-            }
-        }
+        $userRequest['user_email'] = $user->email;
 
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
             $userRequest['room_type_id'],
@@ -56,7 +51,7 @@ class BookingController extends Controller
             $totalPrice = RoomType::findOrFail($userRequest['room_type_id'])->price;
 
             Booking::create([
-                'user_id' => $userRequest['user_uuid'],
+                'user_email' => $userRequest['user_email'],
                 'room_id' => $this->bookingService->getAvailableRoomId($userRequest['room_type_id'], $userRequest['start_date'], $userRequest['end_date']),
                 'start_date' => $userRequest['start_date'],
                 'end_date' => $userRequest['end_date'],

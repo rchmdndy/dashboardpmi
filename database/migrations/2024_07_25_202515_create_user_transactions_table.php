@@ -15,7 +15,7 @@ class CreateUserTransactionsTable extends Migration
     public function up()
     {
         Schema::create('user_transactions', function (Blueprint $table) {
-            $table->char('user_id', 36);
+            $table->string('user_email');
             $table->string('order_id', 255);
             $table->unsignedBigInteger('booking_id');
             $table->date('transaction_date');
@@ -23,7 +23,7 @@ class CreateUserTransactionsTable extends Migration
             $table->timestamps();
 
             $table->foreign('booking_id')->references('id')->on('bookings');
-            $table->foreign('user_id')->references('uuid')->on('users');
+            $table->foreign('user_email')->references('email')->on('users');
         });
     }
 

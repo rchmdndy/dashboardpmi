@@ -11,7 +11,7 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'user_email',
         'room_id',
         'start_date',
         'end_date',
