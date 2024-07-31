@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Booking;
 use App\Models\Room;
+use Carbon\Carbon;
 use Exception;
 
 class BookingService
@@ -104,4 +105,18 @@ class BookingService
 
         return true;
     }
+
+    public function getTotalDays($startDate, $endDate)
+    {
+        $start = Carbon::createFromFormat('Y-m-d', $startDate);
+        $end = Carbon::createFromFormat('Y-m-d', $endDate);
+
+        if ($start->greaterThan($end)) {
+            throw new Exception('Start date must be before end date.');
+        }
+
+        return abs($end->diffInDays($start));
+    }
+
+
 }

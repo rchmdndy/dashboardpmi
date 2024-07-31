@@ -33,8 +33,8 @@ class BookingController extends Controller
             'amount' => 'required|integer|min:1'
         ]);
 
-        $user = Auth::user();
-        $userRequest['user_email'] = $user->email;
+        // $user = Auth::user();
+        $userRequest['user_email'] = $request->email;
 
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
             $userRequest['room_type_id'],
@@ -47,8 +47,11 @@ class BookingController extends Controller
         }
 
         try {
-          
-            $totalPrice = RoomType::findOrFail($userRequest['room_type_id'])->price;
+            $roomType = RoomType::findOrFail($userRequest['room_type_id']);
+
+            $days = $this->bookingService->getTotalDays($userRequest['start_date'], $userRequest['end_date']);
+
+            $totalPrice = $roomType->price * $userRequest['amount'] * $days;
 
             Booking::create([
                 'user_email' => $userRequest['user_email'],
@@ -63,4 +66,20 @@ class BookingController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
+    public function getBookings(Request $request)
+{
+    $request->validate([
+        'user_email' => 'required|email',
+    ]);
+
+    $userEmail = $request->user_email;
+    $booking = Booking::where('user_email', $userEmail)
+                        ->latest('created_at')  // booking paling terakhit
+                        ->first();  // Booking pertama paling terakhir
+
+    return response()->json($booking, 200);
+}
+
+    
 }

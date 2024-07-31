@@ -17,10 +17,10 @@ Route::prefix('v1')->group(function (){
         Route::get('/getDetail', 'getDetail')->name('getDetail');
         Route::get('/getByRoomType', 'getByRoomType')->name('getByRoomType');
     });
+
+    Route::get('/getBookings', [BookingController::class, 'getBookings'])->name('bookings.store');
 })->middleware("auth:sanctum");
 
-    Route::post('/bookings', [BookingController::class, 'bookRoom'])->name('bookings.store');
-    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
     Route::post('/is-login', [AuthenticatedSessionController::class, 'isLogin']);;

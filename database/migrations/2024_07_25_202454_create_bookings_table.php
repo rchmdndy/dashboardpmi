@@ -20,7 +20,7 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger('room_id');
             $table->date('start_date');
             $table->date('end_date');
-            $table->decimal('total_price');
+            $table->decimal('total_price', 15, 2);
             $table->timestamps();
 
             $table->foreign('room_id')->references('id')->on('rooms');
