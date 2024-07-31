@@ -17,7 +17,7 @@ class CreateReportsTable extends Migration
         Schema::create('reports', function (Blueprint $table) {
             $table->unsignedBigInteger('room_type_id');
             $table->integer('total_bookings');
-            $table->decimal('total_income');
+            $table->decimal('total_income', 0, 0);
             $table->date('created_at');
             $table->date('updated_at');
 

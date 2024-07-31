@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-4">Book a Room</h1>
+    <h1 class="text-2xl font-bold mb-4 text-white">Book a Room</h1>
 
     @if(session('success'))
         <div class="mb-4 p-4 bg-green-200 text-green-800 rounded-md">
@@ -26,7 +26,7 @@
 
         <!-- Room Type -->
         <div class="mb-4">
-            <label for="room_type_id" class="block text-sm font-medium text-gray-700">Room Type</label>
+            <label for="room_type_id" class="block text-sm font-medium text-gray-200">Room Type</label>
             <select id="room_type_id" name="room_type_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
                 @foreach ($roomTypes as $roomType)
                     <option value="{{ $roomType->id }}">{{ $roomType->room_type }} (Capacity: {{ $roomType->capacity }})</option>
@@ -39,7 +39,7 @@
 
         <!-- Start Date -->
         <div class="mb-4">
-            <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+            <label for="start_date" class="block text-sm font-medium text-gray-200">Check In</label>
             <input type="date" id="start_date" name="start_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
             @error('start_date')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -48,7 +48,7 @@
 
         <!-- End Date -->
         <div class="mb-4">
-            <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+            <label for="end_date" class="block text-sm font-medium text-gray-200">Check Out</label>
             <input type="date" id="end_date" name="end_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
             @error('end_date')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

@@ -6,13 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\RoomType;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ReportController;
 
 class BookingController extends Controller
 {
     protected $bookingService;
+    protected $reportController;
 
-    public function __construct(BookingService $bookingService) {
+    public function __construct(BookingService $bookingService, ReportController $reportController) {
         $this->bookingService = $bookingService;
+        $this->reportController = $reportController;
     }
 
     public function create() {
@@ -55,6 +58,8 @@ class BookingController extends Controller
                 'end_date' => $userRequest['end_date'],
                 'total_price' => $totalPrice,
             ]);
+
+            $this->reportController->createReport($request);
 
             return redirect()->route('bookings.create')->with('success', 'Booking successful!');
         } catch (\Exception $e) {
