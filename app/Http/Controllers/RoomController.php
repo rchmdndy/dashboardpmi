@@ -24,6 +24,10 @@ class RoomController extends Controller
                 });
         return response()->json($rooms);
     }
+//
+//    public function getLodgeRoom(){
+//        $lodgeRooms = Room::
+//    }
 
     public function getDetail(Request $request){
         $room = Room::with(['roomType:id,room_type', 'parentRoom:id,room_name'])

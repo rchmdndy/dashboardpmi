@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\RoomType;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\ReportController;
 
 class BookingController extends Controller
 {
