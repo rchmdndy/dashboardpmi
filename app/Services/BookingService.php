@@ -60,7 +60,7 @@ class BookingService
                     ->orWhereBetween('end_date', [$startDate, $endDate])
                     ->orWhere(function ($query) use ($startDate, $endDate) {
                         $query->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
+                            ->where('end_date', '>=', $endDate);   
                     });
             })->exists();
 
@@ -112,7 +112,7 @@ class BookingService
         $end = Carbon::createFromFormat('Y-m-d', $endDate);
 
         if ($start->greaterThan($end)) {
-            throw new Exception('Start date must be before end date.');
+            return response()->json(['message' => 'End date must be greater than start date'], 400);
         }
 
         return abs($end->diffInDays($start));

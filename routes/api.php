@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
@@ -18,9 +19,17 @@ Route::prefix('v1')->group(function (){
         Route::get('/getByRoomType', 'getByRoomType')->name('getByRoomType');
     });
 
-    Route::get('/getBookings', [BookingController::class, 'getBookings'])->name('bookings.store');
-})->middleware("auth:sanctum");
+});
 
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
-    Route::post('/is-login', [AuthenticatedSessionController::class, 'isLogin']);;
+Route::get('/getBookings', [BookingController::class, 'getBookings'])->name('bookings.get');
+Route::post('/bookings', [BookingController::class, 'bookRoom'])->name('bookings.store');
+Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+
+
+Route::post('login', [AuthenticatedSessionController::class, 'login']);
+Route::post('register', [AuthenticatedSessionController::class, 'register']);
+Route::post('/logout', [AuthenticatedSessionController::class, 'logout'])->middleware('jwt.auth')->name('logout');
+Route::post('/refresh', [AuthenticatedSessionController::class, 'refresh'])->middleware('jwt.refresh')->middleware('jwt.auth')->name('refresh');
+Route::post('/me', [AuthenticatedSessionController::class, 'me'])->middleware('jwt.auth')->name('me');
+Route::post('/updatePassword', [AuthenticatedSessionController::class, 'updatePassword'])->middleware('jwt.auth')->middleware('jwt.refresh')->name('updatePassword');

@@ -26,7 +26,7 @@ class BookingController extends Controller
 
         // Validate request
         $userRequest = $request->validate([
-//            'user_email' => 'required|email',
+           'user_email' => 'required|email',
             'room_type_id' => 'required|integer|exists:room_types,id',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -34,7 +34,7 @@ class BookingController extends Controller
         ]);
 
         // $user = Auth::user();
-        $userRequest['user_email'] = $request->email;
+        $userRequest['user_email'] = $request->user_email;
 
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
             $userRequest['room_type_id'],
@@ -46,7 +46,7 @@ class BookingController extends Controller
             return back()->withErrors(['amount' => 'Not enough rooms available for the selected dates']);
         }
 
-        try {
+        try {   
             $roomType = RoomType::findOrFail($userRequest['room_type_id']);
 
             $days = $this->bookingService->getTotalDays($userRequest['start_date'], $userRequest['end_date']);
@@ -63,23 +63,32 @@ class BookingController extends Controller
 
             return response()->json(['message' => 'Room booked successfully'], 201);
         } catch (\Exception $e) {
+            
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
     public function getBookings(Request $request)
-{
-    $request->validate([
-        'user_email' => 'required|email',
-    ]);
+    {
+        $request->validate([
+            'user_email' => 'required|email',
+        ]);
+    
+        $userEmail = $request->user_email;
+        
+            $booking = Booking::where('user_email', $userEmail)
+            ->latest('created_at')  
+            ->with('user') 
+            ->with('room.roomType')
+            ->first(); 
 
-    $userEmail = $request->user_email;
-    $booking = Booking::where('user_email', $userEmail)
-                        ->latest('created_at')  // booking paling terakhit
-                        ->first();  // Booking pertama paling terakhir
-
-    return response()->json($booking, 200);
-}
-
+        if (!$booking) {
+        return response()->json(['error' => 'No bookings found for this user'], 404);
+        }
+            
+                return response()->json([
+                    'booking' => $booking,
+                ], 200);
+            }
     
 }

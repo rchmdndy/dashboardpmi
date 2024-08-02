@@ -20,7 +20,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/bookings', [BookingController::class, 'bookRoom'])->name('bookings.store');
-    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
 
 
 require __DIR__.'/auth.php';
