@@ -54,8 +54,11 @@ public function login(Request $request)
         }
 
         // $cookie = Cookie('access_token', $token);
-
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+        $user = JWTAuth::user();
+        
+        return response()->json([
+            'data' => $user,
+            'access_token' => $token, 'token_type' => 'Bearer']);
 
     } catch (\Exception $e) {
         \Log::error($e->getMessage());
@@ -67,15 +70,20 @@ public function login(Request $request)
     public function logout()
     {
         try {
-        JWTAuth::invalidate(JWTAuth::getToken());
+            $user = JWTAuth::parseToken()->authenticate();
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
 
-        auth()->logout();
+            JWTAuth::invalidate(JWTAuth::getToken());
 
-        return response()->json(['message' => 'Successfully logged out']);
+            auth()->logout();
+
+            return response()->json(['message' => 'Successfully logged out']);
 
         }catch (\Exception $e) {
             \Log::error('Error in logout method: '.$e->getMessage());
-            return response()->json(['error' => 'Unauthorized'], 401);}
+            return response()->json(['error' => 'User not logged in'], 401);}
 
     }
 
