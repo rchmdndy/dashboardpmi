@@ -2,18 +2,26 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\Cookie;
 use Validator;
+use App\Models\User;
+use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use App\Jobs\SendMailVerificationJob;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Password;
+use Symfony\Component\HttpFoundation\Cookie;
+
 
 class AuthenticatedSessionController extends Controller
 {
+    public function create(): View
+    {
+        
+        return view('welcome');
+    }
     public function register(Request $request)
 {
     try {
@@ -36,6 +44,12 @@ class AuthenticatedSessionController extends Controller
 
         $token = JWTAuth::fromUser($user);
 
+        //QUEUE
+        SendMailVerificationJob::dispatch($user);
+
+        // NOT QUEUE
+        // event(new Registered($user));
+
         return response()->json(['data' => $user, 'access_token' => $token, 'token_type' => 'Bearer']);
 
     } catch (\Exception $e) {
@@ -49,16 +63,22 @@ public function login(Request $request)
         try {
         $credentials = $request->only('email', 'password');
 
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 401);
+        }
+
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'The email or password entered is incorrect'], 401);
         }
 
         // $cookie = Cookie('access_token', $token);
         $user = JWTAuth::user();
-        
+
         return response()->json([
             'data' => $user,
-            'access_token' => $token, 'token_type' => 'Bearer']);
+            'access_token' => $token, 'token_type' => 'Bearer'])->cookie($token);
 
     } catch (\Exception $e) {
         \Log::error($e->getMessage());
@@ -119,8 +139,8 @@ public function refresh(Request $request)
 {
     try {
         $validator = Validator::make($request->all(), [
-            'old_password' => 'required',
-            'new_password' => 'required|confirmed|min:8',
+            'current_password' => 'required',
+            'password' => 'required|confirmed|min:8',
         ]);
 
         if ($validator->fails()) {
@@ -129,11 +149,11 @@ public function refresh(Request $request)
 
         $user = JWTAuth::parseToken()->authenticate();
 
-        if (!Hash::check($request->old_password, $user->password)) {
+        if (!Hash::check($request->current_password, $user->password)) {
             return response()->json(['error' => 'Old password is incorrect'], 400);
         }
 
-        $user->password = Hash::make($request->new_password);
+        $user->password = Hash::make($request->password);
         $user->save();
 
         // Dapatkan token baru dari JWTAuth
@@ -148,6 +168,72 @@ public function refresh(Request $request)
         return response()->json(['error' => 'Could not Update Password'], 401);
     }
 
+}
+
+public function updateProfile(Request $request)
+{
+    try {
+        $user = JWTAuth::parseToken()->authenticate();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $user->name = $request->name;
+        $user->phone = $request->phone;
+        $user->save();
+
+        return response()->json(['message' => 'Profile updated successfully']);
+
+    } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+        return response()->json(['error' => 'Could not update profile'], 401);
+    }
+
+}
+
+public function sendEmailVerificationNotification(Request $request)
+{
+
+    try{
+        //no queue
+        // $request->user()->sendEmailVerificationNotification();
+
+        //with queue
+        SendMailVerificationJob::dispatch($request->user());
+
+        return response()->json(['message' => 'Email verification link sent on your email']);
+
+    }catch (\Exception $e) {
+        return response()->json(['error' => 'Could not send email verification link'], 401);}
+
+}
+
+//WORKING
+
+public function forgotPassword(Request $request)
+{
+    try {
+        $status = Password::sendResetLink($request->user()->only('email'));
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return response()->json(['message' => 'Reset password link sent on your email']);
+        }
+
+        // ?? KAPAN NEw ACCESS TOEN DIKIRIM?
+
+        return response()->json(['error' => 'Could not send reset password link'], 401);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Could not send reset password link'], 401);
+    }
 }
 
 

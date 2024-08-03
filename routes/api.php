@@ -32,4 +32,7 @@ Route::post('register', [AuthenticatedSessionController::class, 'register']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'logout'])->middleware('jwt.auth')->name('logout');
 Route::post('/refresh', [AuthenticatedSessionController::class, 'refresh'])->middleware('jwt.refresh')->middleware('jwt.auth')->name('refresh');
 Route::post('/me', [AuthenticatedSessionController::class, 'me'])->middleware('jwt.auth')->name('me');
-Route::post('/updatePassword', [AuthenticatedSessionController::class, 'updatePassword'])->middleware('jwt.auth')->middleware('jwt.refresh')->name('updatePassword');
+Route::put('/updatePassword', [AuthenticatedSessionController::class, 'updatePassword'])->middleware('jwt.auth')->middleware('jwt.refresh')->name('updatePassword');
+Route::put('/updateProfile', [AuthenticatedSessionController::class, 'updateProfile'])->middleware('jwt.auth')->name('updateProfile');
+Route::post('/sendEmailVerif', [AuthenticatedSessionController::class, 'sendEmailVerificationNotification'])->middleware('jwt.auth')->name('sendEmailVerif');
+Route::post('/forgotPassword', [AuthenticatedSessionController::class, 'forgotPassword'])->middleware('jwt.auth')->middleware('jwt.refresh')->name('forgotPassword');
