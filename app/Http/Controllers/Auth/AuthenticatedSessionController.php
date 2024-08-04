@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Jobs\SendMailForgotPasswordJob;
 use Validator;
 use App\Models\User;
 use Illuminate\View\View;
@@ -10,8 +11,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Jobs\SendMailVerificationJob;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Password;
 use Symfony\Component\HttpFoundation\Cookie;
 
 
@@ -203,7 +202,6 @@ public function sendEmailVerificationNotification(Request $request)
 {
 
     try{
-        //no queue
         // $request->user()->sendEmailVerificationNotification();
 
         //with queue
@@ -212,7 +210,7 @@ public function sendEmailVerificationNotification(Request $request)
         return response()->json(['message' => 'Email verification link sent on your email']);
 
     }catch (\Exception $e) {
-        return response()->json(['error' => 'Could not send email verification link'], 401);}
+        return response()->json(['error' => 'Could not send email verification link'], 500);}
 
 }
 
@@ -221,20 +219,19 @@ public function sendEmailVerificationNotification(Request $request)
 public function forgotPassword(Request $request)
 {
     try {
-        $status = Password::sendResetLink($request->user()->only('email'));
+        $user = User::where('email', $request->email)->first();
 
-        if ($status == Password::RESET_LINK_SENT) {
-            return response()->json(['message' => 'Reset password link sent on your email']);
+        if(!$user){
+            return response()->json(['error' => 'Could not send Forgot Password link'], 500);
         }
 
-        // ?? KAPAN NEw ACCESS TOEN DIKIRIM?
-
-        return response()->json(['error' => 'Could not send reset password link'], 401);
-
+        SendMailForgotPasswordJob::dispatch($request->only('email'));
+        return response()->json(['message' => 'Forgot Password link sent on your email']);
     } catch (\Exception $e) {
-        return response()->json(['error' => 'Could not send reset password link'], 401);
+        \Log::error($e->getMessage());
+        return response()->json(['error' => 'Could not send Forgot Password link'], 500);
     }
-}
 
+}
 
 }

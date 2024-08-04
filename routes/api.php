@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
@@ -35,4 +36,6 @@ Route::post('/me', [AuthenticatedSessionController::class, 'me'])->middleware('j
 Route::put('/updatePassword', [AuthenticatedSessionController::class, 'updatePassword'])->middleware('jwt.auth')->middleware('jwt.refresh')->name('updatePassword');
 Route::put('/updateProfile', [AuthenticatedSessionController::class, 'updateProfile'])->middleware('jwt.auth')->name('updateProfile');
 Route::post('/sendEmailVerif', [AuthenticatedSessionController::class, 'sendEmailVerificationNotification'])->middleware('jwt.auth')->name('sendEmailVerif');
-Route::post('/forgotPassword', [AuthenticatedSessionController::class, 'forgotPassword'])->middleware('jwt.auth')->middleware('jwt.refresh')->name('forgotPassword');
+Route::post('/forgotPassword', [AuthenticatedSessionController::class, 'forgotPassword'])->name('forgotPassword');
+
+Route::get('/email/verify/{email}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
