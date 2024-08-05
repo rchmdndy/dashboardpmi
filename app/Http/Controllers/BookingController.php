@@ -27,15 +27,12 @@ class BookingController extends Controller
 
         // Validate request
         $userRequest = $request->validate([
-//            'user_email' => 'required|email',
+            'user_email' => 'required|email',
             'room_type_id' => 'required|integer|exists:room_types,id',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
             'amount' => 'required|integer|min:1'
         ]);
-
-        $user = Auth::user();
-        $userRequest['user_email'] = $user->email;
 
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
             $userRequest['room_type_id'],
