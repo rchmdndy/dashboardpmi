@@ -47,25 +47,6 @@ class RoomTypeController extends Controller
         ]);
     }
 
-//    public function get
-    public function getRoomType(Request $request){
-        $roomType = $request->input('type');
-        $roomData = RoomType::where('room_type', 'like', "$roomType%")->get();
-
-        $roomData = $roomData->map(function ($room) {
-            $firstImage = $room->room_image()->first();
-            $room->room_image = $firstImage ? asset('storage/room_images/' . $firstImage->image_path) : null;
-            return $room;
-        });
-
-        return response()->json($roomData);
-
-
-//        return response()->json(match($roomType){
-//            'kamar', 'meeting' => RoomType::where("room_type", 'like', "$roomType%")->get(),
-//            default =>  'Ruangan tidak ditermukan'
-//        });
-    }
     // Create a new room type
     public function store(Request $request)
     {

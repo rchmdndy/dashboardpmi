@@ -6,9 +6,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * @mixin IdeHelperUserTransaction
- */
 class UserTransaction extends Model
 {
     use HasFactory;
