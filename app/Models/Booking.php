@@ -15,7 +15,6 @@ class Booking extends Model
         'room_id',
         'start_date',
         'end_date',
-        'amount',
         'total_price',
     ];
 

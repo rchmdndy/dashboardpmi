@@ -23,6 +23,7 @@
 
     <form action="{{ route('bookings.store') }}" method="POST">
         @csrf
+        <input type="hidden" name="user_email" value="{{$user->email}}">
 
         <!-- Room Type -->
         <div class="mb-4">
@@ -55,7 +56,14 @@
             @enderror
         </div>
 {{--        <input type="hidden" id="user_uuid" name="user_uuid" value="9ca350c8-8d2a-405e-814f-0db56bf1f24b    ">--}}
-        <input type="hidden" id="amount" name="amount" value="{{1}}">
+        <!-- End Date -->
+        <div class="mb-4">
+            <label for="amount" class="block text-sm font-medium text-gray-200">Amount</label>
+            <input type="number" id="amount" name="amount" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            @error('amount')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
         <div class="mb-4">
             <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm">Book Now</button>
