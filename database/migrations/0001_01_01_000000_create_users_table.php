@@ -15,7 +15,7 @@ return new class extends Migration
 //            $table->char('uuid', 36)->primary();
             $table->string('email', 255)->unique()->primary();
             $table->string('name', 255);
-            $table->string('phone', 255);
+            $table->string('phone', 255)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

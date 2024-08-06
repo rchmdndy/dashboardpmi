@@ -4,18 +4,21 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasRelationships;
+use App\Notifications\CustomVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @mixin IdeHelperUser
  */
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject , MustVerifyEmail
 {
     use HasFactory, Notifiable, HasApiTokens, HasRelationships;
+    use HasFactory, Notifiable;
     protected $primaryKey = 'email';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -29,6 +32,7 @@ class User extends Authenticatable
         'email',
         'name',
         'phone',
+        // 'refresh_token',
         'password'
     ];
 
@@ -42,6 +46,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $visible = [
+        'email',
+        'name',
+        'phone',
+        'email_verified_at',
+    ];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -53,6 +64,31 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
+    }
+
+    public function getEmailForVerification()
+    {
+        return $this->email;
     }
 
     public function user_transaction(){

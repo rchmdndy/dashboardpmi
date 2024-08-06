@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use App\Models\RoomType;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\JWT;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Str;
 use Midtrans\Snap;
@@ -54,7 +57,6 @@ class BookingController extends Controller
             $userRequest['start_date'],
             $userRequest['end_date']
         );
-//        dd($availableRooms);
 
         if ($availableRooms < $userRequest['amount']) {
             if ($userRequest['side'] == 'client') return response()->json('Room is not enough!', 409);
@@ -62,7 +64,11 @@ class BookingController extends Controller
         }
 
         try {
-            $totalPrice = RoomType::findOrFail($userRequest['room_type_id'])->price * $userRequest['amount'];
+            $roomType = RoomType::findOrFail($userRequest['room_type_id']);
+
+            $days = $this->bookingService->getTotalDays($userRequest['start_date'], $userRequest['end_date']);
+
+            $totalPrice = $roomType->price * $userRequest['amount'] * $days;
 
             $userTransaction = UserTransaction::create([
                 'user_email' => $userRequest['user_email'],
@@ -118,4 +124,49 @@ class BookingController extends Controller
         }
     }
 
-}
+    public function getBookings(Request $request)
+    {
+        $request->validate([
+            'user_email' => 'required|email',
+        ]);
+
+        $userEmail = $request->user_email;
+
+            $booking = Booking::where('user_email', $userEmail)
+            ->with('user')
+            ->with('room.roomType')
+            ->get();
+
+        if (!$booking) {
+        return response()->json(['error' => 'No bookings found for this user'], 404);
+        }
+
+        foreach ($booking as $book) {
+            $book['payment_status'] = "Pending";
+        }
+
+                return response()->json([
+                    'booking' => $booking,
+                ], 200);
+            }
+
+
+            public function show(Request $request)
+            {
+                $bookingId = $request->query('id'); // Use query parameter for ID
+
+                $booking = Booking::where('id', $bookingId)
+                    ->with('user')
+                    ->with('room.roomType')
+                    ->first();
+
+                if (!$booking) {
+                    return response()->json(['error' => 'Booking not found'], 404);
+                }
+                $booking['payment_status'] = "Completed"; // Manually add payment_status to the booking
+
+                return response()->json([
+                    'booking' => $booking,
+                ]);
+            }
+            }
