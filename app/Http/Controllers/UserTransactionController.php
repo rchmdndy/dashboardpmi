@@ -8,13 +8,11 @@ use Illuminate\Support\Str;
 
 class UserTransactionController extends Controller
 {
-    public function createTransaction(Request $request, array $bookingId){
-        // TODO: Unfinsihed
-        $q = $request;
-        UserTransaction::create([
-            'user_email' => $q['user_email'],
-            'order_id' => Str::uuid(),
-            'booking_id' => implode(",", $bookingId),
-        ]);
+    public function getUserTransaction(Request $request){
+        $userTransactions = UserTransaction::whereUserEmail($request->user_email)->get();
+        if ($userTransactions->count() >= 1){
+            return response()->json($userTransactions->toArray());
+        }
+        return response(['User email is not found in transaction table'], 409);
     }
 }

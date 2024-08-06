@@ -45,7 +45,8 @@ class BookingController extends Controller
             'room_type_id' => 'required|integer|exists:room_types,id',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'amount' => 'required|integer|min:1'
+            'amount' => 'required|integer|min:1',
+            'side' => 'string'
         ]);
 
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
@@ -56,6 +57,7 @@ class BookingController extends Controller
 //        dd($availableRooms);
 
         if ($availableRooms < $userRequest['amount']) {
+            if ($userRequest['side'] == 'client') return response()->json('Room is not enough!', 409);
             return back()->withErrors(['amount' => 'Not enough rooms available for the selected dates']);
         }
 
@@ -105,9 +107,15 @@ class BookingController extends Controller
                'snap_token' => $snap_token
             ]);
 
+            if ($userRequest['side'] == 'client') return response()->json([
+                'snap_token' => $snap_token,
+                'client_key' => \config('midtrans.client_key')
+            ], 200);
             return view('bookings.pay', ['snap_token' => $snap_token]);
         } catch (Exception $e) {
+            if ($userRequest['side'] == 'client') return response([$e->getMessage()], 419);
             return back()->withErrors(['error' => 'Failed to create booking: ' . $e->getMessage()]);
         }
     }
+
 }

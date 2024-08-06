@@ -23,6 +23,20 @@ class RoomTypeController extends Controller
         })->all());
     }
 
+    public function getRoomType(Request $request)
+    {
+        $roomType = $request->input('type');
+        $roomData = RoomType::whereLike('room_type', "%$roomType%")->get();
+
+        $roomData = $roomData->map(function ($room) {
+            $firstImage = $room->room_image()->first();
+            $room->room_image = $firstImage ? asset('storage/room_images/' . $firstImage->image_path) : null;
+            return $room;
+        });
+
+        return response()->json($roomData);
+    }
+
     /**
      * Mengembalikan row dari tabel room_type berdasarkan dengan id yang diberikan
      * @param Request $request

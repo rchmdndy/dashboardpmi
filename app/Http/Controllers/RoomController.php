@@ -14,14 +14,12 @@ class RoomController extends Controller
         $rooms = Room::with(['roomType:id,room_type', 'parentRoom:id,room_name'])
                 ->select('id','room_type_id', 'room_name', 'parent_id')
                 ->get()
-                ->map(function ($room){
-                    return [
-                        'id' => $room->id,
-                        'room_type' => $room->roomType->room_type,
-                        'room_name' => $room->room_name,
-                        'parent_room' => $room->parentRoom->room_name ?? null,
-                    ];
-                });
+                ->map(fn ($room) => [
+                    'id' => $room->id,
+                    'room_type' => $room->roomType->room_type,
+                    'room_name' => $room->room_name,
+                    'parent_room' => $room->parentRoom->room_name ?? null,
+                ]);
         return response()->json($rooms);
     }
 
@@ -45,14 +43,12 @@ class RoomController extends Controller
                 ->select('id', 'room_type_id', 'room_name', 'parent_id')
                 ->where('room_type_id', '=', $room_type_id)
                 ->get()
-                ->map(function ($room) {
-                    return [
-                        'id' => $room->id,
-                        'room_type' => $room->roomType->room_type,
-                        'room_name' => $room->room_name,
-                        'parent_room' => $room->parentRoom->room_name ?? null,
-                    ];
-                });
+                ->map(fn ($room) => [
+                    'id' => $room->id,
+                    'room_type' => $room->roomType->room_type,
+                    'room_name' => $room->room_name,
+                    'parent_room' => $room->parentRoom->room_name ?? null,
+                ]);
 
             if ($rooms->isEmpty()) {
                 return response()->json(['error' => 'Rooms not found'], 404);
