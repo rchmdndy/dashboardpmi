@@ -24,12 +24,14 @@ Route::prefix('v1')->group(function (){
 
 
 Route::get('/getBookings', [BookingController::class, 'getBookings'])->name('bookings.get');
+Route::get('/getBookingDetails', [BookingController::class, 'show']);
+
 Route::post('/bookings', [BookingController::class, 'bookRoom'])->name('bookings.store');
 Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
 
 
-Route::post('login', [AuthenticatedSessionController::class, 'login']);
-Route::post('register', [AuthenticatedSessionController::class, 'register']);
+Route::post('login', [AuthenticatedSessionController::class, 'login'])->middleware('throttle:10');
+Route::post('register', [AuthenticatedSessionController::class, 'register'])->middleware('throttle:10');
 Route::post('/logout', [AuthenticatedSessionController::class, 'logout'])->middleware('jwt.auth')->name('logout');
 Route::post('/refresh', [AuthenticatedSessionController::class, 'refresh'])->middleware('jwt.refresh')->middleware('jwt.auth')->name('refresh');
 Route::post('/me', [AuthenticatedSessionController::class, 'me'])->middleware('jwt.auth')->name('me');

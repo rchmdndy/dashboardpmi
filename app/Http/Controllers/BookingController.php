@@ -7,6 +7,8 @@ use App\Models\RoomType;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\JWT;
 
 class BookingController extends Controller
 {
@@ -76,19 +78,43 @@ class BookingController extends Controller
     
         $userEmail = $request->user_email;
         
-            $booking = Booking::where('user_email', $userEmail)
-            ->latest('created_at')  
+            $booking = Booking::where('user_email', $userEmail) 
             ->with('user') 
             ->with('room.roomType')
-            ->first(); 
+            ->get(); 
 
         if (!$booking) {
         return response()->json(['error' => 'No bookings found for this user'], 404);
         }
-            
+
+        foreach ($booking as $book) {
+            $book['payment_status'] = "Pending";
+        }
+
                 return response()->json([
                     'booking' => $booking,
                 ], 200);
             }
-    
-}
+
+
+            public function show(Request $request)
+            {
+                $bookingId = $request->query('id'); // Use query parameter for ID
+
+                $booking = Booking::where('id', $bookingId) 
+                    ->with('user') 
+                    ->with('room.roomType')
+                    ->first(); 
+
+                if (!$booking) {
+                    return response()->json(['error' => 'Booking not found'], 404);
+                }
+                $booking['payment_status'] = "Completed"; // Manually add payment_status to the booking
+
+                return response()->json([
+                    'booking' => $booking,
+                ]);
+            }
+            }
+
+

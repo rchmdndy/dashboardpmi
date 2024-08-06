@@ -74,7 +74,7 @@ public function login(Request $request)
 
         // $cookie = Cookie('access_token', $token);
         $user = JWTAuth::user();
-
+        
         return response()->json([
             'data' => $user,
             'access_token' => $token, 'token_type' => 'Bearer'])->cookie($token);
@@ -97,6 +97,8 @@ public function login(Request $request)
             JWTAuth::invalidate(JWTAuth::getToken());
 
             auth()->logout();
+            session()->invalidate();
+            session()->flush();
 
             return response()->json(['message' => 'Successfully logged out']);
 

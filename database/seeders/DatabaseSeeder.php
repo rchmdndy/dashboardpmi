@@ -24,12 +24,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('room_types')->insert([
-            ['id' => 1, 'room_type' => 'Kamar Standard', 'capacity' => 2, 'price' => 200000.00, 'description' => 'Kamar Twin kami didesain secara elegan dengan perabotan modern buatan tangan. Dengan luas kamar 25-27 meter persegi, kamar ini menyediakan fasilitas lengkap di dalam kamar, seperti Tempat Tidur 2 bed,  TV LED 42 inci, kopi/teh di dalam kamar, Water Heater dan lain-lain. Kamar ini cocok untuk kebutuhan tamu yang sedang berlibur maupun yang sedang melakukan bisnis.'],
-            ['id' => 2, 'room_type' => 'Kamar Family', 'capacity' => 4, 'price' => 250000.00, 'description' => 'Kamar Family kami didesain secara elegan dengan perabotan modern buatan tangan. Dengan luas kamar 25-27 meter persegi, kamar ini menyediakan fasilitas lengkap di dalam kamar, seperti Tempat Tidur 4 bed,  TV LED 42 inci, kopi/teh di dalam kamar, Water Heater dan lain-lain. Kamar ini cocok untuk kebutuhan tamu yang sedang berlibur maupun yang sedang melakukan bisnis.'],
-            ['id' => 3, 'room_type' => 'Meeting Room Kecil', 'capacity' => 25, 'price' => 100000.00, 'description' => 'Ruang pertemuan dengan kapasitas 15 orang'],
-            ['id' => 4, 'room_type' => 'Meeting Room Sedang', 'capacity' => 50, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 35 orang'],
-            ['id' => 5, 'room_type' => 'Meeting Room Besar', 'capacity' => 100, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 100 orang'],
-            ['id' => 6, 'room_type' => 'Meeting Room Ekstra Besar', 'capacity' => 150, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 150 orang'],
+            ['id' => 1, 'room_type' => 'kamar_standard', 'capacity' => 2, 'price' => 200000.00, 'description' => 'Kamar dengan kapasitas 2 orang'],
+            ['id' => 2, 'room_type' => 'kamar_family', 'capacity' => 4, 'price' => 250000.00, 'description' => 'Kamar dengan kapasitas 4 orang'],
+            ['id' => 3, 'room_type' => 'meeting_room_kecil', 'capacity' => 25, 'price' => 100000.00, 'description' => 'Ruang pertemuan dengan kapasitas 15 orang'],
+            ['id' => 4, 'room_type' => 'meeting_room_sedang', 'capacity' => 50, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 35 orang'],
+            ['id' => 5, 'room_type' => 'meeting_room_besar', 'capacity' => 100, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 100 orang'],
+            ['id' => 6, 'room_type' => 'meeting_room_ekstra_besar', 'capacity' => 150, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 150 orang'],
         ]);
 
         DB::table('rooms')->insert([
@@ -65,14 +65,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $roomTypes = [
-            'Kamar Standard',
-            'Kamar Family',
-            'Meeting Room Kecil',
-            'Meeting Room Sedang',
-            'Meeting Room Besar',
-            'Meeting Room Ekstra Besar'
+            'kamar_standard',
+            'kamar_family',
+            'meeting_room_kecil',
+            'meeting_room_sedang',
+            'meeting_room_besar',
+            'meeting_room_ekstra_besar'
         ];
-        
 
         $roomImages = [];
 
