@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
-            'midtrans/notification_handling'
+            'midtrans/notification_handling',
+            'booking/generateToken'
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

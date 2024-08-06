@@ -38,4 +38,12 @@ class ReportController extends Controller
                         ->where('room_type_id', $roomTypeId)
                         ->first();
     }
+
+    public function generateReport(Request $request){
+        $monthGeneration = $request->validate([
+            'month' => "date"
+        ]);
+
+
+    }
 }
