@@ -10,26 +10,18 @@ class BookingService
 {
     public function checkRoomAvailabilityOnBetweenDates($roomTypeId, $startDate, $endDate)
     {
-        // Check for parent and child room availability
+        // Fetch rooms of the specified room type
         $rooms = Room::where('room_type_id', $roomTypeId)->get();
+
+        // Initialize total room count and booked room count
+        $totalRooms = $rooms->count();
+        $bookedRooms = 0;
 
         foreach ($rooms as $room) {
             if (!$this->isRoomAvailable($room, $startDate, $endDate)) {
-                return 0; // No available rooms
+                $bookedRooms++;
             }
         }
-
-        $totalRooms = Room::where('room_type_id', $roomTypeId)->count();
-        $bookedRooms = Booking::whereHas('room', function ($query) use ($roomTypeId) {
-            $query->where('room_type_id', $roomTypeId);
-        })->where(function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('start_date', [$startDate, $endDate])
-                ->orWhereBetween('end_date', [$startDate, $endDate])
-                ->orWhere(function ($query) use ($startDate, $endDate) {
-                    $query->where('start_date', '<=', $startDate)
-                        ->where('end_date', '>=', $endDate);
-                });
-        })->count();
 
         return $totalRooms - $bookedRooms;
     }
@@ -52,7 +44,7 @@ class BookingService
 
     private function isRoomAvailable($room, $startDate, $endDate)
     {
-        // Check if the room itself is available
+        // Check if the room itself is booked
         $isBooked = Booking::where('room_id', $room->id)
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('start_date', [$startDate, $endDate])
@@ -67,7 +59,7 @@ class BookingService
             return false;
         }
 
-        // Check parent room availability
+        // Check if the parent room is booked
         if ($room->parent_id) {
             $parentBooked = Booking::where('room_id', $room->parent_id)
                 ->where(function ($query) use ($startDate, $endDate) {
@@ -84,7 +76,7 @@ class BookingService
             }
         }
 
-        // Check child rooms availability
+        // Check if any child room is booked
         $childRooms = Room::where('parent_id', $room->id)->get();
         foreach ($childRooms as $childRoom) {
             $childBooked = Booking::where('room_id', $childRoom->id)

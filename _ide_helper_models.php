@@ -16,19 +16,26 @@ namespace App\Models{
  * 
  *
  * @property int $id
+ * @property string $user_email
  * @property int $user_transaction_id
  * @property int $room_id
+ * @property string $start_date
+ * @property string $end_date
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Room $room
+ * @property-read \App\Models\User|null $user
  * @property-read \App\Models\UserTransaction $user_transaction
  * @method static \Illuminate\Database\Eloquent\Builder|Booking newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Booking newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Booking query()
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereEndDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereRoomId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereStartDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereUserEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereUserTransactionId($value)
  * @mixin \Eloquent
  */
@@ -154,6 +161,8 @@ namespace App\Models{
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $booking
+ * @property-read int|null $booking_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
@@ -185,10 +194,8 @@ namespace App\Models{
  * @property int $id
  * @property string $user_email
  * @property string $order_id
- * @property int $room_type_id
- * @property string $start_date
- * @property string $end_date
  * @property string|null $snap_token
+ * @property string $transaction_date
  * @property int $amount
  * @property string $total_price
  * @property string $transaction_status
@@ -202,13 +209,11 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction query()
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereEndDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereOrderId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereRoomTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereSnapToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereStartDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereTotalPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereTransactionDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereTransactionStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereUserEmail($value)

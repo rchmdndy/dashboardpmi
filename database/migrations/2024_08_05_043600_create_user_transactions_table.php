@@ -15,14 +15,16 @@ return new class extends Migration
     public function up()
     {
         Schema::create('user_transactions', function (Blueprint $table) {
+            $table->id();
             $table->string('user_email');
-            $table->string('order_id', 255);
-            $table->unsignedBigInteger('booking_id');
+            $table->string('order_id', 255)->unique();
+            $table->string('snap_token')->nullable();
             $table->date('transaction_date');
+            $table->integer('amount');
+            $table->decimal('total_price', 0, 0);
             $table->enum('transaction_status', ['failed', 'pending', 'success']);
             $table->timestamps();
 
-            $table->foreign('booking_id')->references('id')->on('bookings');
             $table->foreign('user_email')->references('email')->on('users');
         });
     }

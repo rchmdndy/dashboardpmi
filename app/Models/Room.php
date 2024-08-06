@@ -3,12 +3,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperRoom
+ */
 class Room extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRelationships;
 
     protected $fillable = [
         'room_type_id',
@@ -22,7 +26,7 @@ class Room extends Model
     }
 
     public function booking(){
-        return $this->hasMany(Booking::class);
+        return $this->hasMany(Booking::class, 'room_id', 'id');
     }
     public function parentRoom()
     {
