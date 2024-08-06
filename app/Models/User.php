@@ -17,8 +17,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  */
 class User extends Authenticatable implements JWTSubject , MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasApiTokens, HasRelationships;
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRelationships;
     protected $primaryKey = 'email';
     public $incrementing = false;
     protected $keyType = 'string';

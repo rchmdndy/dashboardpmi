@@ -165,8 +165,6 @@ namespace App\Models{
  * @property-read int|null $booking_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
- * @property-read int|null $tokens_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserTransaction> $user_transaction
  * @property-read int|null $user_transaction_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
