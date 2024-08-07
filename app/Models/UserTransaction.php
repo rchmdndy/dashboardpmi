@@ -24,6 +24,30 @@ class UserTransaction extends Model
         'transaction_status',
     ];
 
+    public function setPending()
+    {
+        $this->attributes['transaction_status'] = 'pending';
+        $this->save();  // Gunakan $this->save() untuk menyimpan perubahan
+    }
+
+    public function setSuccess()
+    {
+        $this->attributes['transaction_status'] = 'success';
+        $this->save();
+    }
+
+    public function setFailed()
+    {
+        $this->attributes['transaction_status'] = 'failed';
+        $this->save();
+    }
+
+    public function setExpired()
+    {
+        $this->attributes['transaction_status'] = 'failed';
+        $this->save();
+    }
+
     public function booking()
     {
         return $this->hasMany(Booking::class, 'user_transaction_id', 'id');

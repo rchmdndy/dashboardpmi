@@ -20,6 +20,9 @@ class UserTransactionController extends Controller
     public function getUserTransactionByOrderID(Request $request){
         $userTransactions = UserTransaction::where('id', $request->id)
                             ->with('user')
+                            // ->with('booking')
+                            // ->with('booking.room')
+                            // ->with('booking.room.roomType')
                             ->first();
         
         if ($userTransactions){

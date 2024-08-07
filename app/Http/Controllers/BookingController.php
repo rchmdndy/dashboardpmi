@@ -18,6 +18,7 @@ use Midtrans\Snap;
 use NumberFormatter;
 use Midtrans\Config;
 
+
 class BookingController extends Controller
 {
     protected $bookingService;
@@ -26,8 +27,12 @@ class BookingController extends Controller
     public function __construct(BookingService $bookingService, ReportController $reportController) {
         $this->bookingService = $bookingService;
         $this->reportController = $reportController;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$clientKey = config('midtrans.client_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
     }
-
     public function create() {
         $roomTypes = RoomType::all();
         $user = Auth::user();
@@ -60,7 +65,7 @@ class BookingController extends Controller
 
         if ($availableRooms < $userRequest['amount']) {
             if ($userRequest['side'] == 'client') {
-                return response()->json(['error' => 'Ruangan tipe ini tidak tersedia untuk tanggal yang dipilih, Coba Yang lain!'], 500);
+                return response()->json(['error' => 'Ruangan tipe ini tidak tersedia untuk tanggal yang dipilih, Coba Yang lain!'], 409);
             }
             return back()->withErrors(['amount' => 'Not enough rooms available for the selected dates']);
         }
@@ -93,7 +98,7 @@ class BookingController extends Controller
             }
 
             Config::$serverKey = \config('midtrans.server_key');
-            Config::$clientKey = \config('midrans.client_key');
+            Config::$clientKey = \config('midtrans.client_key');
             Config::$isProduction = false;
             Config::$isSanitized = false;
             Config::$is3ds = true;

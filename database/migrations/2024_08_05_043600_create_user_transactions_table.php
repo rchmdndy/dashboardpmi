@@ -27,6 +27,20 @@ return new class extends Migration
 
             $table->foreign('user_email')->references('email')->on('users');
         });
+
+        Schema::create('bookings', function (Blueprint $table) {
+            $table->id();
+            $table->string('user_email');
+            $table->unsignedBigInteger('user_transaction_id');
+            $table->unsignedBigInteger('room_id');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->timestamps();
+
+            $table->foreign('room_id')->references('id')->on('rooms');
+            $table->foreign('user_transaction_id')->references('id')->on('user_transactions');
+            $table->foreign('user_email')->references('email')->on('users');
+        });
     }
 
     /**

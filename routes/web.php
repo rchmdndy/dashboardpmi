@@ -4,6 +4,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReportController;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/home', function () {
@@ -30,6 +31,6 @@ Route::post('/bookings', [BookingController::class, 'bookRoom'])->name('bookings
     Route::get('/reports/create', [ReportController::class, 'createReport'])->name('reports.create');
 
 
-    Route::post('midtrans/notification_handling', [NotificationController::class, 'handleMidtransNotification'])->withoutMiddleware('veri');
+    Route::post('midtrans/notification_handling', [NotificationController::class, 'handleMidtransNotification'])->withoutMiddleware(VerifyCsrfToken::class);
 
 require __DIR__.'/auth.php';
