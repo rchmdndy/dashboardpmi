@@ -7,6 +7,16 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserTransactionController;
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('/report')->controller(ReportController::class)->name('report.')->group(function (){
+    Route::get('/generate', 'generateReport')->name('generate');
+});
+Route::prefix('/booking')->controller(BookingController::class)->name('booking')->group(function(){
+    Route::post('/generateToken', 'bookRoom')->name('bookRoom');
+})->withoutMiddleware("auth");
+
+Route::prefix('/user_transaction')->controller(UserTransactionController::class)->name('user_transaction.')->group(function(){
+   Route::get('/history', 'getTransaction')->name('history');
+});
 Route::get('/', function () {
     return view('welcome');
 });
@@ -25,16 +35,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/create', [ReportController::class, 'createReport'])->name('reports.create');
 });
 
-Route::prefix('/booking')->controller(BookingController::class)->name('booking')->group(function(){
-    Route::post('/generateToken', 'bookRoom')->name('bookRoom');
-})->withoutMiddleware("auth:sanctum");
-
-Route::prefix('/user_transaction')->controller(UserTransactionController::class)->name('user_transaction.')->group(function(){
-   Route::get('/history', 'getTransaction')->name('history');
-});
 
 
 
-    Route::post('midtrans/notification_handling', [NotificationController::class, 'handleMidtransNotification'])->withoutMiddleware('veri');
+Route::post('midtrans/notification_handling', [NotificationController::class, 'handleMidtransNotification'])->withoutMiddleware('veri');
 
 require __DIR__.'/auth.php';

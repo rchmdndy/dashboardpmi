@@ -14,6 +14,8 @@ class Report extends Model
 {
     use HasFactory, HasRelationships;
 
+    protected $table = "reports";
+
     protected $fillable = [
         'room_type_id',
         'total_bookings',

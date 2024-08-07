@@ -65,8 +65,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $roomTypes = [
-            'kamar_standard',
-            'kamar_family',
+            'Kamar Standard',
+            'Kamar_family',
             'meeting_room_kecil',
             'meeting_room_sedang',
             'meeting_room_besar',

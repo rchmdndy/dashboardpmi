@@ -38,15 +38,7 @@ class BookingController extends Controller
     public function bookRoom(Request $request) {
 //        @dd($request);
         // Validate request
-        $userRequest = $request->validate([
-            'user_email' => 'required|email',
-            'room_type_id' => 'required|integer|exists:room_types,id',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'amount' => 'required|integer|min:1',
-            'side' => 'string'
-        ]);
-
+        $userRequest = $request->toArray();
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
             $userRequest['room_type_id'],
             $userRequest['start_date'],
@@ -71,17 +63,6 @@ class BookingController extends Controller
                 'transaction_status' => 'pending'
             ]);
 
-            for ($i = 1; $i <= $userRequest['amount']; $i++) {
-                Booking::create([
-                    'user_transaction_id' => $userTransaction->id,
-                    'user_email' => $userRequest['user_email'],
-                    'room_id' => $this->bookingService->getAvailableRoomId($userRequest['room_type_id'], $userRequest['start_date'], $userRequest['end_date']),
-                    'start_date' => $userRequest['start_date'],
-                    'end_date' => $userRequest['end_date'],
-                ]);
-                $this->reportController->createReport($request);
-            }
-
             Config::$serverKey = \config('midtrans.server_key');
             Config::$clientKey = \config('midrans.client_key');
             Config::$isProduction = false;
@@ -99,8 +80,24 @@ class BookingController extends Controller
                     'phone' => $userTransaction->user->phone
                 )
             );
-
             $snap_token = Snap::getSnapToken($params);
+            if (!$snap_token) {
+                $userTransaction->delete();
+                if ($userRequest['side'] == 'client') return response(['Gagal mendapatkan snap token'], 409);
+                return back()->withErrors(['error' => 'Gagal mendapatkan snap token']);
+            }
+
+
+            for ($i = 1; $i <= $userRequest['amount']; $i++) {
+                Booking::create([
+                    'user_transaction_id' => $userTransaction->id,
+                    'user_email' => $userRequest['user_email'],
+                    'room_id' => $this->bookingService->getAvailableRoomId($userRequest['room_type_id'], $userRequest['start_date'], $userRequest['end_date']),
+                    'start_date' => $userRequest['start_date'],
+                    'end_date' => $userRequest['end_date'],
+                ]);
+                $this->reportController->createReport($request);
+            }
             $userTransaction->update([
                'snap_token' => $snap_token
             ]);
