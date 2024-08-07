@@ -59,7 +59,9 @@ class BookingController extends Controller
         );
 
         if ($availableRooms < $userRequest['amount']) {
-            if ($userRequest['side'] == 'client') return response()->json('Room is not enough!', 409);
+            if ($userRequest['side'] == 'client') {
+                return response()->json(['error' => 'Ruangan tipe ini tidak tersedia untuk tanggal yang dipilih, Coba Yang lain!'], 500);
+            }
             return back()->withErrors(['amount' => 'Not enough rooms available for the selected dates']);
         }
 
@@ -73,7 +75,7 @@ class BookingController extends Controller
             $userTransaction = UserTransaction::create([
                 'user_email' => $userRequest['user_email'],
                 'order_id' => "PMI-BOOKING-".Str::uuid(),
-                'transaction_date' => Carbon::now(),
+                'transaction_date' => now(),
                 'amount' => $userRequest['amount'],
                 'total_price' => $totalPrice,
                 'transaction_status' => 'pending'
@@ -150,23 +152,5 @@ class BookingController extends Controller
                 ], 200);
             }
 
-
-            public function show(Request $request)
-            {
-                $bookingId = $request->query('id'); // Use query parameter for ID
-
-                $booking = Booking::where('id', $bookingId)
-                    ->with('user')
-                    ->with('room.roomType')
-                    ->first();
-
-                if (!$booking) {
-                    return response()->json(['error' => 'Booking not found'], 404);
-                }
-                $booking['payment_status'] = "Completed"; // Manually add payment_status to the booking
-
-                return response()->json([
-                    'booking' => $booking,
-                ]);
-            }
-            }
+            
+    }
