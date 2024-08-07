@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use App\Models\Report;
 use App\Models\RoomType;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Exception;
 use Illuminate\Http\Request;
+use NumberFormatter;
 
 class ReportController extends Controller
 {
@@ -37,5 +36,38 @@ class ReportController extends Controller
         return Report::whereMonth('created_at','=',$currentMonth)
                         ->where('room_type_id', $roomTypeId)
                         ->first();
+    }
+
+    public function generateMonthly(Request $request){
+        $formatter = new NumberFormatter('id_ID', NumberFormatter::CURRENCY);
+        $formatter->setSymbol(NumberFormatter::CURRENCY_SYMBOL, 'Rp');
+
+        // Validate the input month
+        $validated = $request->validate([
+            'month' => 'required|date_format:Y-m'
+        ]);
+//        return response('masuk function report');
+
+        // Extract the numeric month value
+        $month = (int) Carbon::createFromFormat('Y-m', $validated['month'])->format('m');
+        $year = Carbon::createFromFormat('Y-m', $validated['month'])->format('Y');
+
+        // Retrieve reports for the given month
+        $reports = Report::whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get();
+
+        // Format the reports
+        $formattedReports = $reports->map(function ($report) use ($formatter) {
+            $report->room_type_name = $report->roomType ? $report->roomType->room_type : 'Unknown'; // Ensure relationship exists
+            $report->total_income = $formatter->formatCurrency($report->total_income, 'IDR');
+            unset($report->roomType);
+            unset($report->created_at);
+            unset($report->updated_at);
+            return $report;
+        });
+
+        // Return JSON response
+        return response()->json($formattedReports);
     }
 }

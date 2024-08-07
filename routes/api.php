@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\JWTAUTHController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\BookingController;
@@ -28,6 +29,10 @@ Route::prefix('v1')->group(function (){
     });
     Route::prefix('/booking')->controller(BookingController::class)->name('booking,')->group(function (){
        Route::post('/generateToken', 'bookRoom')->name('generateToken'); // tolong tambahin di body POST, "side" = "client" biar dapet response json
+    });
+
+    Route::prefix('/report')->controller(ReportController::class)->name('report.')->group(function (){
+       Route::get('/generate', 'generateMonthly')->name('generateMonthly');
     });
 
     Route::middleware('jwt.auth')->group(function (){

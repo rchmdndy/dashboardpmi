@@ -55,7 +55,7 @@
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
-{{--        <input type="hidden" id="user_uuid" name="user_uuid" value="9ca350c8-8d2a-405e-814f-0db56bf1f24b    ">--}}
+{{--        <input type="hidden" id="_token" name="_token" value="{{csrf()}}"   ">--}}
         <!-- End Date -->
         <div class="mb-4">
             <label for="amount" class="block text-sm font-medium text-gray-200">Amount</label>
