@@ -33,8 +33,9 @@ class JWTAUTHController extends Controller
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
             ]);
-    
+
             $token = JWTAuth::fromUser($user);
+            $user['email_verified_at'] = $user->email_verified_at;
     
             //QUEUE
             SendMailVerificationJob::dispatch($user);
@@ -49,6 +50,36 @@ class JWTAUTHController extends Controller
             return response()->json(['error' => 'Failed to create a new user'], 500);
         }
     }
+
+    public function registerSocial(Request $request)
+    {
+        try {
+        // Cari user berdasarkan email
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+
+        } else {
+            // Jika user tidak ditemukan, buat user baru dengan password acak
+            $user = User::create([
+                'email' => $request->email,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'password' => Hash::make($request->password),
+                'email_verified_at' => now(),
+            ]);
+            SendMailVerificationJob::dispatch($user);
+            
+        }
+        $user['email_verified_at'] = $user->email_verified_at;
+
+        $token = JWTAuth::fromUser($user);
+        return response()->json(['data' => $user, 'access_token' => $token, 'token_type' => 'Bearer']);
+    } catch (\Exception $e) {
+        \Log::error($e->getMessage());
+        return response()->json(['error' => 'Failed to create a new user'], 500);
+    }
+}
     
     public function login(Request $request)
         {
@@ -209,7 +240,6 @@ class JWTAUTHController extends Controller
     
     }
     
-    //WORKING
     
     public function forgotPassword(Request $request)
     {

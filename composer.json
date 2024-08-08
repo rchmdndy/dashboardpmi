@@ -9,6 +9,7 @@
         "ext-intl": "*",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.15",
         "laravel/tinker": "^2.9",
         "midtrans/midtrans-php": "^2.5",
         "tymon/jwt-auth": "^2.1"

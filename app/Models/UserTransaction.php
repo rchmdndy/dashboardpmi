@@ -57,4 +57,6 @@ class UserTransaction extends Model
     {
         return $this->belongsTo(User::class, 'user_email', 'email');
     }
+
+    
 }

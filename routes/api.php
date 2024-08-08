@@ -46,6 +46,7 @@ Route::prefix('v1')->group(function (){
 
     Route::post('login', [JWTAUTHController::class, 'login'])->middleware('throttle:10');
     Route::post('register', [JWTAUTHController::class, 'register'])->middleware('throttle:10');
+    Route::post('/registerSocial', [JWTAUTHController::class, 'registerSocial'])->name('registerSocial')->middleware('throttle:10'); //untuk google & twitter
     Route::post('/forgotPassword', [JWTAUTHController::class, 'forgotPassword'])->name('forgotPassword');
     //Signature URL Email Verification
     Route::get('/email/verify/{email}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
