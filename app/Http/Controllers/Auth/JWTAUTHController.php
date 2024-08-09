@@ -32,6 +32,7 @@ class JWTAUTHController extends Controller
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
+                'role_id' => 4,
             ]);
 
             $token = JWTAuth::fromUser($user);
@@ -66,12 +67,14 @@ class JWTAUTHController extends Controller
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
+                'role_id' => 4,
                 'email_verified_at' => now(),
             ]);
             SendMailVerificationJob::dispatch($user);
             
         }
         $user['email_verified_at'] = $user->email_verified_at;
+        $user['role_id'] = $user->role_id;
 
         $token = JWTAuth::fromUser($user);
         return response()->json(['data' => $user, 'access_token' => $token, 'token_type' => 'Bearer']);
@@ -86,7 +89,8 @@ class JWTAUTHController extends Controller
             try {
             $credentials = $request->only('email', 'password');
     
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)
+                        ->first();
     
             if (!$user) {
                 return response()->json(['error' => 'User Not Found'], 401);
@@ -101,7 +105,7 @@ class JWTAUTHController extends Controller
             
             return response()->json([
                 'data' => $user,
-                'access_token' => $token, 'token_type' => 'Bearer'])->cookie($token);
+                'access_token' => $token, 'token_type' => 'Bearer']);
     
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
@@ -135,7 +139,7 @@ class JWTAUTHController extends Controller
         public function me()
     {
         try {
-            return response()->json(JWTAuth::parseToken()->authenticate());
+            return response()->json(JWTAuth::user());
         } catch (\Exception $e) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }

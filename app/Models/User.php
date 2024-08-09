@@ -3,14 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Concerns\HasRelationships;
-use App\Notifications\CustomVerifyEmail;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Role;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Notifications\CustomVerifyEmail;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 
 /**
  * @mixin IdeHelperUser
@@ -32,7 +33,9 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
         'name',
         'phone',
         // 'refresh_token',
-        'password'
+        'role_id',
+        'password',
+        
     ];
 
     /**
@@ -49,6 +52,7 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
         'email',
         'name',
         'phone',
+        'role_id',
         'email_verified_at',
     ];
 
@@ -97,4 +101,8 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
     public function booking(){
         return $this->hasMany(Booking::class);
     }
+
+    public function role(){
+        return $this->belongsTo(Role::class);
+    }   
 }

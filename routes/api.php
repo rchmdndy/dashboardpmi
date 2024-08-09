@@ -35,20 +35,29 @@ Route::prefix('v1')->group(function (){
        Route::get('/generate', 'generateMonthly')->name('generateMonthly');
     });
 
-    Route::middleware('jwt.auth')->group(function (){
-        Route::post('/logout', [JWTAUTHController::class, 'logout'])->name('logout');
-        Route::post('/refresh', [JWTAUTHController::class, 'refresh'])->middleware('jwt.refresh')->name('refresh');
-        Route::get('/me', [JWTAUTHController::class, 'me'])->name('me');
-        Route::put('/updatePassword', [JWTAUTHController::class, 'updatePassword'])->middleware('jwt.refresh')->name('updatePassword');
-        Route::put('/updateProfile', [JWTAUTHController::class, 'updateProfile'])->name('updateProfile');
-        Route::post('/sendEmailVerif', [JWTAUTHController::class, 'sendEmailVerificationNotification'])->name('sendEmailVerif');
+
+    // MUST LOGIN/REGISTER FIRST
+    Route::middleware(['jwt.auth'])->group(function (){
+
+        Route::controller(JWTAUTHController::class)->group(function (){
+            Route::post('/logout',  'logout')->name('logout');
+            Route::post('/refresh', 'refresh')->middleware('jwt.refresh')->name('refresh');
+            Route::get('/me', 'me')->name('me');
+            Route::put('/updatePassword', 'updatePassword')->middleware('jwt.refresh')->middleware('throttle:10')->name('updatePassword');
+            Route::put('/updateProfile', 'updateProfile')->name('updateProfile');
+            Route::post('/sendEmailVerif', 'sendEmailVerificationNotification')->middleware('throttle:5')->name('sendEmailVerif');
+        });
+
     });
 
-    Route::post('login', [JWTAUTHController::class, 'login'])->middleware('throttle:10');
-    Route::post('register', [JWTAUTHController::class, 'register'])->middleware('throttle:10');
-    Route::post('/registerSocial', [JWTAUTHController::class, 'registerSocial'])->name('registerSocial')->middleware('throttle:10'); //untuk google & twitter
-    Route::post('/forgotPassword', [JWTAUTHController::class, 'forgotPassword'])->name('forgotPassword');
-    //Signature URL Email Verification
+    Route::middleware('throttle:5')->controller(JWTAUTHController::class)->group(function (){
+        Route::post('/login', 'login')->name('login');
+        Route::post('/register', 'register')->name('register');
+        Route::post('/registerSocial', 'registerSocial')->name('registerSocial'); //untuk google & twitter
+        Route::post('/forgotPassword', 'forgotPassword')->name('forgotPassword');
+    });
+
+     //Signature URL Email Verification
     Route::get('/email/verify/{email}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
 
 });

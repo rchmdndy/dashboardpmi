@@ -1,9 +1,14 @@
 <?php
 
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
+use Illuminate\Auth\AuthenticationException;
+use Tymon\JWTAuth\Http\Middleware\Authenticate;
+use Tymon\JWTAuth\Http\Middleware\RefreshToken;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
+use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\RefreshTokenMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,9 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
 
         $middleware->alias([
-            'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
-            'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
-            'refresh.token' => \App\Http\Middleware\RefreshTokenMiddleware::class,
+            'jwt.auth' => Authenticate::class,
+            'jwt.refresh' => RefreshToken::class,
+            'refresh.token' => RefreshTokenMiddleware::class,
+            'check.role' => CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

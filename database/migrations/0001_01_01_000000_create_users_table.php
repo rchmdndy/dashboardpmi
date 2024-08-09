@@ -38,6 +38,16 @@ return new class extends Migration
 
             $table->foreign('user_id')->references('email')->on('users')->onDelete('cascade');
         });
+
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('role_id')->nullable()->default(4)->constrained()->onDelete('set null');
+        });
+        
     }
 
     /**
@@ -48,5 +58,6 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('roles');
     }
 };

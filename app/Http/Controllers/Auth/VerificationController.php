@@ -20,9 +20,9 @@ class VerificationController extends Controller
     $expectedHash = hash_hmac('sha256', $email . $key, $key);
 
     if (! $request->hasValidSignature() || ! hash_equals($request->route('hash'), $expectedHash)) {
-        abort(403, 'Invalid or expired signature.');
+        abort(401);
     }elseif (!$user){
-        abort(403, 'Invalid or expired signature.');
+        abort(401);
     }
 
     if ($user->hasVerifiedEmail()) {
