@@ -28,6 +28,5 @@ class SendMailForgotPasswordJob implements ShouldQueue
     {
             Password::sendResetLink(['email' => $this->email]);
 
-    
     }
 }

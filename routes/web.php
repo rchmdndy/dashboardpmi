@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BookingController;
@@ -33,6 +34,11 @@ Route::get('/csrf-token', function () {
     return response()->json(['csrf_token' => csrf_token()]);
 });
 
+Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+                ->name('password.reset');
+
+Route::post('reset-password', [NewPasswordController::class, 'store'])
+                ->name('password.store');
 
 Route::post('midtrans/notification_handling', [NotificationController::class, 'handleMidtransNotification'])->withoutMiddleware(VerifyCsrfToken::class);
 

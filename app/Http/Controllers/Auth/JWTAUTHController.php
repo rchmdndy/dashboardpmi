@@ -74,7 +74,6 @@ class JWTAUTHController extends Controller
             
         }
         $user['email_verified_at'] = $user->email_verified_at;
-        $user['role_id'] = $user->role_id;
 
         $token = JWTAuth::fromUser($user);
         return response()->json(['data' => $user, 'access_token' => $token, 'token_type' => 'Bearer']);
@@ -101,7 +100,6 @@ class JWTAUTHController extends Controller
             }
     
             // $cookie = Cookie('access_token', $token);
-            $user = JWTAuth::user();
             
             return response()->json([
                 'data' => $user,
@@ -219,8 +217,11 @@ class JWTAUTHController extends Controller
             $user->name = $request->name;
             $user->phone = $request->phone;
             $user->save();
-    
-            return response()->json(['message' => 'Profile updated successfully']);
+
+            return response()->json([
+                'data' => $user,
+                'message' => 'Profile updated successfully'
+            ]);
     
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['error' => 'Could not update profile'], 401);
@@ -230,7 +231,6 @@ class JWTAUTHController extends Controller
     
     public function sendEmailVerificationNotification(Request $request)
     {
-    
         try{
             // $request->user()->sendEmailVerificationNotification();
     
@@ -248,10 +248,18 @@ class JWTAUTHController extends Controller
     public function forgotPassword(Request $request)
     {
         try {
+            $validator = validator::make(request()->all(), [
+                'email' => 'required|email',
+            ]);
+
+            if($validator->fails()){
+                return response()->json($validator->errors()->toJson(), 400);
+            }
+
             $user = User::where('email', $request->email)->first();
     
             if(!$user){
-                return response()->json(['error' => 'Could not send Forgot Password link'], 500);
+                return response()->json(['error' => 'Could not send Forgot Password link'], 400);
             }
     
             SendMailForgotPasswordJob::dispatch($request->only('email'));
