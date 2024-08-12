@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
+        $this->call(UserSeeder::class);
 
         DB::table('room_types')->insert([
             ['id' => 1, 'room_type' => 'kamar_standard', 'capacity' => 2, 'price' => 200000.00, 'description' => 'Kamar dengan kapasitas 2 orang'],
