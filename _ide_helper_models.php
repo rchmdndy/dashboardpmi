@@ -47,6 +47,40 @@ namespace App\Models{
 /**
  * 
  *
+ * @property int $id
+ * @property string $name
+ * @property string $price_per_person
+ * @property int $min_person_quantity
+ * @property int $hasLodgeRoom
+ * @property int $hasMeetingRoom
+ * @property string|null $description
+ * @property string|null $image
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Package newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Package newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Package query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereHasLodgeRoom($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereHasMeetingRoom($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereMinPersonQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package wherePricePerPerson($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Package whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperPackage {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
  * @property int $room_type_id
  * @property int $total_bookings
  * @property string $total_income
@@ -57,6 +91,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Report newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Report query()
  * @method static \Illuminate\Database\Eloquent\Builder|Report whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Report whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Report whereRoomTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Report whereTotalBookings($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Report whereTotalIncome($value)
@@ -65,6 +100,25 @@ namespace App\Models{
  */
 	#[\AllowDynamicProperties]
 	class IdeHelperReport {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $name
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Role newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Role newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Role query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereName($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperRole {}
 }
 
 namespace App\Models{
@@ -161,10 +215,12 @@ namespace App\Models{
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $role_id
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $booking
  * @property-read int|null $booking_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
+ * @property-read \App\Models\Role|null $role
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserTransaction> $user_transaction
  * @property-read int|null $user_transaction_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
@@ -178,6 +234,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereRoleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @mixin \Eloquent
  */
@@ -191,6 +248,7 @@ namespace App\Models{
  *
  * @property int $id
  * @property string $user_email
+ * @property string $channel
  * @property string $order_id
  * @property string|null $snap_token
  * @property string $transaction_date
@@ -206,6 +264,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction query()
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereChannel($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction whereOrderId($value)

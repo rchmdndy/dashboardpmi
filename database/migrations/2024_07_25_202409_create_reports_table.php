@@ -15,6 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('reports', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('room_type_id');
             $table->integer('total_bookings');
             $table->decimal('total_income', 0, 0);

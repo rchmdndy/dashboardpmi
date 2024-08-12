@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('room_types', function (Blueprint $table) {
             $table->id();
-            $table->string('room_type', 255);
+            $table->string('room_type', 255)->index();
             $table->integer('capacity');
             $table->decimal('price', 10, 2);
             $table->text('description')->nullable();

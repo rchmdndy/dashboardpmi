@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Package;
 use App\Models\UserTransaction;
 use App\Services\BookingService;
 use Carbon\Carbon;
@@ -10,6 +11,7 @@ use App\Models\RoomType;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\JWT;
 use App\Http\Controllers\ReportController;
@@ -45,7 +47,6 @@ class BookingController extends Controller
 
     public function bookRoom(Request $request) {
 
-        $formatter = new NumberFormatter("id_ID", NumberFormatter::CURRENCY);
 
         // Validate request
         $userRequest = $request->validate([
@@ -79,6 +80,7 @@ class BookingController extends Controller
 
             $userTransaction = UserTransaction::create([
                 'user_email' => $userRequest['user_email'],
+                'channel' => 'direct',
                 'order_id' => "PMI-BOOKING-".Str::uuid(),
                 'transaction_date' => now(),
                 'amount' => $userRequest['amount'],
@@ -131,6 +133,127 @@ class BookingController extends Controller
         }
     }
 
+    public function bookPackage(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_email' => 'required|email',
+            'package_id' => 'required|exists:packages,id',
+            'person_count' => 'required|integer|min:20',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after:start_date'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $package = Package::findOrFail($request->package_id);
+        $personCount = $request->person_count;
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+        $totalDays = $this->bookingService->getTotalDays($request->start_date, $request->end_date);
+
+        if ($personCount < $package->min_person_quantity) {
+            return response()->json(['error' => 'Minimum person count not met.'], 400);
+        }
+
+        if ($package->hasMeetingRoom == 1 && $package->hasLodgeRoom == 0) {
+            $meetingRoom = $this->bookingService->getMeetingRoomForPackage($personCount, $startDate, $endDate);
+
+            if (!$meetingRoom) {
+                return response()->json(['error' => 'No available meeting room found.'], 400);
+            }
+
+            $total_price = $package->price_per_person * $request->person_count * $totalDays;
+            $userTransaction = UserTransaction::create([
+                'user_email' => $request->user_email,
+                'channel' => 'packages',
+                'order_id' => 'PMI-BOOKING-'.Str::uuid(),
+                'transaction_date' => now(),
+                'amount' => $personCount,
+                'total_price' => $total_price,
+                'transaction_status' => 'pending'
+            ]);
+
+            // Book the meeting room
+            Booking::create([
+                'user_email' => $request->user_email,
+                'user_transaction_id' => $userTransaction->id,
+                'room_id' => $meetingRoom->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]);
+        } elseif ($package->hasMeetingRoom == 1 && $package->hasLodgeRoom == 1) {
+            $meetingRoom = $this->bookingService->getMeetingRoomForPackage($personCount, $startDate, $endDate);
+            $lodgeRooms = $this->bookingService->getLodgeRoomsForPackage($personCount, $startDate, $endDate);
+
+            if (!$meetingRoom) {
+                return response()->json(['error' => 'No available meeting room found.'], 400);
+            }
+
+            if (empty($lodgeRooms)) {
+                return response()->json(['error' => 'No available lodge rooms found.'], 400);
+            }
+
+            $packageData = [];
+
+            $total_price = $package->price_per_person * $request->person_count;
+            $userTransaction = UserTransaction::create([
+                'user_email' => $request->user_email,
+                'channel' => 'packages',
+                'order_id' => 'PMI-BOOKING-'.Str::uuid(),
+                'transaction_date' => now(),
+                'amount' => $personCount,
+                'total_price' => $total_price,
+                'transaction_status' => 'pending'
+            ]);
+
+            // Book the meeting room
+            Booking::create([
+                'user_email' => $request->user_email,
+                'user_transaction_id' => $userTransaction->id,
+                'room_id' => $meetingRoom->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]);
+
+            // Book lodge rooms
+            foreach ($lodgeRooms as $room) {
+                Booking::create([
+                    'user_email' => $request->user_email,
+                    'user_transaction_id' => $userTransaction->id,
+                    'room_id' => $room['id'],
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                ]);
+            }
+        }
+
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $userTransaction->order_id,
+                'gross_amount' => (int) $userTransaction->total_price,
+            ),
+            'customer_details' => array(
+                'name' => $userTransaction->user->name,
+                'email' => $userTransaction->user->email,
+                'phone' => $userTransaction->user->phone
+            )
+        );
+
+        $snap_token = Snap::getSnapToken($params);
+        $userTransaction->update([
+            'snap_token' => $snap_token
+        ]);
+
+        return response()->json([
+            "snap_token" => $snap_token,
+            "client_key" => \config('midtrans.client_key')
+        ]);
+    }
+
+
     public function getBookings(Request $request)
     {
         $request->validate([
@@ -157,5 +280,5 @@ class BookingController extends Controller
                 ], 200);
             }
 
-            
+
     }

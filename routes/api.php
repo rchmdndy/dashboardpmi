@@ -28,7 +28,8 @@ Route::prefix('v1')->group(function (){
         Route::get('/getSnapToken', 'getSnapToken')->name('getSnapToken');
     });
     Route::prefix('/booking')->controller(BookingController::class)->name('booking,')->group(function (){
-       Route::post('/generateToken', 'bookRoom')->name('generateToken'); // tolong tambahin di body POST, "side" = "client" biar dapet response json
+        Route::post('/packageToken', 'bookPackage')->name('packageToken');
+        Route::post('/generateToken', 'bookRoom')->name('generateToken'); // tolong tambahin di body POST, "side" = "client" biar dapet response json
     });
 
     Route::prefix('/report')->controller(ReportController::class)->name('report.')->group(function (){

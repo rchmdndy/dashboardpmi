@@ -17,8 +17,9 @@ return new class extends Migration
         Schema::create('user_transactions', function (Blueprint $table) {
             $table->id();
             $table->string('user_email');
-            $table->string('order_id', 255)->unique();
-            $table->string('snap_token')->nullable();
+            $table->enum('channel', ['direct', 'packages']);
+            $table->string('order_id', 255)->unique()->index();
+            $table->string('snap_token')->nullable()->index();
             $table->date('transaction_date');
             $table->integer('amount');
             $table->decimal('total_price', 0, 0);
