@@ -16,6 +16,7 @@ class UserTransaction extends Model
 
     protected $fillable = [
         'user_email',
+        'channel',
         'order_id',
         'snap_token',
         'transaction_date',
@@ -58,5 +59,5 @@ class UserTransaction extends Model
         return $this->belongsTo(User::class, 'user_email', 'email');
     }
 
-    
+
 }

@@ -78,5 +78,10 @@ class DatabaseSeeder extends Seeder
         }
 
         DB::table('room_images')->insert($roomImages);
+
+        DB::table('packages')->insert([
+           ['name' => 'Paket Meeting', 'price_per_person' => 200000.00, 'min_person_quantity' => 20, 'hasLodgeRoom' => false, 'hasMeetingRoom' => true],
+           ['name' => 'Paket Full Board', 'price_per_person' => 250000.00, 'min_person_quantity' => 20, 'hasLodgeRoom' => true, 'hasMeetingRoom' => true]
+        ]);
     }
 }
