@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('room_type', 255)->index();
             $table->integer('capacity');
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 0, 0);
             $table->text('description')->nullable();
             $table->timestamps();
         });

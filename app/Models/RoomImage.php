@@ -1,4 +1,5 @@
 <?php
+
 // app/Models/RoomImage.php
 
 namespace App\Models;
@@ -19,8 +20,21 @@ class RoomImage extends Model
         'image_path',
     ];
 
+    public $timestamps = false;
+
     public function roomType()
     {
         return $this->belongsTo(RoomType::class, 'room_type_id', 'id');
+    }
+
+    public function getImagePathAttribute($value)
+    {
+        return 'images/kamar/'.$value;
+    }
+
+    // Mutator
+    public function setImagePathAttribute($value)
+    {
+        $this->attributes['image_path'] = str_replace('images/kamar/', '', $value);
     }
 }

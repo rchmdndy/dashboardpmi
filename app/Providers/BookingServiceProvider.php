@@ -13,8 +13,8 @@ class BookingServiceProvider extends ServiceProvider implements DeferrableProvid
      */
     public function register(): void
     {
-        $this->app->singleton(BookingService::class, function($app){
-            return new BookingService();
+        $this->app->singleton(BookingService::class, function ($app) {
+            return new BookingService;
         });
     }
 
@@ -28,8 +28,6 @@ class BookingServiceProvider extends ServiceProvider implements DeferrableProvid
 
     /**
      * Get the services provided by the provider.
-     *
-     * @return array
      */
     public function provides(): array
     {

@@ -19,6 +19,17 @@ class Package extends Model
         'hasLodgeRoom',
         'hasMeetingRoom',
         'description',
-        'image'
+        'image',
     ];
+
+    public function getImageAttribute($value)
+    {
+        return 'images/packages/'.$value;
+    }
+
+    // Mutator
+    public function setImageAttribute($value)
+    {
+        $this->attributes['image'] = str_replace('images/packages/', '', $value);
+    }
 }

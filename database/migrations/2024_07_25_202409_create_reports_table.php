@@ -1,4 +1,5 @@
 <?php
+
 // database/migrations/xxxx_xx_xx_xxxxxx_create_reports_table.php
 
 use Illuminate\Database\Migrations\Migration;
@@ -18,7 +19,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('room_type_id');
             $table->integer('total_bookings');
-            $table->decimal('total_income', 0, 0);
+            $table->decimal('total_income', 20, 2);
             $table->date('created_at');
             $table->date('updated_at');
 

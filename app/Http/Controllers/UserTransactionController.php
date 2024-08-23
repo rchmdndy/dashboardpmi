@@ -4,30 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\UserTransaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class UserTransactionController extends Controller
 {
-    public function getUserTransaction(Request $request){
-        $userTransactions = UserTransaction::whereUserEmail($request->user_email) 
-                            ->get();
-        if ($userTransactions->count() >= 1){
+    public function getUserTransaction(Request $request)
+    {
+        $userTransactions = UserTransaction::whereUserEmail($request->user_email)
+            ->get();
+        if ($userTransactions->count() >= 1) {
             return response()->json($userTransactions->toArray());
         }
+
         return response(['User email is not found in transaction table'], 409);
     }
 
-    public function getUserTransactionByOrderID(Request $request){
+    public function getUserTransactionByOrderID(Request $request)
+    {
         $userTransactions = UserTransaction::where('id', $request->id)
-                            ->with('user')
-                            ->with('booking.room.roomType')
-                            ->first();
-        
-        if ($userTransactions){
+            ->with('user')
+            ->with('booking.room.roomType')
+            ->first();
+
+        if ($userTransactions) {
             return response()->json([
                 'booking' => $userTransactions,
             ]);
         }
+
         return response(['OrderID is not found in transaction table'], 409);
     }
 
@@ -37,27 +40,26 @@ class UserTransactionController extends Controller
 
         $booking = UserTransaction::with('user')->find($bookingId);
 
-        if (!$booking) {
+        if (! $booking) {
             return response()->json(['error' => 'Booking not found'], 404);
         }
+
         return response()->json([
             'booking' => $booking,
         ]);
     }
 
-            // app/Http/Controllers/TransactionController.php
+    // app/Http/Controllers/TransactionController.php
 
-public function getSnapToken(Request $request)
-{
-    $orderId = $request->query('id');
-    $transaction = UserTransaction::where('id', $orderId)->firstOrFail();
+    public function getSnapToken(Request $request)
+    {
+        $orderId = $request->query('id');
+        $transaction = UserTransaction::where('id', $orderId)->firstOrFail();
 
-    if ($transaction->snap_token) {
-        return response()->json(['snap_token' => $transaction->snap_token]);
-    } else {
-        return response()->json(['error' => 'Snap token not found'], 404);
+        if ($transaction->snap_token) {
+            return response()->json(['snap_token' => $transaction->snap_token]);
+        } else {
+            return response()->json(['error' => 'Snap token not found'], 404);
+        }
     }
-}
-
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 // app/Models/Booking.php
 
 namespace App\Models;
@@ -32,7 +33,8 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'user_email', 'email');
     }
 
-    public function user_transaction(){
+    public function user_transaction()
+    {
         return $this->belongsTo(UserTransaction::class, 'user_transaction_id', 'id');
     }
 }

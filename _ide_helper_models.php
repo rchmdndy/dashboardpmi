@@ -133,6 +133,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $booking
  * @property-read int|null $booking_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $bookingStats
+ * @property-read int|null $booking_stats_count
  * @property-read Room|null $parentRoom
  * @property-read \App\Models\RoomType $roomType
  * @method static \Illuminate\Database\Eloquent\Builder|Room newModelQuery()
@@ -216,6 +218,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $role_id
+ * @property string|null $avatar_url
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $booking
  * @property-read int|null $booking_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
@@ -227,6 +230,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereAvatarUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
@@ -259,6 +263,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $booking
  * @property-read int|null $booking_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $bookings
+ * @property-read int|null $bookings_count
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserTransaction newQuery()

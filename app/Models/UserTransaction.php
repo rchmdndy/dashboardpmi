@@ -1,8 +1,10 @@
 <?php
+
 // app/Models/UserTransaction.php
 
 namespace App\Models;
 
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +37,16 @@ class UserTransaction extends Model
     {
         $this->attributes['transaction_status'] = 'success';
         $this->save();
+
+        $admins = User::where('role_id', 1)->get();
+
+        foreach ($admins as $admin) {
+            Notification::make()
+                ->title('Transaction Success: '.$this->order_id)
+                ->body('The transaction by '.$this->user_email.' has been completed successfully.')
+                ->sendTo($admin);
+        }
+
     }
 
     public function setFailed()
@@ -54,10 +66,13 @@ class UserTransaction extends Model
         return $this->hasMany(Booking::class, 'user_transaction_id', 'id');
     }
 
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'user_transaction_id', 'id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_email', 'email');
     }
-
-
 }

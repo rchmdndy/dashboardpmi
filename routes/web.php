@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
@@ -35,10 +35,10 @@ Route::get('/csrf-token', function () {
 });
 
 Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-                ->name('password.reset');
+    ->name('password.reset');
 
 Route::post('reset-password', [NewPasswordController::class, 'store'])
-                ->name('password.store');
+    ->name('password.store');
 
 Route::post('midtrans/notification_handling', [NotificationController::class, 'handleMidtransNotification'])->withoutMiddleware(VerifyCsrfToken::class);
 

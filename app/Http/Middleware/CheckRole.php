@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use App\Models\Role;
+use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,7 +19,7 @@ class CheckRole
         //fcking array role
         $roleIds = Role::whereIn('name', $role)->pluck('id')->toArray();
 
-        if (!in_array(auth()->user()->role_id, $roleIds)) {
+        if (! in_array(auth()->user()->role_id, $roleIds)) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 

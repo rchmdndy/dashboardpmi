@@ -3,24 +3,27 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Role;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Notifications\CustomVerifyEmail;
-use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Concerns\HasRelationships;
+use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
  * @mixin IdeHelperUser
  */
-class User extends Authenticatable implements JWTSubject , MustVerifyEmail
+class User extends Authenticatable implements FilamentUser, JWTSubject, MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasRelationships;
+    use HasFactory, HasRelationships, Notifiable;
+
     protected $primaryKey = 'email';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     /**
@@ -35,7 +38,8 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
         // 'refresh_token',
         'role_id',
         'password',
-        
+        'email_verified_at',
+
     ];
 
     /**
@@ -69,6 +73,33 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
         ];
     }
 
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // dd($panel);
+        if ($panel->getId() === 'admin') {
+            return $this->isAdmin() && $this->hasVerifiedEmail();
+        } elseif ($panel->getId() === 'staff') {
+            return $this->isStaff() && $this->hasVerifiedEmail();
+        }
+
+        return false;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role_id === 1;
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role_id === 3;
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role_id === 4;
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -94,15 +125,18 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
         return $this->email;
     }
 
-    public function user_transaction(){
+    public function user_transaction()
+    {
         return $this->hasMany(UserTransaction::class);
     }
 
-    public function booking(){
+    public function booking()
+    {
         return $this->hasMany(Booking::class);
     }
 
-    public function role(){
+    public function role()
+    {
         return $this->belongsTo(Role::class);
-    }   
+    }
 }
