@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('min_person_quantity');
             $table->boolean('hasLodgeRoom');
             $table->boolean('hasMeetingRoom')->default(true);
+            $table->string('image');
             $table->text('description')->nullable();
             $table->timestamps();
         });
