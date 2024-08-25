@@ -2,24 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Package;
 use App\Models\RoomImage;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class RoomTypeController extends Controller
 {
-
     // api stuff
     /**
      * Mengembalikan semua row dari tabel room_type
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAll(){
-        return response()->json(RoomType::select('id', 'room_type', 'capacity', 'price', 'description')->get()->map(function ($roomType){
-            $roomType->image = asset('storage/images/kamar/'.RoomImage::select('image_path')->where('room_type_id', $roomType->id)->first()->image_path ?? 'default_image.jpg');
+    public function getAll()
+    {
+        return response()->json(RoomType::select('id', 'room_type', 'capacity', 'price', 'description')->get()->map(function ($roomType) {
+            $roomType->image = asset(RoomImage::select('image_path')->where('room_type_id', $roomType->id)->first()->image_path ?? 'default_image.jpg');
 
             return $roomType;
+        })->all());
+    }
+
+    public function getAllPackage()
+    {
+        return response()->json(Package::all()->map(function ($package) {
+            $package->image = asset('storage/images/kamar/'.$package->image);
+
+            return $package;
         })->all());
     }
 
@@ -30,7 +40,9 @@ class RoomTypeController extends Controller
 
         $roomData = $roomData->map(function ($room) {
             $firstImage = $room->room_image()->first();
-            $room->room_image = $firstImage ? asset('storage/images/kamar/' . $firstImage->image_path) : null;
+            // $room->room_image = $firstImage ? asset('storage/images/kamar/' . $firstImage->image_path) : null;
+            $room->room_image = $firstImage ? asset($firstImage->image_path) : null;
+
             return $room;
         });
 
@@ -39,25 +51,39 @@ class RoomTypeController extends Controller
 
     /**
      * Mengembalikan row dari tabel room_type berdasarkan dengan id yang diberikan
-     * @param Request $request
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getDetail(Request $request){
+    public function getDetail(Request $request)
+    {
         $room_type_id = $request->input('id');
         $room_type = RoomType::find($room_type_id);
         $room_images = RoomImage::select('image_path')->where('room_type_id', $room_type_id)->get();
 
-        if ($room_images->isEmpty()){
+        if ($room_images->isEmpty()) {
             $imagePaths = [];
-        }else{
-            $imagePaths = $room_images->pluck('image_path')->map(function ($imagePath){
-                return asset('storage/images/kamar/'.$imagePath);
+        } else {
+            $imagePaths = $room_images->pluck('image_path')->map(function ($imagePath) {
+                return asset($imagePath);
             })->toArray();
         }
 
         return response()->json([
             'room_data' => $room_type,
-            'room_images' => $imagePaths
+            'room_images' => $imagePaths,
+        ]);
+    }
+
+    public function getDetailPackage(Request $request)
+    {
+        $package_type_id = $request->input('id');
+        $package = Package::find($package_type_id);
+
+        $imagePaths = empty($package->image) ? [] : asset("storage/images/kamar/{$package->image}");
+
+        return response()->json([
+            'room_data' => $package,
+            'room_images' => $imagePaths,
         ]);
     }
 
@@ -74,6 +100,7 @@ class RoomTypeController extends Controller
 
         try {
             $roomType = RoomType::create($validated);
+
             return response()->json($roomType, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to create room type', 'message' => $e->getMessage()], 500);
@@ -94,6 +121,7 @@ class RoomTypeController extends Controller
         try {
             $roomType = RoomType::findOrFail($id);
             $roomType->update($validated);
+
             return response()->json($roomType);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to update room type', 'message' => $e->getMessage()], 500);
@@ -106,11 +134,10 @@ class RoomTypeController extends Controller
         try {
             $roomType = RoomType::findOrFail($id);
             $roomType->delete();
+
             return response()->json(['message' => 'Room type deleted successfully']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to delete room type', 'message' => $e->getMessage()], 500);
         }
     }
-
-
 }

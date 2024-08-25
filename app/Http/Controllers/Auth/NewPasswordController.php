@@ -34,10 +34,10 @@ class NewPasswordController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-        
+
         if ($request->password !== $request->password_confirmation) {
             return back()->withInput($request->only('email'))
-                            ->withErrors(['password' => 'The password confirmation does not match.']);
+                ->withErrors(['password' => 'The password confirmation does not match.']);
         }
 
         // Here we will attempt to reset the user's password. If it is successful we
@@ -61,6 +61,6 @@ class NewPasswordController extends Controller
         return $status == Password::PASSWORD_RESET
                     ? redirect()->route('home')->with('status', __($status))
                     : back()->withInput($request->only('email'))
-                            ->withErrors(['email' => __($status)]);
+                        ->withErrors(['email' => __($status)]);
     }
 }

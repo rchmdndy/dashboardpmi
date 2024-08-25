@@ -2,14 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Symfony\Component\HttpFoundation\Response;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Illuminate\Support\Facades\Cookie;
-use App\Models\User;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RefreshTokenMiddleware
 {
@@ -17,7 +15,7 @@ class RefreshTokenMiddleware
     {
         try {
             // Cek apakah access token valid
-            if (!$user = JWTAuth::parseToken()->authenticate()) {
+            if (! $user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['error' => 'User not found'], 404);
             }
         } catch (TokenExpiredException $e) {
@@ -26,7 +24,7 @@ class RefreshTokenMiddleware
                 $refreshToken = $request->cookie('refresh_token');
                 $user = User::where('refresh_token', $refreshToken)->first();
 
-                if (!$user) {
+                if (! $user) {
                     return response()->json(['error' => 'Invalid refresh token'], 401);
                 }
 
@@ -35,7 +33,7 @@ class RefreshTokenMiddleware
 
                 // Lanjutkan permintaan dengan token baru
                 $response = $next($request);
-                $response->headers->set('Authorization', 'Bearer ' . $newToken);
+                $response->headers->set('Authorization', 'Bearer '.$newToken);
 
                 return $response;
             } catch (JWTException $e) {

@@ -1,4 +1,5 @@
 <?php
+
 // app/Models/RoomType.php
 
 namespace App\Models;
@@ -21,16 +22,18 @@ class RoomType extends Model
         'description',
     ];
 
-    public function room(){
+    public function room()
+    {
         return $this->hasMany(Room::class, 'room_type_id', 'id');
     }
 
-    public function room_image(){
+    public function room_image()
+    {
         return $this->hasMany(RoomImage::class, 'room_type_id', 'id');
     }
 
-    public function report(){
+    public function report()
+    {
         return $this->hasMany(Report::class, 'room_type_id', 'id');
     }
-
 }

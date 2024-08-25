@@ -37,20 +37,23 @@ class UserTransactionController extends Controller
         if ($userTransactions->count() >= 1){
             return response()->json($userTransactions->toArray());
         }
+
         return response(['User email is not found in transaction table'], 409);
     }
 
-    public function getUserTransactionByOrderID(Request $request){
+    public function getUserTransactionByOrderID(Request $request)
+    {
         $userTransactions = UserTransaction::where('id', $request->id)
-                            ->with('user')
-                            ->with('booking.room.roomType')
-                            ->first();
+            ->with('user')
+            ->with('booking.room.roomType')
+            ->first();
 
-        if ($userTransactions){
+        if ($userTransactions) {
             return response()->json([
                 'booking' => $userTransactions,
             ]);
         }
+
         return response(['OrderID is not found in transaction table'], 409);
     }
 
@@ -60,24 +63,27 @@ class UserTransactionController extends Controller
 
         $booking = UserTransaction::with('user')->find($bookingId);
 
-        if (!$booking) {
+        if (! $booking) {
             return response()->json(['error' => 'Booking not found'], 404);
         }
+
         return response()->json([
             'booking' => $booking,
         ]);
     }
 
+    // app/Http/Controllers/TransactionController.php
+
     public function getSnapToken(Request $request)
     {
-    $orderId = $request->query('id');
-    $transaction = UserTransaction::where('id', $orderId)->firstOrFail();
+        $orderId = $request->query('id');
+        $transaction = UserTransaction::where('id', $orderId)->firstOrFail();
 
-    if ($transaction->snap_token) {
-        return response()->json(['snap_token' => $transaction->snap_token]);
-    } else {
-        return response()->json(['error' => 'Snap token not found'], 404);
-    }
+        if ($transaction->snap_token) {
+            return response()->json(['snap_token' => $transaction->snap_token]);
+        } else {
+            return response()->json(['error' => 'Snap token not found'], 404);
+        }
     }
 
     public function detail(Request $request){

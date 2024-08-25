@@ -1,4 +1,5 @@
 <?php
+
 // app/Models/Report.php
 
 namespace App\Models;

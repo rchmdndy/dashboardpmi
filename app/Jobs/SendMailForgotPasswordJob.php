@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -26,7 +25,7 @@ class SendMailForgotPasswordJob implements ShouldQueue
      */
     public function handle(): void
     {
-            Password::sendResetLink(['email' => $this->email]);
+        Password::sendResetLink(['email' => $this->email]);
 
     }
 }

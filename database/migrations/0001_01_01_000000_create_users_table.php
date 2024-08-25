@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-//            $table->char('uuid', 36)->primary();
+            //            $table->char('uuid', 36)->primary();
             $table->string('email', 255)->unique()->primary();
             $table->string('name', 255);
             $table->string('phone', 255)->nullable();
@@ -47,7 +47,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('role_id')->nullable()->default(4)->constrained()->onDelete('set null');
         });
-        
+
     }
 
     /**

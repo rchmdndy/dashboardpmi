@@ -19,7 +19,7 @@ class BookingService
         $bookedRooms = 0;
 
         foreach ($rooms as $room) {
-            if (!$this->isRoomAvailable($room, $startDate, $endDate)) {
+            if (! $this->isRoomAvailable($room, $startDate, $endDate)) {
                 $bookedRooms++;
             }
         }
@@ -43,7 +43,7 @@ class BookingService
         throw new Exception('No available rooms found');
     }
 
-    private function isRoomAvailable($room, $startDate, $endDate)
+    public function isRoomAvailable($room, $startDate, $endDate)
     {
         // Check if the room itself is booked
         $isBooked = Booking::where('room_id', $room->id)
@@ -57,6 +57,7 @@ class BookingService
             })->exists();
 
         if ($isBooked) {
+            // dd('isBooked');
             return false;
         }
 
@@ -73,6 +74,7 @@ class BookingService
                 })->exists();
 
             if ($parentBooked) {
+                // dd('parentBooked');
                 return false;
             }
         }
@@ -91,9 +93,12 @@ class BookingService
                 })->exists();
 
             if ($childBooked) {
+                // dd('childBooked');
                 return false;
             }
         }
+
+        // dd('berhasil');
 
         return true;
     }
@@ -115,18 +120,17 @@ class BookingService
         $availableRoom = Room::join('room_types', 'rooms.room_type_id', '=', 'room_types.id')
             ->whereIn('room_types.id', [3, 4, 5, 6])
             ->where('room_types.capacity', '>=', $personCount)
-            ->whereDoesntHave('booking', function($query) use ($startDate, $endDate) {
-                $query->where(function($query) use ($startDate, $endDate) {
+            ->whereDoesntHave('booking', function ($query) use ($startDate, $endDate) {
+                $query->where(function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('start_date', [$startDate, $endDate])
                         ->orWhereBetween('end_date', [$startDate, $endDate])
-                        ->orWhere(function($query) use ($startDate, $endDate) {
+                        ->orWhere(function ($query) use ($startDate, $endDate) {
                             $query->where('start_date', '<=', $startDate)
                                 ->where('end_date', '>=', $endDate);
                         });
                 });
             })
             ->first(['rooms.*']); // Make sure to select the columns you need
-
 
         return $availableRoom;
     }
@@ -135,11 +139,11 @@ class BookingService
     {
         $rooms = Room::join('room_types', 'rooms.room_type_id', '=', 'room_types.id')
             ->whereIn('rooms.room_type_id', [1, 2]) // Use whereIn for multiple room_type_ids
-            ->whereDoesntHave('booking', function($query) use ($startDate, $endDate) {
-                $query->where(function($query) use ($startDate, $endDate) {
+            ->whereDoesntHave('booking', function ($query) use ($startDate, $endDate) {
+                $query->where(function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('start_date', [$startDate, $endDate])
                         ->orWhereBetween('end_date', [$startDate, $endDate])
-                        ->orWhere(function($query) use ($startDate, $endDate) {
+                        ->orWhere(function ($query) use ($startDate, $endDate) {
                             $query->where('start_date', '<=', $startDate)
                                 ->where('end_date', '>=', $endDate);
                         });
@@ -153,16 +157,18 @@ class BookingService
         $selectedRooms = [];
 
         foreach ($rooms as $room) {
-            if ($totalCapacity >= $personCount) break;
+            if ($totalCapacity >= $personCount) {
+                break;
+            }
 
             $roomCapacity = $room->capacity;
 
             $availableRooms = Room::where('id', $room->id)
-                ->whereDoesntHave('booking', function($query) use ($startDate, $endDate) {
-                    $query->where(function($query) use ($startDate, $endDate) {
+                ->whereDoesntHave('booking', function ($query) use ($startDate, $endDate) {
+                    $query->where(function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('start_date', [$startDate, $endDate])
                             ->orWhereBetween('end_date', [$startDate, $endDate])
-                            ->orWhere(function($query) use ($startDate, $endDate) {
+                            ->orWhere(function ($query) use ($startDate, $endDate) {
                                 $query->where('start_date', '<=', $startDate)
                                     ->where('end_date', '>=', $endDate);
                             });

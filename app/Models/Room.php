@@ -1,4 +1,5 @@
 <?php
+
 // app/Models/Room.php
 
 namespace App\Models;
@@ -25,9 +26,16 @@ class Room extends Model
         return $this->belongsTo(RoomType::class, 'room_type_id', 'id');
     }
 
-    public function booking(){
+    public function booking()
+    {
         return $this->hasMany(Booking::class, 'room_id', 'id');
     }
+
+    public function bookingStats()
+    {
+        return $this->hasMany(Booking::class, 'room_id', 'id');
+    }
+
     public function parentRoom()
     {
         return $this->belongsTo(Room::class, 'parent_id', 'id');

@@ -1,13 +1,14 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Package;
+use App\Models\RoomType;
 use App\Models\UserTransaction;
 use App\Services\BookingService;
 use Exception;
 use Illuminate\Http\Request;
-use App\Models\RoomType;
-use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -19,9 +20,11 @@ use function PHPUnit\Framework\isNull;
 class BookingController extends Controller
 {
     protected $bookingService;
+
     protected $reportController;
 
-    public function __construct(BookingService $bookingService, ReportController $reportController) {
+    public function __construct(BookingService $bookingService, ReportController $reportController)
+    {
         $this->bookingService = $bookingService;
         $this->reportController = $reportController;
         Config::$serverKey = config('midtrans.server_key');
@@ -30,13 +33,17 @@ class BookingController extends Controller
         Config::$isSanitized = config('midtrans.is_sanitized');
         Config::$is3ds = config('midtrans.is_3ds');
     }
-    public function create() {
+
+    public function create()
+    {
         $roomTypes = RoomType::all();
         $user = Auth::user();
+
         return view('bookings.create', compact('roomTypes', 'user'));
     }
 
-    public function pay(){
+    public function pay()
+    {
         return view('bookings.pay');
     }
 
@@ -46,14 +53,33 @@ class BookingController extends Controller
 
 
         // Validate request
-        $userRequest = $request->validate([
+        $userRequest = $request->all();
+
+        $validator = Validator::make($userRequest, [
             'user_email' => 'required|email',
             'room_type_id' => 'required|integer|exists:room_types,id',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'start_date' => 'required|date|after_or_equal:today|date_format:Y-m-d',
+            'end_date' => 'required|date|after:start_date|date_format:Y-m-d',
             'amount' => 'required|integer|min:1',
-            'side' => 'string'
+            'side' => 'string',
         ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            if ($errors->has('user_email')) {
+                return response()->json(['error' => 'Email tidak diisi atau tidak valid'], 400);
+            } elseif ($errors->has('room_type_id')) {
+                return response()->json(['error' => 'Tipe kamar tidak valid'], 400);
+            } elseif ($errors->has('start_date')) {
+                return response()->json(['error' => 'Tanggal check in minimal adalah hari ini'], 400);
+            } elseif ($errors->has('end_date')) {
+                return response()->json(['error' => 'Tanggal check out harus setelah tanggal check in'], 400);
+            } elseif ($errors->has('amount')) {
+                return response()->json(['error' => 'Jumlah kamar minimal adalah 1'], 400);
+            } else {
+                return response()->json(['error' => 'Invalid request'], 400);
+            }
+        }
 
         $availableRooms = $this->bookingService->checkRoomAvailabilityOnBetweenDates(
             $userRequest['room_type_id'],
@@ -65,6 +91,7 @@ class BookingController extends Controller
             if ($userRequest['side'] == 'client') {
                 return response()->json(['error' => 'Ruangan tipe ini tidak tersedia untuk tanggal yang dipilih, Coba Yang lain!'], 409);
             }
+
             return back()->withErrors(['amount' => 'Not enough rooms available for the selected dates']);
         }
 
@@ -78,11 +105,11 @@ class BookingController extends Controller
             $userTransaction = UserTransaction::create([
                 'user_email' => $userRequest['user_email'],
                 'channel' => 'direct',
-                'order_id' => "PMI-BOOKING-".Str::uuid(),
+                'order_id' => 'PMI-BOOKING-'.Str::uuid(),
                 'transaction_date' => now(),
                 'amount' => $userRequest['amount'],
                 'total_price' => $totalPrice,
-                'transaction_status' => 'pending'
+                'transaction_status' => 'pending',
             ]);
 
             for ($i = 1; $i <= $userRequest['amount']; $i++) {
@@ -115,21 +142,21 @@ class BookingController extends Controller
                 ]
             );
 
-            $params = array(
-                'transaction_details' => array(
+            $params = [
+                'transaction_details' => [
                     'order_id' => $userTransaction->order_id,
                     'gross_amount' => (int) $userTransaction->total_price,
-                ),
-                'customer_details' => array(
+                ],
+                'customer_details' => [
                     'name' => $userTransaction->user->name,
                     'email' => $userTransaction->user->email,
-                    'phone' => $userTransaction->user->phone
-                )
-            );
+                    'phone' => $userTransaction->user->phone,
+                ],
+            ];
 
             $snap_token = Snap::getSnapToken($params);
             $userTransaction->update([
-               'snap_token' => $snap_token
+                'snap_token' => $snap_token,
             ]);
 
             if ($userRequest['side'] == 'client') return response()->json([
@@ -140,8 +167,11 @@ class BookingController extends Controller
             ], 200);
             return view('bookings.pay', ['snap_token' => $snap_token]);
         } catch (Exception $e) {
-            if ($userRequest['side'] == 'client') return response([$e->getMessage()], 419);
-            return back()->withErrors(['error' => 'Failed to create booking: ' . $e->getMessage()]);
+            if ($userRequest['side'] == 'client') {
+                return response([$e->getMessage()], 419);
+            }
+
+            return back()->withErrors(['error' => 'Failed to create booking: '.$e->getMessage()]);
         }
     }
 
@@ -152,11 +182,24 @@ class BookingController extends Controller
             'package_id' => 'required|exists:packages,id',
             'person_count' => 'required|integer|min:20|max:82',
             'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after:start_date'
+            'end_date' => 'required|date|after:start_date',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            $errors = $validator->errors();
+            if ($errors->has('person_count')) {
+                return response()->json(['error' => 'Jumlah minimal orang dalam paket ini adalah 20'], 400);
+            } elseif ($errors->has('start_date')) {
+                return response()->json(['error' => 'Tanggal check in minimal adalah hari ini'], 400);
+            } elseif ($errors->has('end_date')) {
+                return response()->json(['error' => 'Tanggal check out harus setelah tanggal check in'], 400);
+            } elseif ($errors->has('package_id')) {
+                return response()->json(['error' => 'Paket tidak terdaftar'], 400);
+            } elseif ($errors->has('user_email')) {
+                return response()->json(['error' => 'Email tidak diisi atau tidak valid'], 400);
+            }
+
+            return response()->json(['error' => 'Invalid request'], 400);
         }
 
         $package = Package::findOrFail($request->package_id);
@@ -173,7 +216,7 @@ class BookingController extends Controller
         if ($package->hasMeetingRoom == 1 && $package->hasLodgeRoom == 0) {
             $meetingRoom = $this->bookingService->getMeetingRoomForPackage($personCount, $startDate, $endDate);
 
-            if (!$meetingRoom) {
+            if (! $meetingRoom) {
                 return response()->json(['error' => 'No available meeting room found.'], 400);
             }
 
@@ -185,7 +228,7 @@ class BookingController extends Controller
                 'transaction_date' => now(),
                 'amount' => $personCount,
                 'total_price' => $total_price,
-                'transaction_status' => 'pending'
+                'transaction_status' => 'pending',
             ]);
 
             // Book the meeting room
@@ -200,7 +243,7 @@ class BookingController extends Controller
             $meetingRoom = $this->bookingService->getMeetingRoomForPackage($personCount, $startDate, $endDate);
             $lodgeRooms = $this->bookingService->getLodgeRoomsForPackage($personCount, $startDate, $endDate);
 
-            if (!$meetingRoom) {
+            if (! $meetingRoom) {
                 return response()->json(['error' => 'No available meeting room found.'], 400);
             }
 
@@ -217,7 +260,7 @@ class BookingController extends Controller
                 'transaction_date' => now(),
                 'amount' => $personCount,
                 'total_price' => $total_price,
-                'transaction_status' => 'pending'
+                'transaction_status' => 'pending',
             ]);
 
             // Book the meeting room
@@ -241,29 +284,28 @@ class BookingController extends Controller
             }
         }
 
-        $params = array(
-            'transaction_details' => array(
+        $params = [
+            'transaction_details' => [
                 'order_id' => $userTransaction->order_id,
                 'gross_amount' => (int) $userTransaction->total_price,
-            ),
-            'customer_details' => array(
+            ],
+            'customer_details' => [
                 'name' => $userTransaction->user->name,
                 'email' => $userTransaction->user->email,
-                'phone' => $userTransaction->user->phone
-            )
-        );
+                'phone' => $userTransaction->user->phone,
+            ],
+        ];
 
         $snap_token = Snap::getSnapToken($params);
         $userTransaction->update([
-            'snap_token' => $snap_token
+            'snap_token' => $snap_token,
         ]);
 
         return response()->json([
-            "snap_token" => $snap_token,
-            "client_key" => \config('midtrans.client_key')
+            'snap_token' => $snap_token,
+            'client_key' => \config('midtrans.client_key'),
         ]);
     }
-
 
     public function getBookings(Request $request)
     {
@@ -273,17 +315,17 @@ class BookingController extends Controller
 
         $userEmail = $request->user_email;
 
-            $booking = Booking::where('user_email', $userEmail)
+        $booking = Booking::where('user_email', $userEmail)
             ->with('user')
             ->with('room.roomType')
             ->get();
 
-        if (!$booking) {
-        return response()->json(['error' => 'No bookings found for this user'], 404);
+        if (! $booking) {
+            return response()->json(['error' => 'No bookings found for this user'], 404);
         }
 
         foreach ($booking as $book) {
-            $book['payment_status'] = "Pending";
+            $book['payment_status'] = 'Pending';
         }
 
                 return response()->json([

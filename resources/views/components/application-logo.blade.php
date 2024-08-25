@@ -1,1 +1,1 @@
-<img src="{{ url('images/logo_asli.png') }}" class="logo" alt="PMI Logo" height="250" width="250">
+<img src="{{ url('storage/logo_asli.png') }}" class="logo" alt="PMI Logo" height="250" width="250">
