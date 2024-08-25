@@ -156,7 +156,6 @@ class BookingService
             if ($totalCapacity >= $personCount) break;
 
             $roomCapacity = $room->capacity;
-            $requiredRooms = ceil(($personCount - $totalCapacity) / $roomCapacity);
 
             $availableRooms = Room::where('id', $room->id)
                 ->whereDoesntHave('booking', function($query) use ($startDate, $endDate) {
@@ -170,7 +169,6 @@ class BookingService
                     });
                 })
                 ->count();
-//                dd($availableRooms);
 
             if ($availableRooms) {
                 $selectedRooms[] = $room->toArray();
@@ -178,14 +176,47 @@ class BookingService
             }
         }
 
-//        dd($selectedRooms, $personCount);
-
         if ($totalCapacity < $personCount) {
             return false;
         }
 
         return $selectedRooms;
     }
+
+    public function getAvailableRoomBooking($start_date, $end_date, $amount)
+    {
+        $roomData = Room::with(['roomType'])->whereDoesntHave('booking', function ($query) use ($start_date, $end_date) {
+            $query->where(function ($query) use ($start_date, $end_date) {
+                $query->whereBetween('start_date', [$start_date, $end_date])
+                    ->orWhereBetween('end_date', [$start_date, $end_date])
+                    ->orWhere(function ($query) use ($start_date, $end_date) {
+                        $query->where('start_date', '<=', $start_date)
+                            ->where('end_date', '>=', $end_date);
+                    });
+            });
+        })->get();
+
+        $totalCapacity = 0;
+        $selectedRoomTypes = collect();
+
+        foreach ($roomData as $room) {
+            $roomType = $room->roomType;
+
+            // Check if the RoomType can accommodate the required amount and hasn't already been added
+            if ($roomType->capacity >= $amount && !$selectedRoomTypes->contains('id', $roomType->id)) {
+                $selectedRoomTypes->push($roomType);
+                $totalCapacity += $roomType->capacity;
+            }
+
+            // Stop adding RoomTypes if the totalCapacity already satisfies the amount
+            if ($totalCapacity >= $amount) {
+                break;
+            }
+        }
+
+        return $selectedRoomTypes->values();
+    }
+
 
 
 

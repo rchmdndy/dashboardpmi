@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Package extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRelationships;
 
     protected $fillable = [
         'name',
@@ -21,4 +22,8 @@ class Package extends Model
         'description',
         'image'
     ];
+
+    public function package_images(){
+        return $this->hasMany(PackageImages::class, 'package_id', 'id');
+    }
 }

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @mixin IdeHelperUserTransaction
  */
-class UserTransaction extends Model
+class   UserTransaction extends Model
 {
     use HasFactory, HasRelationships;
 

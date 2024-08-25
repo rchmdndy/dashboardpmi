@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('packages', function (Blueprint $table) {
+        Schema::create('package_images', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->decimal('price_per_person', 0, 0);
-            $table->integer('min_person_quantity');
-            $table->boolean('hasLodgeRoom');
-            $table->boolean('hasMeetingRoom')->default(true);
-            $table->text('description')->nullable();
+            $table->foreignId('package_id');
+            $table->string('image_path');
             $table->timestamps();
+            $table->foreign('package_id')->references('id')->on('packages');
         });
     }
 
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('packages');
+        Schema::dropIfExists('package_images');
     }
 };
