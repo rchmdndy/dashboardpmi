@@ -18,12 +18,12 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
 
         DB::table('room_types')->insert([
-            ['id' => 1, 'room_type' => 'kamar_standard', 'capacity' => 2, 'price' => 200000.00, 'description' => 'Kamar dengan kapasitas 2 orang'],
-            ['id' => 2, 'room_type' => 'kamar_family', 'capacity' => 4, 'price' => 250000.00, 'description' => 'Kamar dengan kapasitas 4 orang'],
-            ['id' => 3, 'room_type' => 'meeting_room_kecil', 'capacity' => 25, 'price' => 100000.00, 'description' => 'Ruang pertemuan dengan kapasitas 15 orang'],
-            ['id' => 4, 'room_type' => 'meeting_room_sedang', 'capacity' => 50, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 35 orang'],
-            ['id' => 5, 'room_type' => 'meeting_room_besar', 'capacity' => 100, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 100 orang'],
-            ['id' => 6, 'room_type' => 'meeting_room_ekstra_besar', 'capacity' => 150, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 150 orang'],
+            ['id' => 1, 'room_type' => 'Kamar Standard', 'capacity' => 2, 'price' => 200000.00, 'description' => 'Kamar dengan kapasitas 2 orang'],
+            ['id' => 2, 'room_type' => 'Kamar Family', 'capacity' => 4, 'price' => 250000.00, 'description' => 'Kamar dengan kapasitas 4 orang'],
+            ['id' => 3, 'room_type' => 'Meeting Room Kecil', 'capacity' => 25, 'price' => 100000.00, 'description' => 'Ruang pertemuan dengan kapasitas 15 orang'],
+            ['id' => 4, 'room_type' => 'Meeting Room Sedang', 'capacity' => 50, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 35 orang'],
+            ['id' => 5, 'room_type' => 'Meeting Room Besar', 'capacity' => 100, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 100 orang'],
+            ['id' => 6, 'room_type' => 'Meeting Room Ekstra Besar', 'capacity' => 150, 'price' => 250000.00, 'description' => 'Ruang pertemuan dengan kapasitas 150 orang'],
         ]);
 
         DB::table('rooms')->insert([
@@ -56,51 +56,6 @@ class DatabaseSeeder extends Seeder
             ['id' => 27, 'room_type_id' => 6, 'room_name' => 'Hall Besar Lt 3', 'parent_id' => null],
             ['id' => 28, 'room_type_id' => 5, 'room_name' => 'Merbabu Lt 3', 'parent_id' => 27],
         ]);
-
-        // $roomTypes = [
-        //     'kamar_standard',
-        //     'kamar_family',
-        //     'meeting_room_kecil',
-        //     'meeting_room_sedang',
-        //     'meeting_room_besar',
-        //     'meeting_room_ekstra_besar',
-        // ];
-
-        // $roomImages = [];
-
-        // foreach ($roomTypes as $roomType) {
-        //     for ($i = 1; $i <= 3; $i++) {
-        //         $roomImages[] = [
-        //             'room_type_id' => DB::table('room_types')->where('room_type', $roomType)->value('id'),
-        //             'image_path' => "{$roomType}_{$i}.jpg",
-        //         ];
-        //     }
-        // }
-
-        DB::table('room_images')->insert([
-            ['room_type_id' => 1, 'image_path' => 'kamar_standard_1.jpg'],
-            ['room_type_id' => 1, 'image_path' => 'kamar_standard_2.jpg'],
-            ['room_type_id' => 1, 'image_path' => 'kamar_standard_3.jpg'],
-            ['room_type_id' => 2, 'image_path' => 'kamar_family_1.jpg'],
-            ['room_type_id' => 2, 'image_path' => 'kamar_family_2.jpg'],
-            ['room_type_id' => 2, 'image_path' => 'kamar_family_3.jpg'],
-            ['room_type_id' => 2, 'image_path' => '1724423680_kamar_family_4.jpg'],
-            ['room_type_id' => 2, 'image_path' => '1724423694_kamar_family_5.jpg'],
-            ['room_type_id' => 3, 'image_path' => 'meeting_room_kecil_1.jpg'],
-            ['room_type_id' => 3, 'image_path' => 'meeting_room_kecil_2.jpg'],
-            ['room_type_id' => 4, 'image_path' => 'meeting_room_sedang_1.jpg'],
-            ['room_type_id' => 4, 'image_path' => 'meeting_room_sedang_2.jpg'],
-            ['room_type_id' => 4, 'image_path' => 'meeting_room_sedang_3.jpg'],
-            ['room_type_id' => 4, 'image_path' => '1724423791_meeting_room_sedang_4.jpg'],
-            ['room_type_id' => 4, 'image_path' => '1724423810_meeting_room_sedang_5.jpg'],
-            ['room_type_id' => 5, 'image_path' => 'meeting_room_besar_1.jpg'],
-            ['room_type_id' => 6, 'image_path' => '1724423949_meeting_room_ekstra_besar_1.jpg'],
-            ['room_type_id' => 6, 'image_path' => '1724423959_meeting_room_ekstra_besar_2.jpg'],
-            ['room_type_id' => 6, 'image_path' => '1724423972_meeting_room_ekstra_besar_3.jpg'],
-            ['room_type_id' => 6, 'image_path' => '1724423983_meeting_room_ekstra_besar_4.jpg'],
-            ['room_type_id' => 6, 'image_path' => '1724423992_meeting_room_ekstra_besar_5.jpg'],
-        ]);
-        
 
         DB::table('packages')->insert([
             ['name' => 'Paket Meeting', 'price_per_person' => 200000.00, 'min_person_quantity' => 20, 'hasLodgeRoom' => false, 'hasMeetingRoom' => true, 'image' => 'package_room_1.jpeg'],

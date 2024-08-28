@@ -10,9 +10,9 @@ class PackageController extends Controller
     public function getAll(){
         return response()->json(Package::all()->map(function ($package){
             $thumbnail = $package->image;
-            $package->thumbnail = $thumbnail ? asset('storage/images/paket/'.$thumbnail) : null;
+            $package->thumbnail = $thumbnail ? asset("storage/".$thumbnail) : null;
             unset(
-                $package->package_images,
+                $package->image,
                 $package->created_at,
                 $package->updated_at,
                 $package->hasLodgeRoom,
@@ -30,12 +30,15 @@ class PackageController extends Controller
             return response(['message' => 'Paket tidak ditemukan'], 404);
         }
 
-        // If the package exists, you can manipulate it directly
-        $package->image = asset('storage/images/paket/'.$package->image);
-        unset($package->package_images);
-        unset($package->created_at);
-        unset($package->updated_at);
+        $thumbnail = $package->image;
 
+        // If the package exists, you can manipulate it directly
+        $package->thumbnail = $thumbnail? asset('storage/'.$thumbnail) : null;
+        unset(
+            $package->image,
+            $package->created_at,
+            $package->updated_at
+        );
         return response([$package]);
     }
 }

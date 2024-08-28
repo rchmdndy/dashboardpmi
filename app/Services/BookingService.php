@@ -202,21 +202,29 @@ class BookingService
             });
         })->get();
 
-        $totalCapacity = 0;
         $selectedRoomTypes = collect();
+        $roomTypes = [];
 
         foreach ($roomData as $room) {
             $roomType = $room->roomType;
+            $roomType->image = asset($roomType->room_image->first()->image_path);
+            unset($roomType->room_image);
 
-            // Check if the RoomType can accommodate the required amount and hasn't already been added
-            if ($roomType->capacity >= $amount && !$selectedRoomTypes->contains('id', $roomType->id)) {
-                $selectedRoomTypes->push($roomType);
-                $totalCapacity += $roomType->capacity;
+            if (!isset($roomTypes[$roomType->id])) {
+                $roomTypes[$roomType->id] = [
+                    'type' => $roomType,
+                    'capacity' => $roomType->capacity,
+                ];
+            } else {
+                $roomTypes[$roomType->id]['capacity'] += $roomType->capacity;
             }
+        }
 
-            // Stop adding RoomTypes if the totalCapacity already satisfies the amount
-            if ($totalCapacity >= $amount) {
-                break;
+        ksort($roomTypes);
+
+        foreach ($roomTypes as $room_type_id => $room_type_data) {
+            if ($room_type_data['capacity'] >= $amount) {
+                $selectedRoomTypes->push($room_type_data['type']);
             }
         }
 

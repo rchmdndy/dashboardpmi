@@ -29,7 +29,7 @@ class RoomImage extends Model
 
     public function getImagePathAttribute($value)
     {
-        return 'images/kamar/'.$value;
+        return 'storage/images/kamar/'.$value;
     }
 
     // Mutator
