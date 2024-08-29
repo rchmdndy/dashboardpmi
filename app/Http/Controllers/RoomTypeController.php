@@ -18,7 +18,7 @@ class RoomTypeController extends Controller
     public function getAll()
     {
         return response()->json(RoomType::select('id', 'room_type', 'capacity', 'price', 'description')->get()->map(function ($roomType) {
-            $roomType->image = asset(RoomImage::select('image_path')->where('room_type_id', $roomType->id)->first()->image_path ?? 'default_image.jpg');
+            $roomType->image = asset("storage/".RoomImage::select('image_path')->where('room_type_id', $roomType->id)->first()->image_path ?? 'default_image.jpg');
 
             return $roomType;
         })->all());
@@ -41,7 +41,7 @@ class RoomTypeController extends Controller
         $roomData = $roomData->map(function ($room) {
             $firstImage = $room->room_image()->first();
             // $room->room_image = $firstImage ? asset('storage/images/kamar/' . $firstImage->image_path) : null;
-            $room->room_image = $firstImage ? asset($firstImage->image_path) : null;
+            $room->room_image = $firstImage ? asset("storage/".$firstImage->image_path) : null;
 
             return $room;
         });
@@ -64,7 +64,7 @@ class RoomTypeController extends Controller
             $imagePaths = [];
         } else {
             $imagePaths = $room_images->pluck('image_path')->map(function ($imagePath) {
-                return asset($imagePath);
+                return asset("storage/".$imagePath);
             })->toArray();
         }
 

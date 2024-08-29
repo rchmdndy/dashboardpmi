@@ -9,6 +9,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
 use Filament\Panel;
+use Filament\Support\Enums\Platform;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -33,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(AdminLogin::class)
             ->globalSearch(true)
+            ->globalSearchFieldKeyBindingSuffix()
             ->colors([
                 'primary' => Color::hex('#ce0000'),
                 'red' => Color::Red,
@@ -60,7 +62,12 @@ class AdminPanelProvider extends PanelProvider
                     }),
             ])
             ->sidebarFullyCollapsibleOnDesktop()
-            ->globalSearchKeyBindings(['ctrl+k'])
+            ->globalSearchKeyBindings(['command+k','ctrl+k'])
+            ->globalSearchFieldSuffix(fn (): ?string => match (Platform::detect()) {
+                Platform::Windows, Platform::Linux => 'CTRL+K',
+                Platform::Mac => '⌘K',
+                default => null,
+            })
             ->favicon(asset('images/logo_asli.png'))
             ->plugins([
                 SpotlightPlugin::make(),

@@ -207,7 +207,7 @@ class BookingService
 
         foreach ($roomData as $room) {
             $roomType = $room->roomType;
-            $roomType->image = asset($roomType->room_image->first()->image_path);
+            $roomType->image = asset("storage/".$roomType->room_image->first()->image_path);
             unset($roomType->room_image);
 
             if (!isset($roomTypes[$roomType->id])) {

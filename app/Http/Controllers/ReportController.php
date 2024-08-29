@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Report;
 use App\Models\RoomType;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use NumberFormatter;
@@ -48,15 +49,16 @@ class ReportController extends Controller
         $formatter = new NumberFormatter('id_ID', NumberFormatter::CURRENCY);
         $formatter->setSymbol(NumberFormatter::CURRENCY_SYMBOL, 'Rp');
 
-        // Validate the input month
-        $validated = $request->validate([
+        $validated = Validator::make($request->all(), [
             'month' => 'required|date_format:Y-m',
+
         ]);
-        //        return response('masuk function report');
+
+        if($validated->fails()) return response()->json(["Data is not valid",$validated->failed()], 419);
 
         // Extract the numeric month value
-        $month = (int) Carbon::createFromFormat('Y-m', $validated['month'])->format('m');
-        $year = Carbon::createFromFormat('Y-m', $validated['month'])->format('Y');
+        $month = (int) Carbon::createFromFormat('Y-m', $request->month)->format('m');
+        $year = Carbon::createFromFormat('Y-m', $request->month)->format('Y');
 
         // Retrieve reports for the given month
         $reports = Report::whereYear('created_at', $year)
@@ -65,13 +67,11 @@ class ReportController extends Controller
 
         // Format the reports
         $formattedReports = $reports->map(function ($report) use ($formatter) {
-            $report->room_type_name = $report->roomType ? $report->roomType->room_type : 'Unknown'; // Ensure relationship exists
-            $report->total_income = $formatter->formatCurrency($report->total_income, 'IDR');
-            unset($report->roomType);
-            unset($report->created_at);
-            unset($report->updated_at);
-
-            return $report;
+            return [
+                'room_type' => $report->roomType ? $report->roomType->room_type : 'Unknown',
+                'total_booking' => $report->total_bookings, // Assuming this field exists in your Report model
+                'total_income' => $formatter->formatCurrency($report->total_income, 'IDR'),
+            ];
         });
 
         // Return JSON response
