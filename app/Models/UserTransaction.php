@@ -44,7 +44,7 @@ class UserTransaction extends Model
             Notification::make()
                 ->title('Transaction Success: '.$this->order_id)
                 ->body('The transaction by '.$this->user_email.' has been completed successfully.')
-                ->sendTo($admin);
+                ->sendToDatabase($admin);
         }
 
     }

@@ -30,6 +30,7 @@ Route::post('/bookings', [BookingController::class, 'bookRoom'])->name('bookings
 Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
 Route::get('/bookings/pay', [BookingController::class, 'pay'])->name('bookings.pay');
 Route::get('/reports/create', [ReportController::class, 'createReport'])->name('reports.create');
+Route::get('/reports/print', [ReportController::class, 'printReport'])->name('reports.print');
 Route::get('/csrf-token', function () {
     return response()->json(['csrf_token' => csrf_token()]);
 });

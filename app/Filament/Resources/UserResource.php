@@ -157,7 +157,7 @@ class UserResource extends Resource
             ])
             ->filters([
                 Filter::make('email_verified_at')
-                    ->label('Email Verified At')
+                    ->label('Email Verified')
                     ->form([
                         Forms\Components\Select::make('email_verified_at')
                             ->options([
@@ -196,9 +196,6 @@ class UserResource extends Resource
                                     ->success()
                                     ->send();
                             })
-                            : null,
-                        Gate::allows('admin') ? DeleteAction::make()
-                            ->label('Delete')
                             : null,
                     ]),
                 ])

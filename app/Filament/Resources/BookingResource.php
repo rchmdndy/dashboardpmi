@@ -2,22 +2,25 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\BookingResource\Pages;
-use App\Filament\Resources\BookingResource\Widgets\BookingStats;
-use App\Models\Booking;
 use Filament\Forms;
-use Filament\Pages\SubNavigationPosition;
-use Filament\Resources\Pages\Page;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Enums\FiltersLayout;
+use App\Models\Booking;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Filament\Resources\Pages\Page;
 use Illuminate\Support\Facades\Gate;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Pages\SubNavigationPosition;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use App\Filament\Resources\BookingResource\Pages;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Filament\Infolists\Components\Section as ComponentsSection;
+use App\Filament\Resources\BookingResource\Widgets\BookingStats;
 
 class BookingResource extends Resource
 {
@@ -47,6 +50,7 @@ class BookingResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->sortable(),
@@ -152,6 +156,38 @@ class BookingResource extends Resource
                     ->label('Room Type')
                     ->collapsible(),
             ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                ComponentsSection::make('Transaction Details')
+                    ->description('Showing Transaction Details information')
+                    ->schema([
+                        TextEntry::make('user_email'),
+                        TextEntry::make('user.name')
+                            ->label('Name'),
+                        TextEntry::make('user_transaction.order_id'),
+                        TextEntry::make('room.room_name')
+                            ->label('Room Name'),
+                        TextEntry::make('room.roomType.room_type')
+                            ->label('Room Type'),
+                        TextEntry::make('start_date')
+                            ->badge()
+                            ->label('Check In')
+                            ->icon('heroicon-m-calendar-days')
+                            ->color('blue'),
+                        TextEntry::make('end_date')
+                            ->badge()
+                            ->label('Check Out')
+                            ->icon('heroicon-m-calendar-days')
+                            ->color('red'),
+                    ]),
+
+            ])
+            ->columns(1)
+            ->inlineLabel();
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string
