@@ -17,6 +17,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
+
 
 class PackageResource extends Resource
 {
@@ -67,15 +70,18 @@ class PackageResource extends Resource
                                     ->columnSpanFull(),
                             ])
                             ->columns(2),
-                        Forms\Components\FileUpload::make('image')
+                            Forms\Components\FileUpload::make('image')
                             ->label('Image')
                             ->image()
                             ->visibility('public')
                             ->directory('images/packages')
                             ->preserveFilenames()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file): string => (string) str($file->getClientOriginalName())
-                                    ->prepend(now()->timestamp.'_')
+                                fn (UploadedFile $file): string => Str::slug(
+                                    pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
+                                )
+                                . '_' . now()->timestamp
+                                . '.' . $file->getClientOriginalExtension()
                             )
                             ->imageEditor()
                             ->maxSize(8192)
@@ -98,7 +104,7 @@ class PackageResource extends Resource
                                     ->columnSpanFull(),
                             ])
                             ->columns(2),
-                    ]),
+                            ]),
                 Forms\Components\FileUpload::make('image')
                     ->label('Image')
                     ->image()
@@ -109,6 +115,13 @@ class PackageResource extends Resource
                     ->maxSize(8192)
                     ->columnSpanFull()
                     ->rules(['mimes:jpg,jpeg,png,gif'])
+                    ->getUploadedFileNameForStorageUsing(
+                        fn (UploadedFile $file): string => Str::slug(
+                            pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
+                        )
+                        . '_' . now()->timestamp
+                        . '.' . $file->getClientOriginalExtension()
+                    )
                     ->visibleOn('view'),
             ]);
     }

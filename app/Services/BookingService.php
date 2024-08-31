@@ -120,7 +120,7 @@ class BookingService
         $availableRoom = Room::join('room_types', 'rooms.room_type_id', '=', 'room_types.id')
             ->whereIn('room_types.id', [3, 4, 5, 6])
             ->where('room_types.capacity', '>=', $personCount)
-            ->whereDoesntHave('booking', function ($query) use ($startDate, $endDate) {
+            ->whereDoesntHave('booking', function ($query)  use ($startDate, $endDate) {
                 $query->where(function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('start_date', [$startDate, $endDate])
                         ->orWhereBetween('end_date', [$startDate, $endDate])

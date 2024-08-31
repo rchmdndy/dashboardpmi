@@ -70,10 +70,22 @@ class NotificationController extends Controller
                     Log::info('Transaction capture');
                     if ($type == 'credit_card') {
                         if ($fraud == 'challenge') {
-                            Log::info('Transaction challenged by FDS');
-                            $reservation->setPending();
+                            Log::info("Transaction $orderId challenged by FDS");
+                            try {
+                                $response = \Midtrans\Transaction::deny($orderId);
+                                Log::info( "Transaction $orderId has been denied.");
+                            } catch (\Exception $e) {
+                                Log::error($e->getMessage());
+                            }
+                            $reservation->setFailed();
                         } else {
-                            Log::info('Transaction successful with credit card');
+                            Log::info("Transaction $orderId successful with credit card");
+                            try {
+                                $response = \Midtrans\Transaction::approve($orderId);
+                                Log::info( "Transaction $orderId has been accepted.");
+                            } catch (\Exception $e) {
+                                Log::error($e->getMessage());
+                            }
                             $reservation->setSuccess();
                         }
                     }

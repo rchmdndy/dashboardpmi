@@ -26,14 +26,20 @@ class UserTransactionController extends Controller
         $userTransactions = UserTransaction::whereUserEmail($request->user_email)
                             ->get();
         $userTransactions = $userTransactions->map(function($userTransaction) use($formatter){
-           $userTransaction->room_image = asset("storage/".$userTransaction->booking->first()->room->roomType->room_image->first()->image_path);
-           $userTransaction->room_type = $userTransaction->booking->first()->room->roomType->room_type;
+            if(!$userTransaction->booking->first()){
+                $userTransaction->room_image = asset("storage/default_image.png");
+                $userTransaction->room_type = null;
+            }else{
+                $userTransaction->room_image = asset("storage/".$userTransaction->booking->first()->room->roomType->room_image->first()->image_path);
+                $userTransaction->room_type = $userTransaction->booking->first() ?$userTransaction->booking->first()->room->roomType->room_type: null;
+
+            }
            unset($userTransaction->created_at);
            unset($userTransaction->updated_at);
            unset($userTransaction->booking);
            $userTransaction->total_price = $formatter->formatCurrency($userTransaction->total_price, 'IDR');
            return $userTransaction;
-        });
+        })->reverse();
         if ($userTransactions->count() >= 1){
             return response()->json($userTransactions->toArray());
         }
@@ -92,9 +98,29 @@ class UserTransactionController extends Controller
 
         $transaction = UserTransaction::where('user_email', $request->user_email)->where('id', $request->id)->first();
         if (!$transaction) return response(['data is not available'], 419);
-        $roomNames = $transaction->booking->map(function($booking){
-            return $booking->room->room_name;
-        });
+        if(!$transaction->bookings->first()){
+            // return response(["fungsi masuk"], 200);
+            $roomNames = null;
+            $roomType = null;
+            $roomImage = asset("storage/default_image.png");
+            $roomDescription = null;
+            $checkIn = null;
+            $checkOut = null;
+            $totalNight = null;
+            $roomPerNightPrice = null;
+
+        }else{
+            $roomNames = $transaction->booking->map(function($booking){
+                return $booking->room->room_name;
+            });
+            $roomType = $transaction->booking->first()->room->roomType->room_type;
+            $roomImage = asset("storage/".$transaction->booking->first()->room->roomType->room_image->first()->image_path);
+            $roomDescription = $transaction->booking->first()->room->roomType->description;
+            $checkIn = $transaction->booking->first()->start_date;
+            $checkOut = $transaction->booking->first()->end_date;
+            $totalNight = $this->bookingService->getTotalDays( $transaction->booking->first()->start_date, $transaction->booking->first()->end_date);
+            $roomPerNightPrice = $formatter->formatCurrency($transaction->booking->first()->room->roomType->price, "IDR");
+        }
 
         $data = array(
             'guest_information' => [
@@ -103,18 +129,18 @@ class UserTransactionController extends Controller
             ],
             'room_detail' => [
                 'room_name' => $roomNames,
-                'room_type' => $transaction->booking->first()->room->roomType->room_type,
-                'room_image' => asset("storage/".$transaction->booking->first()->room->roomType->room_image->first()->image_path),
-                'room_description' => $transaction->booking->first()->room->roomType->description
+                'room_type' => $roomType,
+                'room_image' => $roomImage,
+                'room_description' => $roomDescription
             ],
             "order_id" => $transaction->order_id,
-            "check_in" => $transaction->booking->first()->start_date,
-            "check_out" =>  $transaction->booking->first()->end_date,
-            "total_night" => $this->bookingService->getTotalDays( $transaction->booking->first()->start_date, $transaction->booking->first()->end_date),
+            "check_in" => $checkIn,
+            "check_out" =>  $checkOut,
+            "total_night" => $totalNight,
             "payment_information" => [
                 'payment_status' => $transaction->transaction_status,
                 'channel' => $transaction->channel,
-                'room_per_night_price' => $formatter->formatCurrency($transaction->booking->first()->room->roomType->price, "IDR"),
+                'room_per_night_price' => $roomPerNightPrice,
                 'total_price' => $formatter->formatCurrency($transaction->total_price, "IDR"),
                 'snap_token' => $transaction->snap_token
             ]

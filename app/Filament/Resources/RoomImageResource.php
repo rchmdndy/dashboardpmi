@@ -16,6 +16,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
 
 class RoomImageResource extends Resource
 {
@@ -59,8 +61,11 @@ class RoomImageResource extends Resource
                             ->rules(['mimes:jpg,jpeg,png,gif'])
                             ->directory('images/kamar')
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file): string => (string) str($file->getClientOriginalName())
-                                    ->prepend(now()->timestamp.'_')
+                                fn (UploadedFile $file): string => Str::slug(
+                                    pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
+                                )
+                                . '_' . now()->timestamp
+                                . '.' . $file->getClientOriginalExtension()
                             )
                             ->imageEditor()
                             ->maxSize(8192),

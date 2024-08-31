@@ -44,7 +44,7 @@ class   UserTransaction extends Model
             Notification::make()
                 ->title('Transaction Success: '.$this->order_id)
                 ->body('The transaction by '.$this->user_email.' has been completed successfully.')
-                ->sendTo($admin);
+                ->sendToDatabase($admin);
         }
 
     }
@@ -52,12 +52,14 @@ class   UserTransaction extends Model
     public function setFailed()
     {
         $this->attributes['transaction_status'] = 'failed';
+        $this->booking()->delete();
         $this->save();
     }
 
     public function setExpired()
     {
         $this->attributes['transaction_status'] = 'failed';
+        $this->booking()->delete();
         $this->save();
     }
 
