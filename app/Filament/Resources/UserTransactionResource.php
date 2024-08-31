@@ -105,6 +105,9 @@ class UserTransactionResource extends Resource
                             default => 'heroicon-m-sparkles',
                         };
                     }),
+                Tables\Columns\IconColumn::make('verifyCheckin')
+                    ->label('Verifikasi')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -180,6 +183,22 @@ class UserTransactionResource extends Resource
                 //     ),
             ])
             ->actions([
+                Gate::allows('admin') ? Action::make('verifyCheckin')
+                            ->label(fn (Model $record) => $record->verifyCheckin ? 'Unverify' : 'Verify')
+                            ->icon(fn (Model $record) => $record->verifyCheckin ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
+                            ->tooltip(fn (Model $record) => $record->verifyCheckin ? 'Klik untuk unverifikasi kedatangan' : 'Klik untuk verifikasi kedatangan')
+                            ->color(fn (Model $record) => $record->verifyCheckin ? 'danger' : 'success')
+                            ->action(function (Model $record) {
+                                $record->verifyCheckin = !$record->verifyCheckin;
+                                $record->save();
+                                Notification::make()
+                                    ->title('Status berhasil diperbarui!')
+                                    ->success()
+                                    ->send();
+                            })
+                            ->requiresConfirmation()
+                            ->modalDescription(fn (Model $record) => $record->verifyCheckin ? 'Anda Yakin Ingin Membatalkan Verifikasi Kedatangan Tamu Ini?' : 'Anda Yakin Informasi Tamu Sudah Sesuai Dengan Database?')
+                            : null,
                 ActionGroup::make([
                     ViewAction::make()
                         ->label('View')
@@ -271,7 +290,8 @@ class UserTransactionResource extends Resource
             ->bulkActions([
                 ExportBulkAction::make()->exports([
                     ExcelExport::make('table')->fromTable()->withFilename(date('Y-m-d').' -User-Transaction-Report'),
-                ]),
+                ])
+                ->label('Export Excel'),
 
             ])
             ->groups([
