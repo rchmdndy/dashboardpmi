@@ -162,7 +162,6 @@ class BookingService
             }
 
             $roomCapacity = $room->capacity;
-            $requiredRooms = ceil(($personCount - $totalCapacity) / $roomCapacity);
 
             $availableRooms = Room::where('id', $room->id)
                 ->whereDoesntHave('booking', function ($query) use ($startDate, $endDate) {
@@ -176,7 +175,6 @@ class BookingService
                     });
                 })
                 ->count();
-            //                dd($availableRooms);
 
             if ($availableRooms) {
                 $selectedRooms[] = $room->toArray();
@@ -184,12 +182,56 @@ class BookingService
             }
         }
 
-        //        dd($selectedRooms, $personCount);
-
         if ($totalCapacity < $personCount) {
             return false;
         }
 
         return $selectedRooms;
     }
+
+    public function getAvailableRoomBooking($start_date, $end_date, $amount)
+    {
+        $roomData = Room::with(['roomType'])->whereDoesntHave('booking', function ($query) use ($start_date, $end_date) {
+            $query->where(function ($query) use ($start_date, $end_date) {
+                $query->whereBetween('start_date', [$start_date, $end_date])
+                    ->orWhereBetween('end_date', [$start_date, $end_date])
+                    ->orWhere(function ($query) use ($start_date, $end_date) {
+                        $query->where('start_date', '<=', $start_date)
+                            ->where('end_date', '>=', $end_date);
+                    });
+            });
+        })->get();
+
+        $selectedRoomTypes = collect();
+        $roomTypes = [];
+
+        foreach ($roomData as $room) {
+            $roomType = $room->roomType;
+            $roomType->image = asset("storage/".$roomType->room_image->first()->image_path);
+            unset($roomType->room_image);
+
+            if (!isset($roomTypes[$roomType->id])) {
+                $roomTypes[$roomType->id] = [
+                    'type' => $roomType,
+                    'capacity' => $roomType->capacity,
+                ];
+            } else {
+                $roomTypes[$roomType->id]['capacity'] += $roomType->capacity;
+            }
+        }
+
+        ksort($roomTypes);
+
+        foreach ($roomTypes as $room_type_id => $room_type_data) {
+            if ($room_type_data['capacity'] >= $amount) {
+                $selectedRoomTypes->push($room_type_data['type']);
+            }
+        }
+
+        return $selectedRoomTypes->values();
+    }
+
+
+
+
 }

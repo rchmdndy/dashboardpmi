@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\UserTransaction;
 use App\Observers\UserTransactionObserver;
+use App\Providers\FilamentServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Midtrans\Config;
@@ -15,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // App\Providers\FilamentServiceProvider::class;
     }
 
     /**

@@ -41,7 +41,7 @@ class Dashboard extends BaseDashboard
     {
         return [
             StatsOverviewWidget::class,
-            \Filament\Widgets\AccountWidget::class,
+//            \Filament\Widgets\AccountWidget::class,
             // \Filament\Widgets\FilamentInfoWidget::class,
             DashboardWidgetChartBar::class,
             DashboardWidget::class,

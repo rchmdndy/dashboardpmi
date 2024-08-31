@@ -54,9 +54,9 @@ namespace App\Models{
  * @property int $hasLodgeRoom
  * @property int $hasMeetingRoom
  * @property string|null $description
- * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property mixed $image
  * @method static \Illuminate\Database\Eloquent\Builder|Package newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Package newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Package query()
@@ -65,7 +65,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Package whereHasLodgeRoom($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Package whereHasMeetingRoom($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Package whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Package whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Package whereMinPersonQuantity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Package whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Package wherePricePerPerson($value)
@@ -74,6 +73,30 @@ namespace App\Models{
  */
 	#[\AllowDynamicProperties]
 	class IdeHelperPackage {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $package_id
+ * @property string $image_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Package $package
+ * @method static \Illuminate\Database\Eloquent\Builder|PackageImages newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PackageImages newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PackageImages query()
+ * @method static \Illuminate\Database\Eloquent\Builder|PackageImages whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PackageImages whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PackageImages whereImagePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PackageImages wherePackageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PackageImages whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperPackageImages {}
 }
 
 namespace App\Models{
@@ -218,7 +241,6 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $role_id
- * @property string|null $avatar_url
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $booking
  * @property-read int|null $booking_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
@@ -230,7 +252,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
- * @method static \Illuminate\Database\Eloquent\Builder|User whereAvatarUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)

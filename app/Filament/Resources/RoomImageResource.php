@@ -11,6 +11,9 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -94,7 +97,26 @@ class RoomImageResource extends Resource
                     Tables\Columns\Layout\Stack::make([
                         Tables\Columns\TextColumn::make('roomType.room_type')
                             ->weight(FontWeight::Bold),
-                    ]),
+                        Tables\Columns\TextColumn::make('image_path')
+                            ->color('secondary')
+                            ->weight(FontWeight::Light)
+                            ->size(TextColumnSize::Small)
+                            ->limit(25)
+                            ->getStateUsing(function ($record) {
+                                return str_replace('images/kamar/', '', $record->image_path);
+                            })
+                            ->tooltip(function (TextColumn $column): ?string {
+                                $state = $column->getState();
+
+                                if (strlen($state) <= $column->getCharacterLimit()) {
+                                    return null;
+                                }
+
+                                // Only render the tooltip if the column content exceeds the length limit.
+                                return $state;
+                            }
+                            )
+                    ]  ),
                 ])->space(3),
             ])
             ->defaultSort('room_type_id', 'asc')

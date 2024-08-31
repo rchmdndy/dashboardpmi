@@ -12,8 +12,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Midtrans\Config;
 use Midtrans\Snap;
+use Midtrans\Config;
+use function PHPUnit\Framework\isNull;
+
 
 class BookingController extends Controller
 {
@@ -45,8 +47,10 @@ class BookingController extends Controller
         return view('bookings.pay');
     }
 
-    public function bookRoom(Request $request)
-    {
+    public function bookRoom(Request $request) {
+        $formatter = \NumberFormatter::create('id_ID', \NumberFormatter::CURRENCY);
+        $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, 'Rp');
+
 
         // Validate request
         $userRequest = $request->all();
@@ -109,7 +113,7 @@ class BookingController extends Controller
             ]);
 
             for ($i = 1; $i <= $userRequest['amount']; $i++) {
-                Booking::create([
+                    Booking::create([
                     'user_transaction_id' => $userTransaction->id,
                     'user_email' => $userRequest['user_email'],
                     'room_id' => $this->bookingService->getAvailableRoomId($userRequest['room_type_id'], $userRequest['start_date'], $userRequest['end_date']),
@@ -119,11 +123,24 @@ class BookingController extends Controller
                 $this->reportController->createReport($request);
             }
 
-            Config::$serverKey = \config('midtrans.server_key');
-            Config::$clientKey = \config('midtrans.client_key');
-            Config::$isProduction = false;
-            Config::$isSanitized = false;
-            Config::$is3ds = true;
+            $booking_detail = array(
+                "guest_information" => [
+                    "user_name" => $userTransaction->user->name,
+                    "room_booked" => $userTransaction->amount
+                ],
+                "room_detail" => [
+                    "room_name" => $userTransaction->booking->first()->room->roomType->room_type,
+                    "room_image" => asset('storage/images/kamar/'.$userTransaction->booking->first()->room->roomType->room_image->first()->image_path)
+                ],
+                "order_id" => $userTransaction->order_id,
+                "check_in" => $userRequest['start_date'],
+                "check_out" => $userRequest['end_date'],
+                "total_night" => $this->bookingService->getTotalDays($userRequest['start_date'], $userRequest['end_date']),
+                "payment_information" => [
+                    'room_per_night_price' => $formatter->formatCurrency($userTransaction->booking->first()->room->roomType->price, "IDR"),
+                    'total_price' => $formatter->formatCurrency($userTransaction->total_price, "IDR"),
+                ]
+            );
 
             $params = [
                 'transaction_details' => [
@@ -142,13 +159,12 @@ class BookingController extends Controller
                 'snap_token' => $snap_token,
             ]);
 
-            if ($userRequest['side'] == 'client') {
-                return response()->json([
-                    'snap_token' => $snap_token,
-                    'client_key' => \config('midtrans.client_key'),
-                ], 200);
-            }
+            if ($userRequest['side'] == 'client') return response()->json([
+                'booking_detail' => $booking_detail,
+                'snap_token' => $snap_token,
+                'client_key' => \config('midtrans.client_key')
 
+            ], 200);
             return view('bookings.pay', ['snap_token' => $snap_token]);
         } catch (Exception $e) {
             if ($userRequest['side'] == 'client') {
@@ -164,7 +180,7 @@ class BookingController extends Controller
         $validator = Validator::make($request->all(), [
             'user_email' => 'required|email',
             'package_id' => 'required|exists:packages,id',
-            'person_count' => 'required|integer|min:20',
+            'person_count' => 'required|integer|min:20|max:82',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
         ]);
@@ -235,7 +251,6 @@ class BookingController extends Controller
                 return response()->json(['error' => 'No available lodge rooms found.'], 400);
             }
 
-            $packageData = [];
 
             $total_price = $package->price_per_person * $request->person_count;
             $userTransaction = UserTransaction::create([
@@ -313,8 +328,22 @@ class BookingController extends Controller
             $book['payment_status'] = 'Pending';
         }
 
-        return response()->json([
-            'booking' => $booking,
-        ], 200);
+                return response()->json([
+                    'booking' => $booking,
+                ], 200);
+            }
+
+    public function getAvailableRoomOnDate(Request $request){
+        $validate = Validator::make($request->all(), [
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'amount' => 'required|integer|min:1',
+        ]);
+
+        if($validate->fails()) return response()->json(["Data is not valid",$validate->failed()], 419);
+
+        $availableRoomData = $this->bookingService->getAvailableRoomBooking($request->start_date, $request->end_date, $request->amount);
+
+        return (!isNull($availableRoomData) ? response()->json('All room is fully booked') : response()->json($availableRoomData));
     }
 }

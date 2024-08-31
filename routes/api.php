@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\JWTAUTHController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReportController;
@@ -27,10 +28,16 @@ Route::prefix('v1')->group(function () {
         Route::get('/getUserTransactionID', 'getUserTransactionByOrderID')->name('getUserTransactionByOrderID');
         Route::get('/RefreshTransactionStatus', 'refreshTransaction')->name('RefreshTransactionStatus');
         Route::get('/getSnapToken', 'getSnapToken')->name('getSnapToken');
+        Route::get('/detail', 'detail')->name('getUserTransactionDetail');
     });
     Route::prefix('/booking')->controller(BookingController::class)->name('booking.')->group(function () {
         Route::post('/packageToken', 'bookPackage')->name('packageToken');
         Route::post('/generateToken', 'bookRoom')->name('generateToken'); // tolong tambahin di body POST, "side" = "client" biar dapet response json
+        Route::get('/availableRoomOnDate', 'getAvailableRoomOnDate')->name('availableRoomOnDate');
+    });
+    Route::prefix('/packages')->controller(PackageController::class)->name('packages.')->group(function (){
+        Route::get('/getAll', 'getAll')->name('getAll');
+        Route::get('/getDetail', 'getDetail')->name('getDetail');
     });
 
     Route::prefix('/report')->controller(ReportController::class)->name('report.')->group(function () {
