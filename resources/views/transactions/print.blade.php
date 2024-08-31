@@ -90,7 +90,7 @@
     <div class="letterhead">
     <img src="{{ asset('images/logo_asli.png') }}" alt="Logo" style="width: 120px; height: auto;">
         <div>
-            <h1>PMI DIKLAT Report - Cetak</h1>
+            <h1>PMI DIKLAT Transaksi - Cetak</h1>
             <p><strong>Kota Semarang</strong></p>
             <p>Jl. Pandanaran No. XX, Semarang, Telp: (024) XXXXXXX</p>
         </div>
@@ -101,28 +101,30 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Tipe Ruangan</th>
-                <th>Jumlah Pemesanan</th>
+                <th>Alamat Email</th>
+                <th>channel</th>
+                <th>Order ID</th>
+                <th>Guest</th>
                 <th>Total Pendapatan</th>
-                <th>Bulan, Tahun</th>
+                <th>Status Transaksi</th>
+                <th>Tanggal</th>
             </tr>
         </thead>
         <tbody>
         @foreach($records as $record)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $record->roomType?->room_type }}</td>
-                <td>{{ $record->total_bookings }}</td>
-                <td>{{ 'Rp. ' . number_format($record->total_income, 0, ',', '.') }}</td>
-                <td>{{ $record->created_at->translatedFormat('F, Y') }}</td>
+                <td>{{ $record->user_email }}</td>
+                <td>{{ $record->channel }}</td>
+                <td>{{ $record->order_id }}</td>
+                <td>{{ $record->amount }}</td>
+                <td>{{ 'Rp. ' . number_format($record->total_price, 0, ',', '.') }}</td>
+                <td>{{ $record->transaction_status }}</td>
+                <td>{{ $record->transaction_date->translatedFormat('d, F, Y') }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
-    <tr>
-        <td colspan="3"><strong>Total Pendapatan Keseluruhan:</strong></td>
-        <td><strong>{{ 'Rp. ' . number_format($totalIncome, 0, ',', '.') }}</strong></td>
-    </tr>
 </tfoot>
 
     </table>

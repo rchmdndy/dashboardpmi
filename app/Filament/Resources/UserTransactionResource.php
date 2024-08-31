@@ -2,31 +2,32 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\BookingResource\RelationManagers\BookingsRelationManager;
-use App\Filament\Resources\UserTransactionResource\Pages;
-use App\Filament\Resources\UserTransactionResource\Widgets\TransactionStats;
-use App\Models\UserTransaction;
 use Filament\Forms;
-use Filament\Infolists\Components\Section as ComponentsSection;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
-use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
-use Filament\Resources\Pages\Page;
-use Filament\Resources\Resource;
-use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
+use App\Models\UserTransaction;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Filament\Resources\Pages\Page;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\ActionGroup;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Gate;
+use Filament\Support\Enums\ActionSize;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Gate;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Pages\SubNavigationPosition;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use App\Filament\Resources\UserTransactionResource\Pages;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Filament\Infolists\Components\Section as ComponentsSection;
+use App\Filament\Resources\UserTransactionResource\Widgets\TransactionStats;
+use App\Filament\Resources\BookingResource\RelationManagers\BookingsRelationManager;
 
 class UserTransactionResource extends Resource
 {
@@ -57,6 +58,22 @@ class UserTransactionResource extends Resource
     {
         return $table
             ->deferLoading()
+            ->headerActions([
+                Action::make('Print')
+                ->label('Print')
+                ->color('red')
+                ->action(function (Table $table) {
+
+                    $currentRecords = $table->getRecords();
+                    $recordIds = $currentRecords->pluck('id')->toArray();
+                    $user = auth()->user();
+
+                    $url = URL::route('transactions.print', ['records' => $recordIds, 'user' => $user]);
+                    // dd($recordIds);
+
+                    return redirect()->to($url);
+                })
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->limit(4)

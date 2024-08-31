@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use Carbon\Carbon;
+use Midtrans\Snap;
+use App\Models\User;
+use Midtrans\Config;
 use App\Models\Booking;
 use App\Models\Package;
 use App\Models\RoomType;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Models\UserTransaction;
 use App\Services\BookingService;
-use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Midtrans\Snap;
-use Midtrans\Config;
 use function PHPUnit\Framework\isNull;
+use Illuminate\Support\Facades\Validator;
 
 
 class BookingController extends Controller
@@ -345,5 +347,20 @@ class BookingController extends Controller
         $availableRoomData = $this->bookingService->getAvailableRoomBooking($request->start_date, $request->end_date, $request->amount);
 
         return (!isNull($availableRoomData) ? response()->json('All room is fully booked') : response()->json($availableRoomData));
+    }
+
+
+    public function printBooking(Request $request){
+        $email = $request->user;
+
+        $user = User::whereEmail($email)->firstOrFail();
+        $recordIds = $request->input('records', []);
+        $records = Booking::whereIn('id', $recordIds)->orderBy('created_at', 'asc')->get();
+        $records->map(function($record){
+            $record->user_transaction->transaction_date = Carbon::parse($record->user_transaction->transaction_date);
+        });
+        // dd(request()->all(), $recordIds);
+    
+        return view('bookings.print', ['records' => $records, 'user' => $user]);
     }
 }

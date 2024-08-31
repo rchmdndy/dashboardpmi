@@ -21,6 +21,8 @@ use App\Filament\Resources\BookingResource\Pages;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Filament\Infolists\Components\Section as ComponentsSection;
 use App\Filament\Resources\BookingResource\Widgets\BookingStats;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\URL;
 
 class BookingResource extends Resource
 {
@@ -51,6 +53,22 @@ class BookingResource extends Resource
     {
         return $table
             ->deferLoading()
+            ->headerActions([
+                Action::make('Print')
+                ->label('Print')
+                ->color('red')
+                ->action(function (Table $table) {
+
+                    $currentRecords = $table->getRecords();
+                    $recordIds = $currentRecords->pluck('id')->toArray();
+                    $user = auth()->user();
+
+                    $url = URL::route('bookings.print', ['records' => $recordIds, 'user' => $user]);
+                    // dd($recordIds);
+
+                    return redirect()->to($url);
+                })
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->sortable(),

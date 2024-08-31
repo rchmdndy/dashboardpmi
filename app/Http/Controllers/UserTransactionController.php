@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use NumberFormatter;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Models\UserTransaction;
 use App\Services\BookingService;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use NumberFormatter;
 use function PHPUnit\Framework\isNull;
 
 class UserTransactionController extends Controller
@@ -121,6 +123,21 @@ class UserTransactionController extends Controller
 
         );
         return response()->json($data);
+    }
+
+    public function printTransaction(Request $request){
+        $email = $request->user;
+
+        $user = User::whereEmail($email)->firstOrFail();
+        $recordIds = $request->input('records', []);
+        $records = UserTransaction::whereIn('id', $recordIds)->orderBy('transaction_date', 'asc')->get();
+
+        $records->map(function($record){
+            $record->transaction_date = Carbon::parse($record->transaction_date);
+        });
+        // dd(request()->all(), $recordIds);
+    
+        return view('transactions.print', ['records' => $records, 'user' => $user]);
     }
 
 }

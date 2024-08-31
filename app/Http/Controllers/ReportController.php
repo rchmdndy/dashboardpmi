@@ -85,7 +85,7 @@ class ReportController extends Controller
 
         $user = User::whereEmail($email)->firstOrFail();
         $recordIds = $request->input('records', []);
-        $records = Report::whereIn('id', $recordIds)->orderBy('created_at', 'desc')->get();
+        $records = Report::whereIn('id', $recordIds)->orderBy('created_at', 'asc')->get();
         // dd(request()->all(), $recordIds);
         $totalIncome = $records->sum('total_income');
     
