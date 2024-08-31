@@ -123,7 +123,7 @@ class UserTransactionResource extends Resource
                         };
                     }),
                 Tables\Columns\IconColumn::make('verifyCheckin')
-                    ->label('Verifikasi')
+                    ->label('Check-In Status')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -214,7 +214,8 @@ class UserTransactionResource extends Resource
                                     ->send();
                             })
                             ->requiresConfirmation()
-                            ->modalDescription(fn (Model $record) => $record->verifyCheckin ? 'Anda Yakin Ingin Membatalkan Verifikasi Kedatangan Tamu Ini?' : 'Anda Yakin Informasi Tamu Sudah Sesuai Dengan Database?')
+                            ->modalIcon(fn (Model $record) => $record->verifyCheckin ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
+                            ->modalDescription(fn (Model $record) => $record->verifyCheckin ? 'Anda Yakin Ingin Membatalkan Verifikasi Kedatangan Tamu Ini?' : 'Anda Yakin Informasi Tamu Sudah Sesuai ?')
                             : null,
                 ActionGroup::make([
                     ViewAction::make()
