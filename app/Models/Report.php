@@ -1,14 +1,19 @@
 <?php
+
 // app/Models/Report.php
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperReport
+ */
 class Report extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRelationships;
 
     protected $fillable = [
         'room_type_id',
@@ -20,6 +25,6 @@ class Report extends Model
 
     public function roomType()
     {
-        return $this->belongsTo(RoomType::class);
+        return $this->belongsTo(RoomType::class, 'room_type_id', 'id');
     }
 }

@@ -1,14 +1,19 @@
 <?php
+
 // app/Models/RoomType.php
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperRoomType
+ */
 class RoomType extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRelationships;
 
     protected $fillable = [
         'room_type',
@@ -17,16 +22,18 @@ class RoomType extends Model
         'description',
     ];
 
-    public function room(){
-        return $this->hasMany(Room::class);
+    public function room()
+    {
+        return $this->hasMany(Room::class, 'room_type_id', 'id');
     }
 
-    public function room_image(){
-        return $this->hasMany(RoomImage::class);
+    public function room_image()
+    {
+        return $this->hasMany(RoomImage::class, 'room_type_id', 'id');
     }
 
-    public function report(){
-        return $this->hasMany(Report::class);
+    public function report()
+    {
+        return $this->hasMany(Report::class, 'room_type_id', 'id');
     }
-
 }
