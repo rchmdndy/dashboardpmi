@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use NumberFormatter;
 use App\Models\Report;
 use App\Models\RoomType;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\DB;
-use NumberFormatter;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -76,5 +78,17 @@ class ReportController extends Controller
 
         // Return JSON response
         return response()->json($formattedReports);
+    }
+
+    public function printReport(Request $request){
+        $email = $request->user;
+
+        $user = User::whereEmail($email)->firstOrFail();
+        $recordIds = $request->input('records', []);
+        $records = Report::whereIn('id', $recordIds)->orderBy('created_at', 'asc')->get();
+        // dd(request()->all(), $recordIds);
+        $totalIncome = $records->sum('total_income');
+    
+        return view('reports.print', ['records' => $records, 'user' => $user, 'totalIncome' => $totalIncome]);
     }
 }

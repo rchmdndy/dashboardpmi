@@ -2,32 +2,35 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Dashboard;
-use App\Providers\Filament\Auth\AdminLogin;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\Support\Enums\Platform;
 use Filament\PanelProvider;
+use App\Filament\Pages\Dashboard;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Support\Facades\DB;
+use Filament\Http\Middleware\Authenticate;
+use App\Providers\Filament\Auth\AdminLogin;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Joaopaulolndev\FilamentGeneralSettings\FilamentGeneralSettingsPlugin;
-use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $themeColor = DB::table('general_settings')->value('theme_color');
+        
         return $panel
             ->default()
             ->id('admin')
@@ -36,7 +39,7 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearch(true)
             ->globalSearchFieldKeyBindingSuffix()
             ->colors([
-                'primary' => Color::hex('#ce0000'),
+                'primary' => Color::hex($themeColor) ?? Color::hex('#ce0000'),
                 'red' => Color::Red,
                 'green' => Color::Green,
                 'teal' => Color::Teal,

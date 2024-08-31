@@ -83,6 +83,7 @@ class RoomResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
             ])
+            ->defaultSort('room_type_id', 'asc')
             ->filters([
                 //
                 Tables\Filters\SelectFilter::make('room_type_id')

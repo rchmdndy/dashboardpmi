@@ -2,19 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ReportResource\Pages;
-use App\Filament\Resources\ReportResource\Widgets\ReportStats;
-use App\Models\Report;
 use Carbon\Carbon;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Report;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Model;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Filament\Tables\Actions\ExportAction;
+use Illuminate\Database\Eloquent\Builder;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use App\Filament\Resources\ReportResource\Pages;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use App\Filament\Resources\ReportResource\Widgets\ReportStats;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\URL;
 
 class ReportResource extends Resource
 {
@@ -67,19 +70,33 @@ class ReportResource extends Resource
             ]);
     }
 
+
     public static function table(Table $table): Table
     {
         return $table
+            ->deferLoading()
+            ->headerActions([
+                Action::make('Print')
+                ->label('Print')
+                ->color('red')
+                ->action(function (Table $table) {
+
+                    $currentRecords = $table->getRecords();
+                    $recordIds = $currentRecords->pluck('id')->toArray();
+                    $user = auth()->user();
+
+                    $url = URL::route('reports.print', ['records' => $recordIds, 'user' => $user]);
+
+                    return redirect()->to($url);
+                })
+            ])
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->limit(4)
+                Tables\Columns\TextColumn::make('roomType.room_type')
+                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal')
-                    ->date('M, Y')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('roomType.room_type')
-                    ->numeric()
+                    ->date('F, Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_bookings')
                     ->numeric()
@@ -98,6 +115,7 @@ class ReportResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('month')
                     ->label('Month')
@@ -189,6 +207,7 @@ class ReportResource extends Resource
     {
         return [
             'index' => Pages\ListReports::route('/'),
+            'Print' => Pages\ListReports::route('/sdad'),
         ];
     }
 

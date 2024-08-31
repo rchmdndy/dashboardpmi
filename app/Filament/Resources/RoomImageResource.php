@@ -124,6 +124,7 @@ class RoomImageResource extends Resource
                     ]  ),
                 ])->space(3),
             ])
+            ->defaultSort('room_type_id', 'asc')
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
