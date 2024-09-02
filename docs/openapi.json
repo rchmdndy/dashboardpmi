@@ -1,0 +1,42 @@
+{
+    "openapi" : "3.0.0",
+    "info":{
+        "title" : "Pusdiklat PMI Booking API Documentation",
+        "version" : "1.0"
+    },
+    "paths": {
+        "/booking/availableRoomOnDate" :{},
+        "/booking/generateToken" :{},
+        "/booking/packageToken" :{},
+        "/email/verify/{email}/{hash}" :{},
+        "/forgotPassword" :{},
+        "/login" :{},
+        "/logout" :{},
+        "/me" :{},
+        "/refresh" :{},
+        "/register" :{},
+        "/registerSocial" :{},
+        "/packages/getAll" :{},
+        "/packages/getDetail" :{},
+        "/report/generate" :{},
+        "/room/getAll" :{},
+        "/room/getByRoomType" :{},
+        "/room/getDetail" :{},
+        "/room_type/getAll" :{},
+        "/room_type/getAllPackage" :{},
+        "/room_type/getDetail" :{},
+        "/room_type/getDetailPackage" :{},
+        "/room_type/getRoomType" :{},
+        "/sendEmailVerif" :{},
+        "/updatePassword" :{},
+        "/updateProfile" :{},
+        "/user_transaction/RefreshTransactionStatus" :{},
+        "/user_transaction/detail" :{},
+        "/user_transaction/getSnapToken" :{},
+        "/user_transaction/getUserTransaction" :{},
+        "/user_transaction/getUserTransactionID" :{},
+    },
+    "servers": [
+
+    ]
+}

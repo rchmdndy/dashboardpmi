@@ -3,18 +3,28 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Notifications\CustomVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+/**
+ * @mixin IdeHelperUser
+ */
+class User extends Authenticatable implements FilamentUser, JWTSubject, MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasUuids, HasApiTokens;
-    protected $primaryKey = 'uuid';
-//    public $incrementing = false;
-//    protected $keyType = 'char';
+    use HasFactory, HasRelationships, Notifiable;
+
+    protected $primaryKey = 'email';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -22,17 +32,15 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
+        'name',
         'phone',
-        'password'
+        // 'refresh_token',
+        'role_id',
+        'password',
+        'email_verified_at',
+
     ];
-
-    public function uniqueIds()
-    {
-        return ['uuid'];
-    }
-
 
     /**
      * The attributes that should be hidden for serialization.
@@ -42,6 +50,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $visible = [
+        'email',
+        'name',
+        'phone',
+        'role_id',
+        'email_verified_at',
     ];
 
     /**
@@ -57,11 +73,70 @@ class User extends Authenticatable
         ];
     }
 
-    public function user_transaction(){
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // dd($panel);
+        if ($panel->getId() === 'admin') {
+            return $this->isAdmin() && $this->hasVerifiedEmail();
+        } elseif ($panel->getId() === 'staff') {
+            return $this->isStaff() && $this->hasVerifiedEmail();
+        }
+
+        return false;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role_id === 1;
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role_id === 3;
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role_id === 4;
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
+    }
+
+    public function getEmailForVerification()
+    {
+        return $this->email;
+    }
+
+    public function user_transaction()
+    {
         return $this->hasMany(UserTransaction::class);
     }
 
-    public function booking(){
+    public function booking()
+    {
         return $this->hasMany(Booking::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

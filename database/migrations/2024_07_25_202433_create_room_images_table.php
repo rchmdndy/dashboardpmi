@@ -1,11 +1,12 @@
 <?php
+
 // database/migrations/xxxx_xx_xx_xxxxxx_create_room_images_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRoomImagesTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -15,6 +16,7 @@ class CreateRoomImagesTable extends Migration
     public function up()
     {
         Schema::create('room_images', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('room_type_id');
             $table->string('image_path', 255);
 
@@ -31,4 +33,4 @@ class CreateRoomImagesTable extends Migration
     {
         Schema::dropIfExists('room_images');
     }
-}
+};

@@ -1,11 +1,21 @@
 <?php
 
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserTransactionController;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+Route::get('/home', function () {
     return view('welcome');
-});
+})->name('home');
+
+Route::get('/', function () {
+    return view('template');
+})->name('template');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -16,12 +26,24 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-//
-//Route::prefix('/api/v1')->name('api.')->group(function (){
-//   Route::prefix('room_type')->controller(\App\Http\Controllers\RoomTypeController::class)->name('room_type.')->group(function (){
-//     Route::get('/getAll', 'getAll')->name('getAll');
-//     Route::get('/getDetail', 'getDetail')->name('getDetail');
-//   });
-//});
+
+Route::post('/bookings', [BookingController::class, 'bookRoom'])->name('bookings.store');
+Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+Route::get('/bookings/pay', [BookingController::class, 'pay'])->name('bookings.pay');
+Route::get('/reports/create', [ReportController::class, 'createReport'])->name('reports.create');
+Route::get('/reports/print', [ReportController::class, 'printReport'])->name('reports.print');
+Route::get('/transactions/print', [UserTransactionController::class, 'printTransaction'])->name('transactions.print');
+Route::get('/booking/print', [BookingController::class, 'printBooking'])->name('bookings.print');
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+});
+
+Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+    ->name('password.reset');
+
+Route::post('reset-password', [NewPasswordController::class, 'store'])
+    ->name('password.store');
+
+Route::post('midtrans/notification_handling', [NotificationController::class, 'handleMidtransNotification'])->withoutMiddleware(VerifyCsrfToken::class);
 
 require __DIR__.'/auth.php';

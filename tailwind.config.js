@@ -15,6 +15,9 @@ export default {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
         },
+        colors: {
+                'magenta': '#ff00ff',
+            }
     },
 
     plugins: [forms],
