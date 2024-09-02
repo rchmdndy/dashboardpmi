@@ -75,9 +75,6 @@ class UserTransactionResource extends Resource
                 })
             ])
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->limit(4)
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('user_email')
                     ->limit(20)
                     ->label('Email')
@@ -96,6 +93,7 @@ class UserTransactionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->numeric()
+                    ->label("Room Booked")
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_price')
                     ->money('IDR')
@@ -123,7 +121,10 @@ class UserTransactionResource extends Resource
                         };
                     }),
                 Tables\Columns\IconColumn::make('verifyCheckin')
-                    ->label('Verifikasi')
+                    ->label('Status Check-In')
+                    ->boolean(),
+                Tables\Columns\IconColumn::make('verifyCheckout')
+                    ->label('Status Check-Out')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -200,39 +201,54 @@ class UserTransactionResource extends Resource
                 //     ),
             ])
             ->actions([
-                Gate::allows('admin') ? Action::make('verifyCheckin')
-                            ->label(fn (Model $record) => $record->verifyCheckin ? 'Unverify' : 'Verify')
-                            ->icon(fn (Model $record) => $record->verifyCheckin ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
-                            ->tooltip(fn (Model $record) => $record->verifyCheckin ? 'Klik untuk unverifikasi kedatangan' : 'Klik untuk verifikasi kedatangan')
-                            ->color(fn (Model $record) => $record->verifyCheckin ? 'danger' : 'success')
-                            ->action(function (Model $record) {
-                                $record->verifyCheckin = !$record->verifyCheckin;
-                                $record->save();
-                                Notification::make()
-                                    ->title('Status berhasil diperbarui!')
-                                    ->success()
-                                    ->send();
-                            })
-                            ->requiresConfirmation()
-                            ->modalDescription(fn (Model $record) => $record->verifyCheckin ? 'Anda Yakin Ingin Membatalkan Verifikasi Kedatangan Tamu Ini?' : 'Anda Yakin Informasi Tamu Sudah Sesuai Dengan Database?')
-                            : null,
                 ActionGroup::make([
+                    Gate::allows('admin') ? Action::make('verifyCheckin')
+                        ->label(fn (Model $record) => $record->verifyCheckin ? 'Batalkan Check-In Tamu' : 'Check-In Tamu')
+                        ->icon(fn (Model $record) => $record->verifyCheckin ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
+                        ->tooltip(fn (Model $record) => $record->verifyCheckin ? 'Klik untuk membatalkan check-in tamu' : 'Klik untuk verifikasi check-in tamu')
+                        ->color(fn (Model $record) => $record->verifyCheckin ? 'danger' : 'success')
+                        ->action(function (Model $record) {
+                            $record->verifyCheckin = !$record->verifyCheckin;
+                            $record->save();
+                            Notification::make()
+                                ->title('Status berhasil diperbarui!')
+                                ->success()
+                                ->send();
+                        })
+                        ->requiresConfirmation()
+                        ->modalDescription(fn (Model $record) => $record->verifyCheckin ? 'Anda Yakin Ingin Membatalkan Verifikasi Check-In Tamu Ini?' : 'Anda Yakin Informasi Check-In Sudah Sesuai dan Identitas Tamu Sudah Diterima?')
+                        : null,
+                    Gate::allows('admin') ? Action::make('verifyCheckout')
+                        ->label(fn (Model $record) => $record->verifyCheckout ? 'Batalkan Check-Out Tamu' : 'Check-Out Tamu')
+                        ->icon(fn (Model $record) => $record->verifyCheckout ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
+                        ->tooltip(fn (Model $record) => $record->verifyCheckin ?
+                        ($record->verifyCheckout ? 'Klik untuk membatalkan check-out tamu' : 'Klik untuk verifikasi check-out tamu') :
+                        'Tamu diharuskan Check-In terlebih dahulu untuk mengubah status Check-Out')
+                     ->color(fn (Model $record) => $record->verifyCheckout ? 'danger' : 'success')
+                        ->disabled(fn (Model $record) => $record->verifyCheckin == false)
+                        ->action(function (Model $record) {
+                            $record->verifyCheckout = !$record->verifyCheckout;
+                            $record->save();
+                            Notification::make()
+                                ->title('Status berhasil diperbarui!')
+                                ->success()
+                                ->send();
+                        })
+                        ->requiresConfirmation()
+                        ->modalDescription(fn (Model $record) => $record->verifyCheckout ? 'Anda Yakin Ingin Membatalkan Verifikasi Check-In Tamu Ini?' : 'Anda Yakin Informasi Check-Out Sudah Sesuai dan Identitas Tamu Sudah Dikembalikan?')
+                        : null,
                     ViewAction::make()
-                        ->label('View')
+                        ->label('Lihat Detail')
                         ->icon('heroicon-o-eye'),
-                    EditAction::make()
-                        ->label('Edit')
-                        ->color('Amber')
-                        ->icon('heroicon-o-pencil'),
                     ActionGroup::make([
                         Action::make('Success')
                             ->icon('heroicon-m-check-badge')
-                            ->tooltip('Click to change transaction status to success')
+                            ->tooltip('Klik untuk mengubah status transaksi menjadi success')
                             ->color('success')
                             ->label('Success')
                             ->requiresConfirmation()
-                            ->modalHeading('Confirm Success Transaction')
-                            ->modalDescription('Are you sure you\'d like to set transaction to Success?')
+                            ->modalHeading('Verifikasi Transaksi Sukses')
+                            ->modalDescription('Apakah Anda yakin ingin mengubah status transaksi menjadi Success?')
                             ->modalSubmitActionLabel('Yes')
                             ->modalIcon('heroicon-m-check-badge')
                             ->modalIconColor('success')
@@ -241,8 +257,8 @@ class UserTransactionResource extends Resource
                                 $record->save();
 
                                 Notification::make()
-                                    ->title('Transaction Updated')
-                                    ->body('The transaction status has been successfully updated to Success.')
+                                    ->title('Status Transaksi telah diperbarui')
+                                    ->body('Status transaksi telah berhasil diperbarui menjadi Success.')
                                     ->success()
                                     ->icon('heroicon-m-check-badge')
                                     ->color('success')
@@ -250,12 +266,12 @@ class UserTransactionResource extends Resource
                             }),
                         Action::make('Pending')
                             ->icon('heroicon-m-clock')
-                            ->tooltip('Click to change transaction status to pending')
+                            ->tooltip('Klik untuk mengubah status transaksi menjadi pending')
                             ->color('warning')
                             ->label('Pending')
                             ->requiresConfirmation()
-                            ->modalHeading('Confirm Pending Transaction')
-                            ->modalDescription('Are you sure you\'d like to set transaction to Pending?')
+                            ->modalHeading('Verifikasi Transaksi Pending')
+                            ->modalDescription('Apakah Anda yakin ingin mengubah status transaksi menjadi Pending?')
                             ->modalSubmitActionLabel('Yes')
                             ->modalIcon('heroicon-m-clock')
                             ->modalIconColor('warning')
@@ -264,8 +280,8 @@ class UserTransactionResource extends Resource
                                 $record->save();
 
                                 Notification::make()
-                                    ->title('Transaction Updated')
-                                    ->body('The transaction status has been successfully updated to Pending.')
+                                    ->title('Status Transaksi telah diperbarui')
+                                    ->body('Status transaksi telah berhasil diperbarui menjadi Pending.')
                                     ->success()
                                     ->icon('heroicon-m-check-badge')
                                     ->color('success')
@@ -273,11 +289,11 @@ class UserTransactionResource extends Resource
                             }),
                         Action::make('Failed')
                             ->icon('heroicon-m-x-circle')
-                            ->tooltip('Click to change transaction status to failed')
+                            ->tooltip('Klik untuk mengubah status transaksi menjadi failed')
                             ->color('danger')
                             ->requiresConfirmation()
-                            ->modalHeading('Confirm Failed Transaction')
-                            ->modalDescription('Are you sure you\'d like to set transaction to Failed?')
+                            ->modalHeading('Verifikasi Transaksi Failed')
+                            ->modalDescription('Apakah Anda yakin ingin mengubah status transaksi menjadi Failed?')
                             ->modalSubmitActionLabel('Yes')
                             ->modalIcon('heroicon-m-x-circle')
                             ->modalIconColor('danger')
@@ -287,8 +303,8 @@ class UserTransactionResource extends Resource
                                 $record->save();
 
                                 Notification::make()
-                                    ->title('Transaction Updated')
-                                    ->body('The transaction status has been successfully updated to Failed.')
+                                    ->title('Status Transaksi telah diperbarui')
+                                    ->body('Status transaksi telah berhasil diperbarui menjadi Failed.')
                                     ->success()
                                     ->icon('heroicon-m-check-badge')
                                     ->color('success')
@@ -296,7 +312,7 @@ class UserTransactionResource extends Resource
                             }),
 
                     ])
-                        ->label('Set Status')
+                        ->label('Ubah status transaksi')
                         ->icon('heroicon-m-ellipsis-vertical')
                         ->size(ActionSize::ExtraSmall)
                         ->color('gray')
@@ -316,7 +332,8 @@ class UserTransactionResource extends Resource
                     ->label('Transaction Date')
                     ->date()
                     ->collapsible(),
-            ]);
+            ])
+            ->defaultSort('transaction_date', 'desc');
     }
 
     public static function infolist(Infolist $infolist): Infolist

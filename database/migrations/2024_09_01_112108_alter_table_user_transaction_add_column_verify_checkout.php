@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('user_transactions', function (Blueprint $table) {
-            $table->foreignId("room_type_id")->references("id")->on("room_types");
+            $table->boolean("verifyCheckout")->default(false);
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('user_transactions', function (Blueprint $table) {
-            $table->dropColumn("room_type_id");
+            $table->dropColumn("verifyCheckout");
         });
     }
 };
