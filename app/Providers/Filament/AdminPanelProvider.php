@@ -29,8 +29,8 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        $themeColor = DB::table('general_settings')->value('theme_color');
-        
+//        $themeColor = DB::table('general_settings')->value('theme_color');
+
         return $panel
             ->default()
             ->id('admin')
@@ -39,7 +39,7 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearch(true)
             ->globalSearchFieldKeyBindingSuffix()
             ->colors([
-                'primary' => Color::hex($themeColor) ?? Color::hex('#ce0000'),
+                'primary' => Color::hex('#ce0000'),
                 'red' => Color::Red,
                 'green' => Color::Green,
                 'teal' => Color::Teal,

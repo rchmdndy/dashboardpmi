@@ -221,10 +221,7 @@ class UserTransactionResource extends Resource
                     Gate::allows('admin') ? Action::make('verifyCheckout')
                         ->label(fn (Model $record) => $record->verifyCheckout ? 'Batalkan Check-Out Tamu' : 'Check-Out Tamu')
                         ->icon(fn (Model $record) => $record->verifyCheckout ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
-                        ->tooltip(fn (Model $record) => $record->verifyCheckin ?
-                        ($record->verifyCheckout ? 'Klik untuk membatalkan check-out tamu' : 'Klik untuk verifikasi check-out tamu') :
-                        'Tamu diharuskan Check-In terlebih dahulu untuk mengubah status Check-Out')
-                     ->color(fn (Model $record) => $record->verifyCheckout ? 'danger' : 'success')
+                        ->color(fn (Model $record) => $record->verifyCheckout ? 'danger' : 'success')
                         ->disabled(fn (Model $record) => $record->verifyCheckin == false)
                         ->action(function (Model $record) {
                             $record->verifyCheckout = !$record->verifyCheckout;
