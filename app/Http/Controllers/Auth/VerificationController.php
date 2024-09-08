@@ -18,7 +18,7 @@ class VerificationController extends Controller
         $key = config('app.key');
         $expectedHash = hash_hmac('sha256', $email.$key, $key);
 
-        if (hash_equals($request->route('hash'), $expectedHash)) {
+        if (!hash_equals($request->route('hash'), $expectedHash)) {
             abort(401);
         } elseif (! $user) {
             abort(401);

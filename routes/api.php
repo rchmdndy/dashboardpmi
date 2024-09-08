@@ -71,3 +71,14 @@ Route::prefix('v1')->group(function () {
     Route::get('/try', [VerificationController::class, 'try'])->name('verification.try');
 
 });
+
+Route::prefix("v2")->middleware(['jwt.auth'])->group(function(){
+    Route::prefix('/booking')->controller(BookingController::class)->name('booking.')->group(function () {
+        Route::post('/packageToken', 'bookPackage')->name('packageToken');
+        Route::post('/generateToken', 'bookRoom')->name('generateToken'); // tolong tambahin di body POST, "side" = "client" biar dapet response json
+    });
+    Route::prefix('/user_transaction')->controller(UserTransactionController::class)->name('user_transaction.')->group(function () {
+        Route::get('/getUserTransaction', 'getUserTransaction')->name('getUserTransaction');
+        Route::get('/detail', 'detail')->name('getUserTransactionDetail');
+    });
+});

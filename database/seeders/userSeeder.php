@@ -29,7 +29,7 @@ class userSeeder extends Seeder
             'password' => 'adminadmin',
             'role_id' => 1,
             ]
-    );
+        );
 
     User::factory()->create(
         [
@@ -39,7 +39,7 @@ class userSeeder extends Seeder
         'password' => 'staffstaff',
         'role_id' => 3,
         ]
-);
+    );
 
     User::factory()->create(
         [
