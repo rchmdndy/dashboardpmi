@@ -127,6 +127,7 @@ class UserTransactionController extends Controller
         $data = array(
             'guest_information' => [
                 'user_name'  => $transaction->user->name,
+                'phone'  => $transaction->user->phone,
                 'room_booked' => $transaction->amount
             ],
             'room_detail' => [
@@ -162,7 +163,7 @@ class UserTransactionController extends Controller
             $record->transaction_date = Carbon::parse($record->transaction_date);
         });
         // dd(request()->all(), $recordIds);
-    
+
         return view('transactions.print', ['records' => $records, 'user' => $user]);
     }
 
