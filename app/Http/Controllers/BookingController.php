@@ -254,7 +254,7 @@ class BookingController extends Controller
             }
 
 
-            $total_price = $package->price_per_person * $request->person_count;
+            $total_price = $package->price_per_person * $request->person_count * $totalDays;
             $userTransaction = UserTransaction::create([
                 'user_email' => $request->user_email,
                 'channel' => 'packages',
@@ -360,7 +360,7 @@ class BookingController extends Controller
             $record->user_transaction->transaction_date = Carbon::parse($record->user_transaction->transaction_date);
         });
         // dd(request()->all(), $recordIds);
-    
+
         return view('bookings.print', ['records' => $records, 'user' => $user]);
     }
 }
