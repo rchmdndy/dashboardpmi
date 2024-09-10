@@ -14,7 +14,7 @@ Route::get('/home', function () {
 })->name('home');
 
 Route::get('/', function () {
-    return view('template');
+    return redirect('/admin/login');
 })->name('template');
 
 Route::get('/dashboard', function () {
