@@ -18,14 +18,22 @@ class JWTAUTHController extends Controller
     public function register(Request $request)
     {
         try {
-            $validator = validator::make(request()->all(), [
+            $validator = Validator::make(request()->all(), [
                 'name' => 'required',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|confirmed|min:8',
+            ], [
+                'name.required' => 'The name field is required.',
+                'email.required' => 'The email field is required.',
+                'email.email' => 'Please provide a valid email address.',
+                'email.unique' => 'This email is already registered.',
+                'password.required' => 'The password field is required.',
+                'password.confirmed' => 'Password confirmation does not match.',
+                'password.min' => 'The password must be at least 8 characters.',
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
+                return response()->json(['error' => $validator->errors()->first()], 400);
             }
 
             $user = User::create([
