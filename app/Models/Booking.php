@@ -37,4 +37,8 @@ class Booking extends Model
     {
         return $this->belongsTo(UserTransaction::class, 'user_transaction_id', 'id');
     }
+
+    public function booking_customer(){
+        return $this->hasMany(BookingCustomer::class);
+    }
 }
