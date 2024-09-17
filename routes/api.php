@@ -5,6 +5,7 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\UserTransactionController;
@@ -40,8 +41,18 @@ Route::prefix('v1')->group(function () {
         Route::get('/getDetail', 'getDetail')->name('getDetail');
     });
 
+    Route::prefix('/midtrans')->controller(\App\Http\Controllers\NotificationController::class)->name('midtrans.')->group(function(){
+        Route::post('/notification_handling', 'handleMidtransNotification');
+    });
+
     Route::prefix('/report')->controller(ReportController::class)->name('report.')->group(function () {
         Route::get('/generate', 'generateMonthly')->name('generateMonthly');
+    });
+
+    Route::prefix('/review')->controller(ReviewController::class)->name("review.")->group(function(){
+        Route::post('/postReview', 'postReview')->name("postReview");
+        Route::get("/getReviewForCurrentTransaction", "getReviewForCurrentTransaction")->name("getReviewForCurrentTransaction");
+        Route::get('/getTopReview', 'getTopReview')->name("getTopReview");
     });
 
     // MUST LOGIN/REGISTER FIRST

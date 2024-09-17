@@ -77,4 +77,8 @@ class   UserTransaction extends Model
     {
         return $this->belongsTo(User::class, 'user_email', 'email');
     }
+
+    public function review(){
+        return $this->hasOne(Review::class);
+    }
 }

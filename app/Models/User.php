@@ -139,4 +139,8 @@ class User extends Authenticatable implements FilamentUser, JWTSubject, MustVeri
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function reviews(){
+        return $this->hasMany(Review::class);
+    }
 }
