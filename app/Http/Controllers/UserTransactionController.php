@@ -104,6 +104,7 @@ class UserTransactionController extends Controller
             // return response(["fungsi masuk"], 200);
             $roomNames = null;
             $roomType = null;
+            $roomTypeId = null;
             $roomImage = asset("storage/default_image.png");
             $roomDescription = null;
             $checkIn = null;
@@ -116,6 +117,9 @@ class UserTransactionController extends Controller
                 return $booking->room->room_name;
             });
             $roomType = $transaction->booking->first()->room->roomType->room_type;
+            $roomTypeId = $transaction->booking->map(function($booking){
+               return $booking->room->roomType->id;
+            })->unique()->values();
             $roomImage = asset("storage/".$transaction->booking->first()->room->roomType->room_image->first()->image_path);
             $roomDescription = $transaction->booking->first()->room->roomType->description;
             $checkIn = $transaction->booking->first()->start_date;
@@ -125,6 +129,7 @@ class UserTransactionController extends Controller
         }
 
         $data = array(
+            'id' => $transaction->id,
             'guest_information' => [
                 'user_name'  => $transaction->user->name,
                 'phone'  => $transaction->user->phone,
@@ -134,7 +139,8 @@ class UserTransactionController extends Controller
                 'room_name' => $roomNames,
                 'room_type' => $roomType,
                 'room_image' => $roomImage,
-                'room_description' => $roomDescription
+                'room_description' => $roomDescription,
+                'room_type_id' => $roomTypeId
             ],
             "order_id" => $transaction->order_id,
             "check_in" => $checkIn,
