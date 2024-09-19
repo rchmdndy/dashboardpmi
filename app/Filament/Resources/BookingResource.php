@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\CustomerResource\RelationManagers\BookingRelationManager;
 use Filament\Forms;
+use Filament\Forms\Form;
 use Filament\Tables;
 use App\Models\Booking;
 use Filament\Tables\Table;
@@ -36,7 +38,7 @@ class BookingResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return false;
+        return true;
     }
 
     public static function canCreate(): bool
@@ -47,6 +49,72 @@ class BookingResource extends Resource
     public static function canDelete(Model $record): bool
     {
         return false;
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Booking')
+                            ->description('Booking Information')
+                            ->schema([
+                                Forms\Components\Select::make('user_email')
+                                    ->searchable()
+                                    ->required()
+                                    ->preload()
+                                    ->relationship('user', 'email')
+                                    ->disabled()
+                                    ->placeholder('Input Email'),
+                                Forms\Components\Select::make('room_id')
+                                    ->placeholder('Select Room')
+                                    ->searchable()
+                                    ->preload()
+                                    ->disabled()
+                                    ->relationship('room', 'room_name')
+                                    ->required(),
+                                Forms\Components\Select::make('user_transaction_id')
+                                    ->required()
+                                    ->label('Order ID')
+                                    ->searchable()
+                                    ->preload()
+                                    ->disabled()
+                                    ->columnSpanFull()
+                                    ->relationship('user_transaction', 'order_id')
+                                    ->placeholder('Select Order ID'),
+
+                            ])
+                            ->columns(1),
+                    ]),
+
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Booking Date')
+                            ->description('Date Information')
+                            ->schema([
+                                Forms\Components\DatePicker::make('start_date')
+                                    ->label('Check In')
+                                    ->disabled()
+                                    ->rules(function (callable $get) {
+                                        $roomId = $get('room_id');
+                                        $startDate = $get('start_date');
+                                        $endDate = $get('end_date');
+                                        // dd($roomId, $startDate, $endDate);
+                                        return [
+                                            new RoomAvailable($roomId, $startDate, $endDate)
+                                        ];
+                                    })
+                                    ->required(),
+                                Forms\Components\DatePicker::make('end_date')
+                                    ->label('Check Out')
+                                    ->disabled()
+                                    ->required(),
+                            ])
+                            ->columns(1),
+
+                    ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -153,7 +221,8 @@ class BookingResource extends Resource
 
             ->actions(array_filter([
                 Tables\Actions\ViewAction::make(),
-                Gate::allows('admin') ? Tables\Actions\EditAction::make()->color('Amber') : null,
+                Tables\Actions\EditAction::make(),
+//                Gate::allows('admin') ? Tables\Actions\EditAction::make()->color('Amber') : null,
 
             ]))
             ->bulkActions([
@@ -244,7 +313,8 @@ class BookingResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+           BookingRelationManager::class,
+
         ];
     }
 
@@ -260,12 +330,14 @@ class BookingResource extends Resource
         return [
             'index' => Pages\ListBookings::route('/'),
             'view' => Pages\ViewBooking::route('/{record}/view'),
+            'edit' => Pages\EditBooking::route('/{record}/edit'),
         ];
     }
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        return $page->generateNavigationItems([Pages\ViewBooking::class]);
+        return $page->generateNavigationItems([Pages\ViewBooking::class,
+            Pages\EditBooking::class]);
     }
 
     public static function getNavigationLabel(): string

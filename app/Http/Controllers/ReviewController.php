@@ -13,28 +13,41 @@ class ReviewController extends Controller
         $validator = Validator::make($request->all(),[
             'user_email' => 'required|email|exists:users,email',
             'user_transaction_id' => 'required|exists:user_transactions,id',
+            'room_types' => 'required',
             'review' => 'required|string',
             'score' => 'required|integer|min:1|max:5'
         ]);
 
         if($validator->fails()){
             $error = $validator->errors();
-            return match ($error) {
-                $error->has("user_email") => response()->json(["error" => "Email tidak valid"], 400),
-                $error->has("user_transaction_id") => response()->json(["error" => "Transaksi tidak valid"], 400),
-                $error->has("review") => response()->json(["error" => "Review tidak valid"], 400),
-                $error->has("score") => response()->json(["error" => "Score tidak valid"], 400),
-                default => response()->json(["error" => $error->getMessages()], 400),
-            };
+            switch ($error) {
+                case $error->has("user_email"):
+                    return response()->json(["error" => "Email tidak valid"], 400);
+                case $error->has("user_transaction_id"):
+                    return response()->json(["error" => "Transaksi tidak valid"], 400);
+                case $error->has("room_types"):
+                    return response()->json(["error" => "ID tipe ruangan tidak valid"], 400);
+                case $error->has("review"):
+                    return response()->json(["error" => "Review tidak valid"], 400);
+                case $error->has("score"):
+                    return response()->json(["error" => "Score tidak valid"], 400);
+                default:
+                    return response()->json(["error" => $error->getMessages()], 400);
+            }
         }
+        $roomIdData = $request->room_types;
+//        dd($roomIdData);
         $review = Review::where("user_transaction_id", $request->user_transaction_id)->first();
         if (!$review) {
-            Review::create([
-                "user_email" => $request->user_email,
-                "user_transaction_id" => $request->user_transaction_id,
-                "review" => $request->review,
-                "score" => $request->score
-            ]);
+            foreach ($roomIdData as $roomId) {
+                Review::create([
+                    "user_email" => $request->user_email,
+                    "room_type_id" => $roomId,
+                    "user_transaction_id" => $request->user_transaction_id,
+                    "review" => $request->review,
+                    "score" => $request->score
+                ]);
+            }
             return response()->json(["Review berhasil!"]);
         }else{
             Review::where("user_transaction_id", $request->user_transaction_id)->update([
@@ -69,7 +82,7 @@ class ReviewController extends Controller
         if($reviewCount < 1) {
             return response(null, 200);
         } else {
-            $reviews = Review::where("score", "=", 5)->get();
+            $reviews = Review::where("score", "=", 5)->limit(5)->get();
             if ($reviews->count() < 1) return response()->json(['count' => 0]);
             foreach ($reviews as $review) {
                 $data = [
@@ -81,5 +94,19 @@ class ReviewController extends Controller
             }
             return response()->json($reviewdata);
         }
+    }
+
+    public function getCurrentRoomTypeReview(Request $request){
+        $validator = Validator::make($request->all(),[
+           'room_type_id' => 'required|exists:room_types,id'
+        ]);
+
+        $roomReview = Review::select(["user_email","review", "score"])->whereRoomTypeId($request->room_type_id)->get();
+        $roomReview = $roomReview->map(function($room){
+           $room->user_name = $room->user->name;
+           unset($room->user);
+           return $room;
+        })->unique()->values();
+        return response()->json($roomReview);
     }
 }

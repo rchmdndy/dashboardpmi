@@ -13,8 +13,10 @@ class BookingCustomer extends Model
 {
     use HasFactory;
 
+    protected $table = "booking_customer";
+
     protected $fillable = [
-        'customer_id',
+        'customer_nik',
         'booking_id'
     ];
 

@@ -53,6 +53,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/postReview', 'postReview')->name("postReview");
         Route::get("/getReviewForCurrentTransaction", "getReviewForCurrentTransaction")->name("getReviewForCurrentTransaction");
         Route::get('/getTopReview', 'getTopReview')->name("getTopReview");
+        Route::get('/getCurrentRoomTypeReview', 'getCurrentRoomTypeReview')->name("getCurrentRoomTypeReview");
     });
 
     // MUST LOGIN/REGISTER FIRST

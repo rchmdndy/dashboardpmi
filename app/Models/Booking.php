@@ -41,4 +41,8 @@ class Booking extends Model
     public function booking_customer(){
         return $this->hasMany(BookingCustomer::class);
     }
+
+    public function customer(){
+        return $this->hasMany(Customer::class);
+    }
 }
