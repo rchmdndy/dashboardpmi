@@ -25,6 +25,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BookingCustomer> $booking_customer
  * @property-read int|null $booking_customer_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Customer> $customer
+ * @property-read int|null $customer_count
  * @property-read \App\Models\Room $room
  * @property-read \App\Models\User $user
  * @property-read \App\Models\UserTransaction $user_transaction
@@ -49,11 +51,21 @@ namespace App\Models{
 /**
  * 
  *
- * @property-read \App\Models\Booking|null $booking
- * @property-read \App\Models\Customer|null $customer
+ * @property int $id
+ * @property string $customer_nik
+ * @property int $booking_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Booking $booking
+ * @property-read \App\Models\Customer $customer
  * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer query()
+ * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereBookingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereCustomerNik($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 	#[\AllowDynamicProperties]
@@ -64,11 +76,19 @@ namespace App\Models{
 /**
  * 
  *
+ * @property int $nik
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BookingCustomer> $booking_customer
  * @property-read int|null $booking_customer_count
  * @method static \Illuminate\Database\Eloquent\Builder|Customer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Customer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Customer query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Customer whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Customer whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Customer whereNik($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Customer whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 	#[\AllowDynamicProperties]
@@ -145,6 +165,8 @@ namespace App\Models{
  * @property int $score
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $room_type_id
+ * @property-read \App\Models\RoomType $room_type
  * @property-read \App\Models\User $user
  * @property-read \App\Models\UserTransaction $user_transaction
  * @method static \Illuminate\Database\Eloquent\Builder|Review newModelQuery()
@@ -153,6 +175,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereReview($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Review whereRoomTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereScore($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereUserEmail($value)
@@ -246,6 +269,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Report> $report
  * @property-read int|null $report_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Review> $reviews
+ * @property-read int|null $reviews_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Room> $room
  * @property-read int|null $room_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RoomImage> $room_image

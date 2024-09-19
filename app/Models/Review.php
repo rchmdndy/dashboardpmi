@@ -16,11 +16,16 @@ class Review extends Model
         'user_email',
         'user_transaction_id',
         'review',
-        'score'
+        'score',
+        'room_type_id'
     ];
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function room_type(){
+        return $this->belongsTo(RoomType::class);
     }
 
     public function user_transaction(){

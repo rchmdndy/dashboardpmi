@@ -12,6 +12,10 @@ class Customer extends Model
 {
     use HasFactory;
 
+    protected $table = "customer";
+
+    protected $primaryKey = "nik";
+
     protected $fillable = [
       "name",
       "nik"
@@ -20,4 +24,5 @@ class Customer extends Model
     public function booking_customer(){
         return $this->hasMany(BookingCustomer::class);
     }
+
 }

@@ -34,7 +34,7 @@ class RoomTypeResource extends Resource
 
     public static function canCreate(): bool
     {
-        return Gate::allows('admin');
+        return false;
     }
 
     public static function canDelete(Model $record): bool
@@ -115,7 +115,6 @@ class RoomTypeResource extends Resource
     {
         return [
             'index' => Pages\ListRoomTypes::route('/'),
-            'create' => Pages\CreateRoomType::route('/create'),
             'edit' => Pages\EditRoomType::route('/{record}/edit'),
             'view' => Pages\ViewRoomType::route('/{record}/view'),
         ];
