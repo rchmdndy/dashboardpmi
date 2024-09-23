@@ -37,7 +37,7 @@ class ReviewController extends Controller
         }
         $roomIdData = $request->room_types;
 //        dd($roomIdData);
-        $review = Review::where("score", "=", 5)->limit(5)->get()->map()->unique()->values();
+        $review = Review::where("user_transaction_id", $request->user_transaction_id)->first();
         if (!$review) {
             foreach ($roomIdData as $roomId) {
                 Review::create([
@@ -82,7 +82,7 @@ class ReviewController extends Controller
         if($reviewCount < 1) {
             return response(null, 200);
         } else {
-            $reviews = Review::where("score", "=", 5)->limit(5)->get();
+            $reviews = Review::select(["user_email", "score", "review"])->where("score", "=", 5)->limit(5)->get()->unique();
             if ($reviews->count() < 1) return response()->json(['count' => 0]);
             foreach ($reviews as $review) {
                 $data = [
