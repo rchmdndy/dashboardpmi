@@ -40,4 +40,9 @@ class Room extends Model
     {
         return $this->belongsTo(Room::class, 'parent_id', 'id');
     }
+
+    public function roomAssets()
+    {
+        return $this->hasMany(RoomAsset::class, 'room_id', 'id');
+    }
 }
