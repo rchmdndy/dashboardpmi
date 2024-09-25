@@ -51,21 +51,11 @@ namespace App\Models{
 /**
  * 
  *
- * @property int $id
- * @property string $customer_nik
- * @property int $booking_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Booking $booking
- * @property-read \App\Models\Customer $customer
+ * @property-read \App\Models\Booking|null $booking
+ * @property-read \App\Models\Customer|null $customer
  * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer query()
- * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereBookingId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereCustomerNik($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BookingCustomer whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 	#[\AllowDynamicProperties]
@@ -76,19 +66,11 @@ namespace App\Models{
 /**
  * 
  *
- * @property int $nik
- * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BookingCustomer> $booking_customer
  * @property-read int|null $booking_customer_count
  * @method static \Illuminate\Database\Eloquent\Builder|Customer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Customer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Customer query()
- * @method static \Illuminate\Database\Eloquent\Builder|Customer whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Customer whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Customer whereNik($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Customer whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 	#[\AllowDynamicProperties]
@@ -158,28 +140,12 @@ namespace App\Models{
 /**
  * 
  *
- * @property int $id
- * @property string $user_email
- * @property int $user_transaction_id
- * @property string $review
- * @property int $score
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property int $room_type_id
- * @property-read \App\Models\RoomType $room_type
- * @property-read \App\Models\User $user
- * @property-read \App\Models\UserTransaction $user_transaction
+ * @property-read \App\Models\RoomType|null $room_type
+ * @property-read \App\Models\User|null $user
+ * @property-read \App\Models\UserTransaction|null $user_transaction
  * @method static \Illuminate\Database\Eloquent\Builder|Review newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Review newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Review query()
- * @method static \Illuminate\Database\Eloquent\Builder|Review whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Review whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Review whereReview($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Review whereRoomTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Review whereScore($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Review whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Review whereUserEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Review whereUserTransactionId($value)
  * @mixin \Eloquent
  */
 	#[\AllowDynamicProperties]
