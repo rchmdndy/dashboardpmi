@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\JWTAUTHController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\BookingController;
@@ -41,7 +42,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/getDetail', 'getDetail')->name('getDetail');
     });
 
-    Route::prefix('/midtrans')->controller(\App\Http\Controllers\NotificationController::class)->name('midtrans.')->group(function(){
+    Route::prefix('/midtrans')->controller(NotificationController::class)->name('midtrans.')->group(function(){
         Route::post('/notification_handling', 'handleMidtransNotification');
     });
 
