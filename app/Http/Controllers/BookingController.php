@@ -183,11 +183,11 @@ class BookingController extends Controller
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => array(
                     'target' => User::where('email', $userRequest['user_email'])->first()->phone,
-                    'message' => `
+                    'message' => "
                     Hallo! Terimakasih telah memesan kamar di PMI Hotel. Berikut adalah detail pesanan Anda:
-                    ${userTransaction}
+                    {$userTransaction}
                     Silahkan selesaikan pembayaran Anda di link berikut :
-                    ` . route("user_transaction.getUserTransactionDetail", ['id' => $userTransaction->id, 'user_email' => $userTransaction->user_email]),
+                    " . route("user_transaction.getUserTransactionDetail", ['id' => $userTransaction->id, 'user_email' => $userTransaction->user_email]),
                     'countryCode' => '62', //optional
                 ),
                 CURLOPT_HTTPHEADER => array(
