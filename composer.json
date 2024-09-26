@@ -20,7 +20,8 @@
         "midtrans/midtrans-php": "^2.5",
         "pxlrbt/filament-excel": "^2.3",
         "pxlrbt/filament-spotlight": "^1.2",
-        "tymon/jwt-auth": "^2.1"
+        "tymon/jwt-auth": "^2.1",
+        "ext-curl": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
