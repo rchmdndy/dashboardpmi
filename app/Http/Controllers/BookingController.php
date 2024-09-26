@@ -58,7 +58,7 @@ class BookingController extends Controller
         $userRequest = $request->all();
 
         $validator = Validator::make($userRequest, [
-            'user_email' => 'required|email',
+            'user_email' => 'required|email|exists:users,email',
             'room_type_id' => 'required|integer|exists:room_types,id',
             'start_date' => 'required|date|after_or_equal:today|date_format:Y-m-d',
             'end_date' => 'required|date|after:start_date|date_format:Y-m-d',
@@ -167,6 +167,32 @@ class BookingController extends Controller
                 'client_key' => \config('midtrans.client_key')
 
             ], 200);
+
+            $curl = curl_init();
+            $fonnte_api_token = env('FONNTE_API_TOKEN');
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.fonnte.com/send',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'target' => User::where('email', $userRequest['user_email'])->first()->phone,
+                    'message' => `
+                    Hallo! Terimakasih telah memesan kamar di PMI Hotel. Berikut adalah detail pesanan Anda:
+                    ${userTransaction}
+                    Silahkan selesaikan pembayaran Anda di link berikut :
+                    ` . route("user_transaction.getUserTransactionDetail", ['id' => $userTransaction->id, 'user_email' => $userTransaction->user_email]),
+                    'countryCode' => '62', //optional
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    "Authorization: $fonnte_api_token"//change TOKEN to your actual token
+                ),
+            ));
             return view('bookings.pay', ['snap_token' => $snap_token]);
         } catch (Exception $e) {
             if ($userRequest['side'] == 'client') {
