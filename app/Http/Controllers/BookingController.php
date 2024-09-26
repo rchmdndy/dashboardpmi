@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Midtrans\Snap;
 use App\Models\User;
 use Midtrans\Config;
@@ -180,7 +181,7 @@ class BookingController extends Controller
                     'message' => "
                     Hallo! Terimakasih telah memesan kamar di PMI Hotel. Berikut adalah detail pesanan Anda:
                     Silahkan selesaikan pembayaran Anda di link berikut :
-                    " . url("https://palmerinjateng.id/detailTransaction?user_email=$userTransaction->user_email&id=$userTransaction->id"),
+                    https://palmerinjateng.id/detailTransaction?user_email=$userTransaction->user_email&id=$userTransaction->id",
                     'countryCode' => '62', //optional
                 ),
                 CURLOPT_HTTPHEADER => array(
