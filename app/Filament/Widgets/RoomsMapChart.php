@@ -6,6 +6,7 @@ use App\Models\Room;
 use App\Models\Inventory;
 use App\Models\RoomAsset;
 use Filament\Support\RawJs;
+use App\Filament\Resources\RoomAssetResource;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class RoomsMapChart extends ApexChartWidget
@@ -33,8 +34,11 @@ class RoomsMapChart extends ApexChartWidget
     
                 $data[] = [
                     'x' => $room->room_name,
-                    'y' => $roomAsset ? ($roomAsset->isBroken == true ? 1 : 2) : 0,
+                    'y' => $roomAsset ? ($roomAsset->isBroken == false ? 1 : 2) : 0,
+                    'room_id' => $room->id,
+                    'inventory_id' => $roomAsset ? $roomAsset->inventory_id : null,
                 ];
+
             }
     
             $series[] = [
@@ -81,6 +85,27 @@ class RoomsMapChart extends ApexChartWidget
             ],
             
         ];
+    }
+
+    protected function extraJsOptions(): ?RawJs
+    {
+        $baseUrl = RoomAssetResource::getUrl();
+        
+        return RawJs::make(<<<JS
+        {
+            chart: {
+                events: {
+                    dataPointSelection: function(event, chartContext, config) {
+                        var roomId = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].room_id;
+                        var inventoryId = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].inventory_id;
+                        if (roomId && inventoryId) {
+                            window.location.href = '{$baseUrl}' + '?tableFilters[room_id][value]=' + roomId + '&tableFilters[inventory_id][value]=' + inventoryId;
+                        }
+                    }
+                }
+            },
+        }
+        JS);
     }
 
     
