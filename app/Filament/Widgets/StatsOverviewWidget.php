@@ -69,6 +69,7 @@ class StatsOverviewWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-user-group')
                 ->chart([50, 89, 55, 53, 44, 80, 92])
                 ->color('secondary'),
+
         ];
     }
 }

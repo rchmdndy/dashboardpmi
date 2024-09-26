@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaction Data - Cetak</title>
+    <title>Room Asset- Cetak</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- Tambahkan CSS jika diperlukan -->
     <style>
@@ -90,45 +90,56 @@
     <div class="letterhead">
     <img src="{{ asset('images/logo_asli.png') }}" alt="Logo" style="width: 120px; height: auto;">
         <div>
-            <h1>PMI DIKLAT Transaksi - Cetak</h1>
+            <h1>PMI DIKLAT Room Asset - Cetak</h1>
             <p><strong>Kota Semarang</strong></p>
             <p>Jl. Pandanaran No. XX, Semarang, Telp: (024) XXXXXXX</p>
         </div>
     </div>
 
     <!-- Tabel Data -->
-    <table class="table table-hover table-bordered table-striped" id="table3">
+    <table class="table table-hover table-bordered" id="table3">
         <thead>
             <tr>
                 <th>No</th>
-                <th>Alamat Email</th>
-                <th>channel</th>
-                <th>Order ID</th>
-                <th>Guest</th>
-                <th>Total Pendapatan</th>
-                <th>Status Transaksi</th>
-                <th>Tanggal</th>
+                <th>Nama Ruangan</th>
+                <th>Nama Item</th>
+                <th>Kondisi</th>
+                <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
-        @foreach($records as $record)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $record->user_email }}</td>
-                <td>{{ $record->channel }}</td>
-                <td>{{ $record->order_id }}</td>
-                <td>{{ $record->amount }}</td>
-                <td>{{ 'Rp. ' . number_format($record->total_price, 0, ',', '.') }}</td>
-                <td>{{ $record->transaction_status }}</td>
-                <td>{{ $record->transaction_date->translatedFormat('d, F, Y') }}</td>
-            </tr>
+            @php
+                $currentRoom = null;
+                $rowspan = 0;
+            @endphp
+            @foreach($records as $key => $record)
+                @if ($record->room?->room_name !== $currentRoom)
+                    @php
+                        $rowspan = $records->where('room.room_name', $record->room?->room_name)->count();
+                        $currentRoom = $record->room?->room_name;
+                    @endphp
+                    <tr>
+                        <td rowspan="{{ $rowspan }}">{{ $loop->iteration }}</td>
+                        <td rowspan="{{ $rowspan }}">{{ $record->room?->room_name }}</td>
+                        <td>{{ $record->inventory?->name }}</td>
+                        <td>{{ $record->isBroken ? 'Rusak' : 'Normal' }}</td>
+                        <td>{{ $record->comment }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td>{{ $record->inventory?->name }}</td>
+                        <td>{{ $record->isBroken ? 'Rusak' : 'Normal' }}</td>
+                        <td>{{ $record->comment }}</td>
+                    </tr>
+                @endif
             @endforeach
         </tbody>
+
         <tfoot>
-</tfoot>
-
+        </tfoot>
     </table>
-
+    <h10>Perhatian :</h1>
+    <p>Semua Perlengkapan/Item Tercatat per-hari dimana Laporan Dibuat</p>
     <div class="signature">
         <p id="tanggal">{{ date("Y-m-d") }}</p>
         <p id="nama"><span id="nama_pengguna">{{ $user->name }}</span></p>

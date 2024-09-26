@@ -19279,6 +19279,15 @@ namespace Laravel\Socialite\Facades {
             }
     }
 
+namespace Leandrocfe\FilamentApexCharts\Facades {
+            /**
+     * 
+     *
+     * @see \Leandrocfe\FilamentApexCharts\FilamentApexCharts
+     */        class FilamentApexCharts {
+            }
+    }
+
 namespace Livewire {
             /**
      * 
@@ -27439,6 +27448,7 @@ namespace  {
             class FilamentEditProfile extends \Joaopaulolndev\FilamentEditProfile\Facades\FilamentEditProfile {}
             class FilamentGeneralSettings extends \Joaopaulolndev\FilamentGeneralSettings\Facades\FilamentGeneralSettings {}
             class Socialite extends \Laravel\Socialite\Facades\Socialite {}
+            class FilamentApexCharts extends \Leandrocfe\FilamentApexCharts\Facades\FilamentApexCharts {}
             class Livewire extends \Livewire\Livewire {}
             class Excel extends \Maatwebsite\Excel\Facades\Excel {}
             class JWTAuth extends \Tymon\JWTAuth\Facades\JWTAuth {}

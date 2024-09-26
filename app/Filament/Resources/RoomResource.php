@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BookingResource\RelationManagers\BookingRelationManager;
 use App\Filament\Resources\RoomResource\Pages;
+use App\Filament\Resources\RoomResource\RelationManagers\RoomAssetsRelationManager;
 use App\Models\Room;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -119,6 +120,7 @@ class RoomResource extends Resource
         return [
             //
             BookingRelationManager::class,
+            RoomAssetsRelationManager::class
         ];
     }
 

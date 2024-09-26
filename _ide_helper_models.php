@@ -101,6 +101,29 @@ namespace App\Models{
  *
  * @property int $id
  * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RoomAsset> $room_assets
+ * @property-read int|null $room_assets_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Inventory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Inventory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Inventory query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Inventory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Inventory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Inventory whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Inventory whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperInventory {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $name
  * @property string $price_per_person
  * @property int $min_person_quantity
  * @property int $hasLodgeRoom
@@ -220,6 +243,8 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $bookingStats
  * @property-read int|null $booking_stats_count
  * @property-read Room|null $parentRoom
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RoomAsset> $roomAssets
+ * @property-read int|null $room_assets_count
  * @property-read \App\Models\RoomType $roomType
  * @method static \Illuminate\Database\Eloquent\Builder|Room newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Room newQuery()
@@ -234,6 +259,35 @@ namespace App\Models{
  */
 	#[\AllowDynamicProperties]
 	class IdeHelperRoom {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $room_id
+ * @property int $inventory_id
+ * @property int $isBroken
+ * @property string|null $comment
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Inventory $inventory
+ * @property-read \App\Models\Room $room
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset query()
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset whereInventoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset whereIsBroken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset whereRoomId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RoomAsset whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperRoomAsset {}
 }
 
 namespace App\Models{
