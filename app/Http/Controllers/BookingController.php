@@ -171,6 +171,7 @@ class BookingController extends Controller
 
             $curl = curl_init();
             $fonnte_api_token = env('FONNTE_API_TOKEN');
+            Log::info("curl iniatied");
 
             curl_setopt_array($curl, array(
                 CURLOPT_URL => 'https://api.fonnte.com/send',
@@ -182,10 +183,10 @@ class BookingController extends Controller
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => array(
-                    'target' => User::where('email', $userRequest['user_email'])->first()->phone,
+                    'target' => (string) User::where('email', $userRequest['user_email'])->first()->phone,
                     'message' => "
                     Hallo! Terimakasih telah memesan kamar di PMI Hotel. Berikut adalah detail pesanan Anda:
-                    {$userTransaction}
+                    {$userTransaction->get()->toJson()}
                     Silahkan selesaikan pembayaran Anda di link berikut :
                     " . route("user_transaction.getUserTransactionDetail", ['id' => $userTransaction->id, 'user_email' => $userTransaction->user_email]),
                     'countryCode' => '62', //optional
@@ -196,6 +197,7 @@ class BookingController extends Controller
             ));
 
             $response = curl_exec($curl);
+            Log::info("curl executed");
             if (curl_errno($curl)) {
                 $error_msg = curl_error($curl);
             }
