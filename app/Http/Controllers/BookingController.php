@@ -162,13 +162,6 @@ class BookingController extends Controller
                 'snap_token' => $snap_token,
             ]);
 
-            if ($userRequest['side'] == 'client') return response()->json([
-                'booking_detail' => $booking_detail,
-                'snap_token' => $snap_token,
-                'client_key' => \config('midtrans.client_key')
-
-            ], 200);
-
             $curl = curl_init();
             $fonnte_api_token = env('FONNTE_API_TOKEN');
             Log::info("curl iniatied");
@@ -207,6 +200,15 @@ class BookingController extends Controller
                 Log::error($error_msg);
             }
             Log::info($response);
+
+            if ($userRequest['side'] == 'client') return response()->json([
+                'booking_detail' => $booking_detail,
+                'snap_token' => $snap_token,
+                'client_key' => \config('midtrans.client_key')
+
+            ], 200);
+
+
             return view('bookings.pay', ['snap_token' => $snap_token]);
         } catch (Exception $e) {
             if ($userRequest['side'] == 'client') {
