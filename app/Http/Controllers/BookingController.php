@@ -179,9 +179,8 @@ class BookingController extends Controller
                     'target' => (string) User::where('email', $userRequest['user_email'])->first()->phone,
                     'message' => "
                     Hallo! Terimakasih telah memesan kamar di PMI Hotel. Berikut adalah detail pesanan Anda:
-                    {$userTransaction->get()->toJson()}
                     Silahkan selesaikan pembayaran Anda di link berikut :
-                    " . route("user_transaction.getUserTransactionDetail", ['id' => $userTransaction->id, 'user_email' => $userTransaction->user_email]),
+                    " . url("https://palmerinjateng.id/detailTransaction", ['user_email' => $userTransaction->user_email, 'id' => $userTransaction->id]),
                     'countryCode' => '62', //optional
                 ),
                 CURLOPT_HTTPHEADER => array(
