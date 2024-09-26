@@ -7,6 +7,7 @@ use App\Filament\Widgets\DashboardWidgetChartBar;
 use App\Filament\Widgets\LastestOrders;
 use App\Filament\Widgets\RoomsMapChart;
 use App\Filament\Widgets\RoomsMapChartTreeMap;
+use App\Filament\Widgets\StatsAssetRoomsOverview;
 use App\Filament\Widgets\StatsOverviewWidget;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -48,6 +49,7 @@ class Dashboard extends BaseDashboard
             DashboardWidgetChartBar::class,
             DashboardWidget::class,
             RoomsMapChartTreeMap::class,
+            StatsAssetRoomsOverview::class,
             RoomsMapChart::class,
             LastestOrders::class,
         ];

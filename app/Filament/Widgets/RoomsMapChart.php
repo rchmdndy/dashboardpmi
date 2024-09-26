@@ -13,7 +13,7 @@ class RoomsMapChart extends ApexChartWidget
 {
     protected static ?string $chartId = 'roomsMapChart';
 
-    protected static ?string $heading = 'Rounded (Range without Shades)';
+    protected static ?string $heading = 'Detail Asset Ruangan';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -37,6 +37,10 @@ class RoomsMapChart extends ApexChartWidget
                     'y' => $roomAsset ? ($roomAsset->isBroken == false ? 1 : 2) : 0,
                     'room_id' => $room->id,
                     'inventory_id' => $roomAsset ? $roomAsset->inventory_id : null,
+                    'inventory_name' => $roomAsset ? $roomAsset->inventory->name : ' ',
+                    'status' => $roomAsset ? ($roomAsset->isBroken == true ? 'Rusak' : 'Normal') : ' ',
+                    'keterangan' =>  $roomAsset->comment ?? ' ',
+                    
                 ];
 
             }
@@ -45,6 +49,7 @@ class RoomsMapChart extends ApexChartWidget
                 'name' => $item,
                 'data' => $data,
             ];
+            
         }
     
         return [
@@ -62,7 +67,7 @@ class RoomsMapChart extends ApexChartWidget
                     'enableShades' => false,
                     'colorScale' => [
                         'ranges' => [
-                            ['from' => 0, 'to' => 0, 'color' => '#CCCCCC', 'name' => 'Not Present'],
+                            ['from' => 0, 'to' => 1, 'color' => '#3d3c3b', 'name' => 'Item tidak tersedia'],
                             ['from' => 1, 'to' => 1, 'color' => '#00E396', 'name' => 'Normal'],
                             ['from' => 2, 'to' => 2, 'color' => '#008FFB', 'name' => 'Rusak'],
                         ],
@@ -79,9 +84,6 @@ class RoomsMapChart extends ApexChartWidget
                 'labels' => [
                     'show' => true,
                 ],
-            ],
-            'title' => [
-                'text' => 'Room Assets Status',
             ],
             
         ];
@@ -102,6 +104,18 @@ class RoomsMapChart extends ApexChartWidget
                             window.location.href = '{$baseUrl}' + '?tableFilters[room_id][value]=' + roomId + '&tableFilters[inventory_id][value]=' + inventoryId;
                         }
                     }
+                }
+            },
+
+            tooltip: {
+                custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                    var data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                    return '<div class="custom-tooltip">' +
+                        '<span><strong>Room:</strong> ' + data.x + '</span><br>' +
+                        '<span><strong>Item:</strong> ' +  data.inventory_name +'</span><br>' +
+                        '<span><strong>Status:</strong> ' + data.status +'</span><br>' +
+                        '<span><strong>Keterangan:</strong> ' +  data.keterangan +'</span>' +
+                        '</div>';
                 }
             },
         }

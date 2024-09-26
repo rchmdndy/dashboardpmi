@@ -88,6 +88,15 @@ class RoomsMapChartTreeMap extends ApexChartWidget
                 'treemap' => [
                     'distributed' => true,
                     'enableShades' => false,
+                    'colorScale' => [
+                        'ranges' => [
+                            ['color' => '#00ff00', 'name' => 'Order'],
+                            ['color' => '#0000ff', 'name' => 'Paid'],
+                            ['color' => '#ffa500', 'name' => 'Check-In'],
+                            ['color' => '#ff0000', 'name' => 'Check-Out'],
+                            ['color' => '#3d3c3b', 'name' => 'Available'],
+                        ],
+                    ],
                 ]
             ],
         ];
