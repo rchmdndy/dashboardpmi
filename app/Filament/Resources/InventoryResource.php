@@ -17,7 +17,7 @@ class InventoryResource extends Resource
 {
     protected static ?string $model = Inventory::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard';
 
     public static function form(Form $form): Form
     {
@@ -34,6 +34,9 @@ class InventoryResource extends Resource
         return $table
             ->columns([
                 //
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -66,6 +69,6 @@ class InventoryResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return "Rooms";
+        return "Inventories";
     }
 }

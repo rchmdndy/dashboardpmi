@@ -2,63 +2,86 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Room;
+use App\Models\Inventory;
+use App\Models\RoomAsset;
+use Filament\Support\RawJs;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class RoomsMapChart extends ApexChartWidget
 {
-    /**
-     * Chart Id
-     *
-     * @var string
-     */
     protected static ?string $chartId = 'roomsMapChart';
 
-    /**
-     * Widget Title
-     *
-     * @var string|null
-     */
-    protected static ?string $heading = 'Detail Ruangan';
+    protected static ?string $heading = 'Rounded (Range without Shades)';
 
-    /**
-     * Chart options (series, labels, types, size, animations...)
-     * https://apexcharts.com/docs/options
-     *
-     * @return array
-     */
+    protected int|string|array $columnSpan = 'full';
+
     protected function getOptions(): array
     {
+        $rooms = Room::with('roomAssets.inventory')->get();
+        $items = Inventory::pluck('name')->toArray();
+    
+        $series = [];
+    
+        foreach ($items as $item) {
+            $data = [];
+    
+            foreach ($rooms as $room) {
+                $roomAsset = $room->roomAssets->first(function ($asset) use ($item) {
+                    return $asset->inventory->name === $item;
+                });
+    
+                $data[] = [
+                    'x' => $room->room_name,
+                    'y' => $roomAsset ? ($roomAsset->isBroken == true ? 1 : 2) : 0,
+                ];
+            }
+    
+            $series[] = [
+                'name' => $item,
+                'data' => $data,
+            ];
+        }
+    
         return [
             'chart' => [
                 'type' => 'heatmap',
-                'height' => 300,
+                'height' => 350,
             ],
-            'series' => [
-                ['name' => 'Jan', 'data' => [[55, 70], [33, 42], [68, 40], [40, 48], [63, 19], [38, 23]]],
-                ['name' => 'Feb', 'data' => [[44, 38], [37, 47], [16, 52], [30, 27], [46, 55], [37, 13]]],
-                ['name' => 'Mar', 'data' => [[10, 42], [30, 16], [54, 34], [31, 47], [30, 31], [58, 60]]],
-                ['name' => 'Apr', 'data' => [[14, 60], [50, 30], [64, 13], [34, 32], [41, 23], [15, 70]]],
-                ['name' => 'May', 'data' => [[66, 69], [42, 20], [47, 34], [12, 37], [59, 29], [25, 60]]],
+            'series' => $series,
+            'stroke' => [
+                'width' => 0,
             ],
-            'xaxis' => [
-                'type' => 'category',
-                'labels' => [
-                    'style' => [
-                        'fontFamily' => 'inherit',
-                    ],
-                ],
-            ],
-            'yaxis' => [
-                'labels' => [
-                    'style' => [
-                        'fontFamily' => 'inherit',
+            'plotOptions' => [
+                'heatmap' => [
+                    'radius' => 30,
+                    'enableShades' => false,
+                    'colorScale' => [
+                        'ranges' => [
+                            ['from' => 0, 'to' => 0, 'color' => '#CCCCCC', 'name' => 'Not Present'],
+                            ['from' => 1, 'to' => 1, 'color' => '#00E396', 'name' => 'Normal'],
+                            ['from' => 2, 'to' => 2, 'color' => '#008FFB', 'name' => 'Rusak'],
+                        ],
                     ],
                 ],
             ],
             'dataLabels' => [
                 'enabled' => false,
             ],
-            'colors' => ['#ce0000'],
+            'xaxis' => [
+                'type' => 'category',
+            ],
+            'yaxis' => [
+                'labels' => [
+                    'show' => true,
+                ],
+            ],
+            'title' => [
+                'text' => 'Room Assets Status',
+            ],
+            
         ];
     }
+
+    
 }

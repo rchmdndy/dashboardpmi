@@ -48,8 +48,8 @@ class Dashboard extends BaseDashboard
             DashboardWidgetChartBar::class,
             DashboardWidget::class,
             RoomsMapChartTreeMap::class,
+            RoomsMapChart::class,
             LastestOrders::class,
-            // RoomsMapChart::class,
         ];
 
     }

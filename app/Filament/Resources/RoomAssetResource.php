@@ -2,22 +2,28 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RoomAssetResource\Pages;
-use App\Filament\Resources\RoomAssetResource\RelationManagers;
-use App\Models\RoomAsset;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\RoomAsset;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\RoomAssetResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\RoomAssetResource\RelationManagers;
 
 class RoomAssetResource extends Resource
 {
     protected static ?string $model = RoomAsset::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     public static function form(Form $form): Form
     {
@@ -50,6 +56,22 @@ class RoomAssetResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Action::make('Print')
+                ->label('Print')
+                ->color('red')
+                ->action(function (Table $table) {
+
+                    $currentRecords = $table->getRecords();
+                    $recordIds = $currentRecords->pluck('id')->toArray();
+                    $user = auth()->user();
+                    // dd($recordIds);
+
+                    $url = URL::route('RoomAssets.print', ['records' => $recordIds, 'user' => $user]);
+
+                    return redirect()->to($url);
+                })
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('room.room_name')
                     ->label('Room')
@@ -60,24 +82,58 @@ class RoomAssetResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('isBroken')
-                    ->label('Apakah rusak?')
+                    ->label('Item rusak?')
                     ->boolean(),
+                Tables\Columns\TextColumn::make('comment')
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('room_id')
                     ->options(fn () => \App\Models\Room::pluck('room_name', 'id')->toArray())
                 ->label('Room'),
                 Tables\Filters\SelectFilter::make('inventory_id')
-                    ->options(fn () => \App\Models\Inventory::pluck('name', 'id')->toArray())
+                    ->options(fn () => \App\Models\Inventory::pluck('name', 'id')->toArray()),
+                Tables\Filters\TernaryFilter::make('isBroken')
+                    ->label('Hanya tampilkan item yang rusak?')
+                    ->options([
+                        'true' => 'Yes',
+                        'false' => 'No',
+                    ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Gate::allows('admin') ? Action::make('isBroken')
+                        ->label(fn (Model $record) => $record->isBroken == false ? 'Item rusak ?' : 'Item sudah diperbaiki ?')
+                        ->icon(fn (Model $record) => $record->isBroken == false ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
+                        ->tooltip(fn (Model $record) => $record->isBroken == false ? 'Klik untuk membuat kondisi menjadi rusak' : 'Klik jika sudah berhasil diperbaiki')
+                        ->color(fn (Model $record) => $record->isBroken == false ? 'danger' : 'success')
+                        ->form([
+                            Forms\Components\Textarea::make('comment')
+                                ->default(fn (Model $record) => $record->comment)
+                                ->label('Keterangan'),
+                            ])
+                        ->action(function (Model $record, array $data): void {
+                            $record->comment = $data['comment'];
+                            $record->isBroken = !$record->isBroken;
+                            $record->save();
+                            Notification::make()
+                                ->title('Status berhasil diperbarui!')
+                                ->success()
+                                ->send();
+                        })
+                        ->requiresConfirmation()
+                        ->modalDescription('Anda anda ingin menambah keterangan item?')
+                        : null,
+
+                    Tables\Actions\EditAction::make()
+                        ->label('Edit Item')
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort(column: 'room_id', direction: 'asc');
     }
 
     public static function getRelations(): array
@@ -98,6 +154,6 @@ class RoomAssetResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return "Rooms";
+        return "Inventories";
     }
 }
