@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Midtrans\Snap;
 use App\Models\User;
 use Midtrans\Config;
@@ -193,6 +194,17 @@ class BookingController extends Controller
                     "Authorization: $fonnte_api_token"//change TOKEN to your actual token
                 ),
             ));
+
+            $response = curl_exec($curl);
+            if (curl_errno($curl)) {
+                $error_msg = curl_error($curl);
+            }
+            curl_close($curl);
+
+            if (isset($error_msg)) {
+                Log::error($error_msg);
+            }
+            Log::info($response);
             return view('bookings.pay', ['snap_token' => $snap_token]);
         } catch (Exception $e) {
             if ($userRequest['side'] == 'client') {
