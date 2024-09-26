@@ -181,7 +181,7 @@ class BookingController extends Controller
                     'message' => "
                     Hallo! Terimakasih telah memesan kamar di PMI Hotel. Berikut adalah detail pesanan Anda:
                     Silahkan selesaikan pembayaran Anda di link berikut :
-                    https://palmerinjateng.id/detailTransaction?user_email=$userTransaction->user_email&id=$userTransaction->id",
+                    https://palmerinjateng.id/detailTransaction?id=$userTransaction->id&user_email=$userTransaction->user_email",
                     'countryCode' => '62', //optional
                 ),
                 CURLOPT_HTTPHEADER => array(
