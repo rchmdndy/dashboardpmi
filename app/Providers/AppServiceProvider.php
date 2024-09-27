@@ -17,10 +17,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // App\Providers\FilamentServiceProvider::class;
-//        URL::forceScheme("https");
         if (env('APP_ENV') === 'production') {
             $this->app['request']->server->set('HTTPS', true);
+            $this->app['config']->set('app.debug', false);
         }
 
     }
@@ -30,8 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // URL::forceScheme("https");
-        //
+
         Config::$serverKey = config('midtrans.server_key');
         Config::$clientKey = config('midtrans.client_key');
         Config::$isProduction = config('midtrans.is_production');
