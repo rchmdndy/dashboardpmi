@@ -167,16 +167,18 @@ class BookingController extends Controller
                 'snap_token' => $snap_token,
             ]);
 
-
+            $rooms = $userTransaction->booking->map(function($booking){
+                return $booking->room->room_name;
+            });
             $data = [
                 'order_id' => $userTransaction->order_id,
                 'name' => $userTransaction->user->name,
                 'start_date' => Carbon::parse($userRequest['start_date'])->translatedFormat('l, d F Y'),
                 'end_date' => Carbon::parse($userRequest['end_date'])->translatedFormat('l, d F Y'),
                 'room_type' => $userTransaction->booking->first()->room->roomType->room_type,
-                'rooms' => implode(",", $userTransaction->booking->map(function($booking){
+                'rooms' => implode(",", array($userTransaction->booking->map(function($booking){
                     return $booking->room->room_name;
-                })),
+                }))),
                 'total_price' => $formatter->formatCurrency($userTransaction->total_price, "IDR")
             ];
 
