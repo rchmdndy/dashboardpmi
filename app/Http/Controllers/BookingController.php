@@ -171,16 +171,16 @@ class BookingController extends Controller
             $data = [
                 'order_id' => $userTransaction->order_id,
                 'name' => $userTransaction->user->name,
-                'start_date' => $userRequest['start_date'],
-                'end_date' => $userRequest['end_date'],
+                'start_date' => Carbon::parse($userRequest['start_date'])->translatedFormat('l, d F Y'),
+                'end_date' => Carbon::parse($userRequest['end_date'])->translatedFormat('l, d F Y'),
                 'room_type' => $userTransaction->booking->first()->room->roomType->room_type,
-                'rooms' => $userTransaction->booking->map(function($booking){
+                'rooms' => implode(",", $userTransaction->booking->map(function($booking){
                     return $booking->room->room_name;
-                }),
+                })),
                 'total_price' => $formatter->formatCurrency($userTransaction->total_price, "IDR")
             ];
 
-            $transactionLink = URL::to("https://palmerinjateng.id/?id=$userTransaction->id&user_email=$userTransaction->user_email");
+            $transactionLink = URL::to("https://palmerinjateng.id/detailTransaction?id=$userTransaction->id&user_email=$userTransaction->user_email");
 
             $this->whatsappService->sendMessage(
                 $userTransaction->user->phone ?? null,
