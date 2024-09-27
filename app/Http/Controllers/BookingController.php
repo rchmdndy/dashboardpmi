@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\WhatsappNotificationService;
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -25,12 +26,15 @@ class BookingController extends Controller
 {
     protected $bookingService;
 
+    protected $whatsappService;
+
     protected $reportController;
 
-    public function __construct(BookingService $bookingService, ReportController $reportController)
+    public function __construct(BookingService $bookingService, ReportController $reportController, WhatsappNotificationService $whatsappService)
     {
         $this->bookingService = $bookingService;
         $this->reportController = $reportController;
+        $this->whatsappService = $whatsappService;
         Config::$serverKey = config('midtrans.server_key');
         Config::$clientKey = config('midtrans.client_key');
         Config::$isProduction = config('midtrans.is_production');
@@ -163,43 +167,26 @@ class BookingController extends Controller
                 'snap_token' => $snap_token,
             ]);
 
-            $curl = curl_init();
-            $fonnte_api_token = env('FONNTE_API_TOKEN');
-            Log::info("curl iniatied");
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://api.fonnte.com/send',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => array(
-                    'target' => (string) User::where('email', $userRequest['user_email'])->first()->phone,
-                    'message' => "
-                    Hallo! Terimakasih telah memesan kamar di PMI Hotel. Berikut adalah detail pesanan Anda:
-                    Silahkan selesaikan pembayaran Anda di link berikut :
-                    https://palmerinjateng.id/detailTransaction?id=$userTransaction->id&user_email=$userTransaction->user_email",
-                    'countryCode' => '62', //optional
-                ),
-                CURLOPT_HTTPHEADER => array(
-                    "Authorization: $fonnte_api_token"//change TOKEN to your actual token
-                ),
-            ));
+            $data = [
+                'order_id' => $userTransaction->order_id,
+                'name' => $userTransaction->user->name,
+                'start_date' => $userRequest['start_date'],
+                'end_date' => $userRequest['end_date'],
+                'room_type' => $userTransaction->booking->first()->room->roomType->room_type,
+                'rooms' => $userTransaction->booking->map(function($booking){
+                    return $booking->room->room_name;
+                }),
+                'total_price' => $formatter->formatCurrency($userTransaction->total_price, "IDR")
+            ];
 
-            $response = curl_exec($curl);
-            Log::info("curl executed");
-            if (curl_errno($curl)) {
-                $error_msg = curl_error($curl);
-            }
-            curl_close($curl);
+            $transactionLink = URL::to("https://palmerinjateng.id/?id=$userTransaction->id&user_email=$userTransaction->user_email");
 
-            if (isset($error_msg)) {
-                Log::error($error_msg);
-            }
-            Log::info($response);
+            $this->whatsappService->sendMessage(
+                $userTransaction->user->phone ?? null,
+                $transactionLink,
+                $data
+            );
 
             if ($userRequest['side'] == 'client') return response()->json([
                 'booking_detail' => $booking_detail,
