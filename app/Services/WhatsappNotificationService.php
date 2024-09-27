@@ -22,10 +22,9 @@ class WhatsappNotificationService
         $fonnte_api_token = env('FONNTE_API_TOKEN');
         Log::info("curl iniatied");
         $message =
-"
-Hallo, terima kasih telah melakukan transaksi di PUSDIKLAT PMI JATENG.
-Berikut adalah detail transaksi anda
 
+"Hallo, terima kasih telah melakukan transaksi di PUSDIKLAT PMI JATENG.
+Berikut adalah detail transaksi anda
 ```
 Order-ID = {$data["order_id"]},
 Nama = {$data["name"]},
