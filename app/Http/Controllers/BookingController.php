@@ -176,9 +176,10 @@ class BookingController extends Controller
                 'start_date' => Carbon::parse($userRequest['start_date'])->translatedFormat('l, d F Y'),
                 'end_date' => Carbon::parse($userRequest['end_date'])->translatedFormat('l, d F Y'),
                 'room_type' => $userTransaction->booking->first()->room->roomType->room_type,
-                'rooms' => implode(",", array($userTransaction->booking->map(function($booking){
+                'rooms' => implode(",", $userTransaction->booking->map(function($booking){
                     return $booking->room->room_name;
-                }))),
+                    })->toArray()
+                ),
                 'total_price' => $formatter->formatCurrency($userTransaction->total_price, "IDR")
             ];
 
