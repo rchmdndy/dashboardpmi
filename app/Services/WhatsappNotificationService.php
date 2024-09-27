@@ -22,10 +22,11 @@ class WhatsappNotificationService
         $fonnte_api_token = env('FONNTE_API_TOKEN');
         Log::info("curl iniatied");
         $message =
-`
+"
 Hallo, terima kasih telah melakukan transaksi di PUSDIKLAT PMI JATENG.
 Berikut adalah detail transaksi anda
 
+```
 Order-ID = {$data["order_id"]},
 Nama = {$data["name"]},
 Tanggal Check-In = {$data["start_date"]},
@@ -33,12 +34,12 @@ Tanggal Check-Out = {$data["end_date"]},
 Tipe Ruangan = {$data["room_type"]},
 Daftar Ruangan = {$data["rooms"]},
 Total Harga = {$data["total_price"]}
-
-Waktu Check-In dan Check-Out di pukul 14:00 WIB
+```
+*Waktu Check-In dan Check-Out di pukul 14:00 WIB*
 
 Berikut adalah link invoice transaksi Anda
 $transactionLink
-`;
+";
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => $this->base_url,
