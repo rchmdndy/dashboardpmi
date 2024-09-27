@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Log;
 class WhatsappNotificationService
 {
 
-    public string $api_token;
-    protected string $base_url = 'https://api.whatsapp.com/send';
+    protected string $api_token;
+    protected string $base_url = 'https://api.fonnte.com/send';
 
 
     public function __construct()
