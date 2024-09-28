@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendWhatsappOrderNotification;
 use App\Services\WhatsappNotificationService;
 use Exception;
 use Carbon\Carbon;
@@ -25,16 +26,12 @@ use Illuminate\Support\Facades\Validator;
 class BookingController extends Controller
 {
     protected $bookingService;
-
-    protected $whatsappService;
-
     protected $reportController;
 
-    public function __construct(BookingService $bookingService, ReportController $reportController, WhatsappNotificationService $whatsappService)
+    public function __construct(BookingService $bookingService, ReportController $reportController)
     {
         $this->bookingService = $bookingService;
         $this->reportController = $reportController;
-        $this->whatsappService = $whatsappService;
         Config::$serverKey = config('midtrans.server_key');
         Config::$clientKey = config('midtrans.client_key');
         Config::$isProduction = config('midtrans.is_production');
@@ -58,7 +55,6 @@ class BookingController extends Controller
     public function bookRoom(Request $request) {
         $formatter = \NumberFormatter::create('id_ID', \NumberFormatter::CURRENCY);
         $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, 'Rp');
-
 
         // Validate request
         $userRequest = $request->all();
@@ -185,8 +181,8 @@ class BookingController extends Controller
 
             $transactionLink = URL::to("https://palmerinjateng.id/detailTransaction?id=$userTransaction->id&user_email=$userTransaction->user_email");
 
-            $this->whatsappService->sendMessage(
-                $userTransaction->user->phone ?? null,
+            SendWhatsappOrderNotification::dispatch(
+                $userTransaction->user->phone,
                 $transactionLink,
                 $data
             );
@@ -211,6 +207,9 @@ class BookingController extends Controller
 
     public function bookPackage(Request $request)
     {
+        $formatter = \NumberFormatter::create('id_ID', \NumberFormatter::CURRENCY);
+        $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, 'Rp');
+
         $validator = Validator::make($request->all(), [
             'user_email' => 'required|email',
             'package_id' => 'required|exists:packages,id',
@@ -317,6 +316,28 @@ class BookingController extends Controller
                 ]);
             }
         }
+
+        $data = [
+            'order_id' => $userTransaction->order_id,
+            'name' => $userTransaction->user->name,
+            'start_date' => Carbon::parse($request['start_date'])->translatedFormat('l, d F Y'),
+            'end_date' => Carbon::parse($request['end_date'])->translatedFormat('l, d F Y'),
+            'room_type' => $userTransaction->channel,
+            'rooms' => implode(",", $userTransaction->booking->map(function($booking){
+                return $booking->room->room_name;
+                })->toArray()
+            ),
+            'total_price' => $formatter->formatCurrency($userTransaction->total_price, "IDR")
+        ];
+
+        $transactionLink = URL::to("https://palmerinjateng.id/detailTransaction?id=$userTransaction->id&user_email=$userTransaction->user_email");
+
+        // Log::info(json_encode($data));
+        SendWhatsappOrderNotification::dispatch(
+            $userTransaction->user->phone,
+            $transactionLink,
+            $data
+        );
 
         $params = [
             'transaction_details' => [
