@@ -68,6 +68,7 @@ class   ReviewResource extends Resource
                     ->searchable(),
 
             ])
+
             ->filters([
                     Tables\Filters\SelectFilter::make('room_type_id')
                     ->relationship('room_type', 'room_type')
@@ -78,7 +79,9 @@ class   ReviewResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-            ]);
+            ])
+            ->defaultSort("created_at", "desc");
+
     }
 
     public static function getRelations(): array
