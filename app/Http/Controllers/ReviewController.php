@@ -82,7 +82,7 @@ class ReviewController extends Controller
         if($reviewCount < 1) {
             return response(null, 200);
         } else {
-            $reviews = Review::select(["user_email", "score", "review"])->where("score", "=", 5)->limit(5)->get()->unique()->values();
+            $reviews = Review::select(["user_email", "score", "review"])->where("score", "=", 5)->distinct()->limit(5)->get();
             if ($reviews->count() < 1) return response()->json(['count' => 0]);
             foreach ($reviews as $review) {
                 $data = [
