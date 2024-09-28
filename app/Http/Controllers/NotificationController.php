@@ -67,6 +67,7 @@ class NotificationController extends Controller
             // menghandel transaksi berdasarkan status
             switch ($transaction) {
                 case 'capture':
+                    if ($reservation->transaction_status == "success") break;
                     Log::info('Transaction capture');
                     if ($type == 'credit_card') {
                         if ($fraud == 'challenge') {
@@ -97,21 +98,25 @@ class NotificationController extends Controller
                     break;
 
                 case 'pending':
-                    Log::info('Transaction pending');
-                    $reservation->setPending();
-                    break;
+                    if ($reservation->transaction_status == "success") break;
+                        Log::info('Transaction pending');
+                        $reservation->setPending();
+                        break;
 
                 case 'deny':
+                    if ($reservation->transaction_status == "success") break;
                     Log::info('Transaction denied');
                     $reservation->setFailed();
                     break;
 
                 case 'expire':
+                    if ($reservation->transaction_status == "success") break;
                     Log::info('Transaction expired');
                     $reservation->setExpired();
                     break;
 
                 case 'cancel':
+                    if ($reservation->transaction_status == "success") break;
                     Log::info('Transaction canceled');
                     $reservation->setFailed();
                     break;
