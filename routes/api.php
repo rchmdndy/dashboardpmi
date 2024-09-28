@@ -33,8 +33,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/detail', 'detail')->name('getUserTransactionDetail');
     });
     Route::prefix('/booking')->controller(BookingController::class)->name('booking.')->group(function () {
-        Route::post('/packageToken', 'bookPackage')->name('packageToken');
-        Route::post('/generateToken', 'bookRoom')->name('generateToken'); // tolong tambahin di body POST, "side" = "client" biar dapet response json
+        Route::redirect('/packageToken', '/v2/booking/packageToken');
+        Route::redirect('/generateToken', '/v2/booking/generateToken');
         Route::get('/availableRoomOnDate', 'getAvailableRoomOnDate')->name('availableRoomOnDate');
     });
     Route::prefix('/packages')->controller(PackageController::class)->name('packages.')->group(function (){
@@ -93,5 +93,8 @@ Route::prefix("v2")->middleware(['jwt.auth'])->group(function(){
     Route::prefix('/user_transaction')->controller(UserTransactionController::class)->name('user_transactionv2.')->group(function () {
         Route::get('/getUserTransaction', 'getUserTransaction')->name('getUserTransactionv2');
         Route::get('/detail', 'detail')->name('getUserTransactionDetailv2');
+    });
+    Route::prefix('/review')->controller(ReviewController::class)->name("review.")->group(function() {
+        Route::post('/postReview', 'postReview')->name("postReview");
     });
 });

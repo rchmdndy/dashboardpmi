@@ -37,7 +37,7 @@ class ReviewController extends Controller
         }
         $roomIdData = $request->room_types;
 //        dd($roomIdData);
-        $review = Review::where("user_transaction_id", $request->user_transaction_id)->first();
+        $review = Review::where("user_transaction_id", $request->user_transaction_id)->where("user_email", $request->user_email)->first();
         if (!$review) {
             foreach ($roomIdData as $roomId) {
                 Review::create([
