@@ -28,6 +28,10 @@ class   ReviewResource extends Resource
                 //
             ]);
     }
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 
     public static function canEdit(Model $record): bool
     {
@@ -40,10 +44,10 @@ class   ReviewResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make("row_number")
                     ->label("No")
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make("user_email")
-                    ->label("User Email")
+                    ->rowIndex()
+                    ->searchable(false),
+                Tables\Columns\TextColumn::make("user.name")
+                    ->label("Name")
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make("user_transaction_id")
@@ -65,15 +69,15 @@ class   ReviewResource extends Resource
 
             ])
             ->filters([
+                    Tables\Filters\SelectFilter::make('room_type_id')
+                    ->relationship('room_type', 'room_type')
+                    ->label('Room Type'),
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
