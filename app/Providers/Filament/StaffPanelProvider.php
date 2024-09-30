@@ -2,26 +2,27 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Dashboard;
-use App\Providers\Filament\Auth\StaffLogin;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Panel;
-use Filament\Support\Enums\Platform;
 use Filament\PanelProvider;
+use App\Filament\Pages\Dashboard;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Filament\Support\Enums\Platform;
+use Filament\Http\Middleware\Authenticate;
+use App\Providers\Filament\Auth\StaffLogin;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
-use pxlrbt\FilamentSpotlight\SpotlightPlugin;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 
 class StaffPanelProvider extends PanelProvider
 {
@@ -67,6 +68,7 @@ class StaffPanelProvider extends PanelProvider
                     ->shouldRegisterNavigation(false)
                     ->shouldShowDeleteAccountForm(false)
                     ->shouldShowBrowserSessionsForm(),
+                FilamentApexChartsPlugin::make(),
 
             ])
             ->sidebarFullyCollapsibleOnDesktop()

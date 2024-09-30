@@ -202,7 +202,7 @@ class UserTransactionResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Gate::allows('admin') ? Action::make('verifyCheckin')
+                     Action::make('verifyCheckin')
                         ->label(fn (Model $record) => $record->verifyCheckin ? 'Batalkan Check-In Tamu' : 'Check-In Tamu')
                         ->icon(fn (Model $record) => $record->verifyCheckin ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
                         ->tooltip(fn (Model $record) => $record->verifyCheckin ? 'Klik untuk membatalkan check-in tamu' : 'Klik untuk verifikasi check-in tamu')
@@ -217,8 +217,8 @@ class UserTransactionResource extends Resource
                         })
                         ->requiresConfirmation()
                         ->modalDescription(fn (Model $record) => $record->verifyCheckin ? 'Anda Yakin Ingin Membatalkan Verifikasi Check-In Tamu Ini?' : 'Anda Yakin Informasi Check-In Sudah Sesuai dan Identitas Tamu Sudah Diterima?')
-                        : null,
-                    Gate::allows('admin') ? Action::make('verifyCheckout')
+                        ,
+                     Action::make('verifyCheckout')
                         ->label(fn (Model $record) => $record->verifyCheckout ? 'Batalkan Check-Out Tamu' : 'Check-Out Tamu')
                         ->icon(fn (Model $record) => $record->verifyCheckout ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
                         ->color(fn (Model $record) => $record->verifyCheckout ? 'danger' : 'success')
@@ -233,7 +233,7 @@ class UserTransactionResource extends Resource
                         })
                         ->requiresConfirmation()
                         ->modalDescription(fn (Model $record) => $record->verifyCheckout ? 'Anda Yakin Ingin Membatalkan Verifikasi Check-In Tamu Ini?' : 'Anda Yakin Informasi Check-Out Sudah Sesuai dan Identitas Tamu Sudah Dikembalikan?')
-                        : null,
+                     ,
                     ViewAction::make()
                         ->label('Lihat Detail')
                         ->icon('heroicon-o-eye'),
