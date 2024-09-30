@@ -2,6 +2,8 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\BookingResource;
+use App\Filament\Resources\UserTransactionResource;
 use App\Models\Room;
 use App\Models\UserTransaction;
 use DB;
@@ -63,9 +65,11 @@ class RoomsMapChartTreeMap extends ApexChartWidget
             return [
                 'x' => $room->room_name,
                 'y' => $capacity,
+                'room_type' => $room->roomType->room_type,
                 'capacity' => $capacity_pure,
                 'checkin' => $booking ? $booking->start_date : "Kosong",
                 'checkout' => $booking ? $booking->end_date : "Kosong",
+                'booking_id' => $booking ? $booking->id : null,
                 'fillColor' => $fillColor, // Set warna berdasarkan kondisi di atas
             ];
         })->toArray();
@@ -104,7 +108,8 @@ class RoomsMapChartTreeMap extends ApexChartWidget
 
     protected function extraJsOptions(): ?RawJs
     {
-        return RawJs::make(<<<'JS'
+        $baseUrl = BookingResource::getUrl();
+        return RawJs::make(<<<JS
         {
             chart: {
                 events: {
@@ -125,6 +130,12 @@ class RoomsMapChartTreeMap extends ApexChartWidget
                             'Available' +
                             '</div>';
                         chartEl.parentNode.insertBefore(legend, chartEl.nextSibling);
+                    },
+                    dataPointSelection: function(event, chartContext, config) {
+                        var booking_id = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].booking_id;
+                        if (booking_id != null && booking_id != undefined) {
+                            window.location.href = '{$baseUrl}/' + booking_id + '/view';
+                        }
                     }
                 }
             },
@@ -133,7 +144,8 @@ class RoomsMapChartTreeMap extends ApexChartWidget
                     var data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                     return '<div class="custom-tooltip">' +
                         '<span><strong>Room:</strong> ' + data.x + '</span><br>' +
-                        '<span><strong>Capacity:</strong> ' + data.capacity + '</span><br>' +
+                        '<span><strong>Tipe Ruangan:</strong> ' + data.room_type + '</span><br>' +
+                        '<span><strong>Kapasitas:</strong> ' + data.capacity + '</span><br>' +
                         '<span><strong>Check-in:</strong> ' + data.checkin + '</span><br>' +
                         '<span><strong>Check-out:</strong> ' + data.checkout + '</span>' +
                         '</div>';
