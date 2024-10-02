@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -108,5 +109,25 @@ class ReviewController extends Controller
            return $room;
         })->unique()->values();
         return response()->json($roomReview);
+    }
+
+    public function printReview(Request $request){
+        $email = $request->user;
+
+        $user = User::whereEmail($email)->firstOrFail();
+        
+        //Hitung rata rata score per room type id
+        $records = Review::selectRaw('room_type_id, AVG(score) as average_score')
+                        ->groupBy('room_type_id')
+                        ->with('room_type')
+                        ->get();
+
+        $records = $records->map(function($record){
+            $record->average_score = round($record->average_score, 2);
+            return $record;
+        });
+        // dd($records);
+
+        return view('Reviews.print', ['records' => $records, 'user' => $user]);
     }
 }

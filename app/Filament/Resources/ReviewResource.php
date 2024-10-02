@@ -2,17 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ReviewResource\Pages;
-use App\Filament\Resources\ReviewResource\RelationManagers;
-use App\Models\Review;
-use Faker\Provider\Text;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Review;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ReviewResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class   ReviewResource extends Resource
@@ -41,6 +40,22 @@ class   ReviewResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Action::make('Print')
+                ->label('Print')
+                ->color('red')
+                ->action(function (Table $table) {
+
+                    $currentRecords = $table->getRecords();
+                    $recordIds = $currentRecords->pluck('id')->toArray();
+                    $user = auth()->user();
+
+                    $url = URL::route('reviews.print', ['records' => $recordIds, 'user' => $user]);
+                    // dd($recordIds);
+
+                    return redirect()->to($url);
+                })
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make("row_number")
                     ->label("No")

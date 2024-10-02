@@ -31,7 +31,7 @@ class RoomsMapChart extends ApexChartWidget
                 $roomAsset = $room->roomAssets->first(function ($asset) use ($item) {
                     return $asset->inventory->name === $item;
                 });
-    
+
                 $data[] = [
                     'x' => $room->room_name,
                     'y' => $roomAsset ? ($roomAsset->isBroken == false ? 1 : 2) : 0,
@@ -68,7 +68,7 @@ class RoomsMapChart extends ApexChartWidget
                     'colorScale' => [
                         'ranges' => [
                             ['from' => 0, 'to' => 1, 'color' => '#3d3c3b', 'name' => 'Item tidak tersedia'],
-                            ['from' => 1, 'to' => 1, 'color' => '#00E396', 'name' => 'Normal'],
+                            ['from' => 1, 'to' => 1.9, 'color' => '#00E396', 'name' => 'Normal'],
                             ['from' => 2, 'to' => 2, 'color' => '#008FFB', 'name' => 'Rusak'],
                         ],
                     ],

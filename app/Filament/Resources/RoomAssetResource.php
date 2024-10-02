@@ -101,7 +101,7 @@ class RoomAssetResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Gate::allows('admin') ? Action::make('isBroken')
+                    Action::make('isBroken')
                         ->label(fn (Model $record) => $record->isBroken == false ? 'Item rusak ?' : 'Item sudah diperbaiki ?')
                         ->icon(fn (Model $record) => $record->isBroken == false ? 'heroicon-m-x-circle' : 'heroicon-m-check-badge')
                         ->tooltip(fn (Model $record) => $record->isBroken == false ? 'Klik untuk membuat kondisi menjadi rusak' : 'Klik jika sudah berhasil diperbaiki')
@@ -121,8 +121,7 @@ class RoomAssetResource extends Resource
                                 ->send();
                         })
                         ->requiresConfirmation()
-                        ->modalDescription('Anda anda ingin menambah keterangan item?')
-                        : null,
+                        ->modalDescription('Anda anda ingin menambah keterangan item?'),
 
                     Tables\Actions\EditAction::make()
                         ->label('Edit Item')
