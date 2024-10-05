@@ -18,76 +18,74 @@ class RoomsMapChart extends ApexChartWidget
     protected int|string|array $columnSpan = 'full';
 
     protected function getOptions(): array
-    {
-        $rooms = Room::with('roomAssets.inventory')->get();
-        $items = Inventory::pluck('name')->toArray();
-    
-        $series = [];
-    
-        foreach ($items as $item) {
-            $data = [];
-    
-            foreach ($rooms as $room) {
-                $roomAsset = $room->roomAssets->first(function ($asset) use ($item) {
-                    return $asset->inventory->name === $item;
-                });
+{
+    $rooms = Room::with('roomAssets.inventory')->get();
+    $items = Inventory::pluck('name')->toArray();
 
-                $data[] = [
-                    'x' => $room->room_name,
-                    'y' => $roomAsset ? ($roomAsset->isBroken == false ? 1 : 2) : 0,
-                    'room_id' => $room->id,
-                    'inventory_id' => $roomAsset ? $roomAsset->inventory_id : null,
-                    'inventory_name' => $roomAsset ? $roomAsset->inventory->name : ' ',
-                    'status' => $roomAsset ? ($roomAsset->isBroken == true ? 'Rusak' : 'Normal') : ' ',
-                    'keterangan' =>  $roomAsset->comment ?? ' ',
-                    
-                ];
+    $series = [];
 
-            }
-    
-            $series[] = [
-                'name' => $item,
-                'data' => $data,
+    foreach ($items as $item) {
+        $data = [];
+
+        foreach ($rooms as $room) {
+            $roomAsset = $room->roomAssets->first(function ($asset) use ($item) {
+                return $asset->inventory->name === $item;
+            });
+
+            $data[] = [
+                'x' => $room->room_name,
+                'y' => $roomAsset ? ($roomAsset->isBroken == false ? 1 : 2) : 0,
+                'room_id' => $room->id,
+                'inventory_id' => $roomAsset ? $roomAsset->inventory_id : null,
+                'inventory_name' => $roomAsset ? $roomAsset->inventory->name : ' ',
+                'status' => $roomAsset ? ($roomAsset->isBroken == true ? 'Rusak' : 'Normal') : ' ',
+                'keterangan' =>  $roomAsset->comment ?? ' ',
             ];
-            
         }
-    
-        return [
-            'chart' => [
-                'type' => 'heatmap',
-                'height' => 350,
-            ],
-            'series' => $series,
-            'stroke' => [
-                'width' => 0,
-            ],
-            'plotOptions' => [
-                'heatmap' => [
-                    'radius' => 30,
-                    'enableShades' => false,
-                    'colorScale' => [
-                        'ranges' => [
-                            ['from' => 0, 'to' => 1, 'color' => '#3d3c3b', 'name' => 'Item tidak tersedia'],
-                            ['from' => 1, 'to' => 1.9, 'color' => '#00E396', 'name' => 'Normal'],
-                            ['from' => 2, 'to' => 2, 'color' => '#008FFB', 'name' => 'Rusak'],
-                        ],
+
+        $series[] = [
+            'name' => $item,
+            'data' => $data,
+        ];
+
+    }
+
+    return [
+        'chart' => [
+            'type' => 'heatmap',
+            'height' => 350,
+        ],
+        'series' => $series,
+        'stroke' => [
+            'width' => 0,
+        ],
+        'plotOptions' => [
+            'heatmap' => [
+                'radius' => 30,
+                'enableShades' => false,
+                'colorScale' => [
+                    'ranges' => [
+                        ['from' => 0, 'to' => 0, 'color' => 'rgba(0,0,0,0)', 'name' => 'Item tidak tersedia'],
+                        ['from' => 1, 'to' => 1.9, 'color' => '#00E396', 'name' => 'Normal'],
+                        ['from' => 2, 'to' => 2, 'color' => '#008FFB', 'name' => 'Rusak'],
                     ],
                 ],
             ],
-            'dataLabels' => [
-                'enabled' => false,
+        ],
+        'dataLabels' => [
+            'enabled' => false,
+        ],
+        'xaxis' => [
+            'type' => 'category',
+        ],
+        'yaxis' => [
+            'labels' => [
+                'show' => true,
             ],
-            'xaxis' => [
-                'type' => 'category',
-            ],
-            'yaxis' => [
-                'labels' => [
-                    'show' => true,
-                ],
-            ],
-            
-        ];
-    }
+        ],
+    ];
+}
+
 
     protected function extraJsOptions(): ?RawJs
     {

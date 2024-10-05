@@ -7,6 +7,7 @@ use App\Filament\Widgets\DashboardWidgetChartBar;
 use App\Filament\Widgets\LastestOrders;
 use App\Filament\Widgets\RoomsMapChart;
 use App\Filament\Widgets\RoomsMapChartTreeMap;
+use App\Filament\Widgets\StatsAssetBookingsOverview;
 use App\Filament\Widgets\StatsAssetRoomsOverview;
 use App\Filament\Widgets\StatsOverviewWidget;
 use Filament\Facades\Filament;
@@ -48,6 +49,7 @@ class Dashboard extends BaseDashboard
             // \Filament\Widgets\FilamentInfoWidget::class,
             DashboardWidgetChartBar::class,
             DashboardWidget::class,
+            StatsAssetBookingsOverview::class,
             RoomsMapChartTreeMap::class,
             StatsAssetRoomsOverview::class,
             RoomsMapChart::class,
