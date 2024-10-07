@@ -77,9 +77,9 @@ class User extends Authenticatable implements FilamentUser, JWTSubject, MustVeri
     {
         // dd($panel);
         if ($panel->getId() === 'admin') {
-            return $this->isAdmin() && $this->hasVerifiedEmail();
+            return $this->isAdmin() || $this->isPimpinan() && $this->hasVerifiedEmail();
         } elseif ($panel->getId() === 'staff') {
-            return $this->isStaff() && $this->hasVerifiedEmail();
+            return $this->isCustomerService() || $this->isInventoris() && $this->hasVerifiedEmail();
         }
 
         return false;
@@ -89,8 +89,12 @@ class User extends Authenticatable implements FilamentUser, JWTSubject, MustVeri
     {
         return $this->role_id === 1;
     }
+    public function isPimpinan(): bool
+    {
+        return $this->role_id === 2;
+    }
 
-    public function isStaff(): bool
+    public function isCustomerService(): bool
     {
         return $this->role_id === 3;
     }
@@ -98,6 +102,10 @@ class User extends Authenticatable implements FilamentUser, JWTSubject, MustVeri
     public function isCustomer(): bool
     {
         return $this->role_id === 4;
+    }
+    public function isInventoris(): bool
+    {
+        return $this->role_id === 5;
     }
 
     public function getJWTIdentifier()

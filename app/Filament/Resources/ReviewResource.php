@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ReviewResource\Pages;
@@ -35,6 +36,10 @@ class   ReviewResource extends Resource
     public static function canEdit(Model $record): bool
     {
         return false;
+    }
+    public static function canViewAny(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
     }
 
     public static function table(Table $table): Table

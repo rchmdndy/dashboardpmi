@@ -9,6 +9,9 @@ use App\Models\Report;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,8 +19,6 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use App\Filament\Resources\ReportResource\Pages;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use App\Filament\Resources\ReportResource\Widgets\ReportStats;
-use Filament\Tables\Actions\Action;
-use Illuminate\Support\Facades\URL;
 
 class ReportResource extends Resource
 {
@@ -38,6 +39,10 @@ class ReportResource extends Resource
     public static function canDelete(Model $record): bool
     {
         return false;
+    }
+    public static function canViewAny(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
     }
 
     public static function form(Form $form): Form

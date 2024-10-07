@@ -2,15 +2,16 @@
 
 namespace App\Filament\Widgets;
 
-use App\Filament\Resources\BookingResource;
-use App\Filament\Resources\UserTransactionResource;
-use App\Models\Room;
-use App\Models\UserTransaction;
 use DB;
+use App\Models\Room;
 use Filament\Support\RawJs;
-use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
-
+use App\Models\UserTransaction;
 use function PHPSTORM_META\map;
+use Illuminate\Support\Facades\Gate;
+use App\Filament\Resources\BookingResource;
+
+use App\Filament\Resources\UserTransactionResource;
+use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class RoomsMapChartTreeMap extends ApexChartWidget
 {
@@ -18,6 +19,11 @@ class RoomsMapChartTreeMap extends ApexChartWidget
     protected static ?string $heading = 'Detail Ruangan';
 
     protected int|string|array $columnSpan = 'full';
+
+    public static function canView(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
+    }
     
     protected function getOptions(): array
     {

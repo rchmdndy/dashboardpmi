@@ -3,16 +3,22 @@
 namespace App\Filament\Widgets;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Facades\DB;
 
 class StatsOverviewWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 0;
+
+    public static function canView(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan');
+    }
 
     protected function getStats(): array
     {

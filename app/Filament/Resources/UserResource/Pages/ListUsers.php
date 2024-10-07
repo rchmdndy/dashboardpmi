@@ -26,14 +26,14 @@ class ListUsers extends ListRecords
             'All' => Tab::make('All'),
         ];
         foreach ($tabs as $tab) {
-            if ($tab->id != 1) {
+            if (Gate::allows('admin') ? $tab->id != 1 : $tab->id != 1 && $tab->id != 2) {
                 $tabsArray[$tab->id] = Tab::make($tab->name)
                     ->query(fn ($query) => $query->where('role_id', $tab->id));
             }
         }
         // dd($tabsArray);
 
-        if (Gate::allows('admin')) {
+        if (Gate::allows('admin') || Gate::allows('pimpinan')) {
             return $tabsArray;
         }
 
