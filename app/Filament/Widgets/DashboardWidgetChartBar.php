@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class DashboardWidgetChartBar extends ChartWidget
 {
@@ -12,6 +13,11 @@ class DashboardWidgetChartBar extends ChartWidget
     public ?string $filter = null;
 
     protected static string $color = 'success';
+
+    public static function canView(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') ;
+    }
 
     public function getDescription(): ?string
     {

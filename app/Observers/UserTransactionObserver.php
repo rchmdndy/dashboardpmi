@@ -20,7 +20,7 @@ class UserTransactionObserver
     public function created(UserTransaction $userTransaction): void
     {
         //
-        $adminUsers = User::whereNotIn('role_id', [4])->get();
+        $adminUsers = User::whereNotIn('role_id', [4,5])->get();
 
         foreach ($adminUsers as $admin) {
             Notification::make()
@@ -54,7 +54,7 @@ class UserTransactionObserver
 
         if ($userTransaction->wasChanged('transaction_status') && $userTransaction->transaction_status === 'success') {
 
-            $adminUsers = User::whereNotIn('role_id', [4])->get();
+            $adminUsers = User::whereNotIn('role_id', [4,5])->get();
 
             foreach ($adminUsers as $admin) {
                 Notification::make()
@@ -75,7 +75,7 @@ class UserTransactionObserver
 
         } elseif ($userTransaction->wasChanged('transaction_status') && $userTransaction->transaction_status === 'failed') {
 
-            $adminUsers = User::whereNotIn('role_id', [4])->get();
+            $adminUsers = User::whereNotIn('role_id', [4,5])->get();
 
             foreach ($adminUsers as $admin) {
                 Notification::make()

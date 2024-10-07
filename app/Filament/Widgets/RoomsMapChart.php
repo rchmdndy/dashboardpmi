@@ -6,6 +6,7 @@ use App\Models\Room;
 use App\Models\Inventory;
 use App\Models\RoomAsset;
 use Filament\Support\RawJs;
+use Illuminate\Support\Facades\Gate;
 use App\Filament\Resources\RoomAssetResource;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
@@ -16,6 +17,11 @@ class RoomsMapChart extends ApexChartWidget
     protected static ?string $heading = 'Detail Asset Ruangan';
 
     protected int|string|array $columnSpan = 'full';
+
+    public static function canView(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('inventoris');
+    }
 
     protected function getOptions(): array
 {

@@ -17,9 +17,10 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
         DB::table('roles')->insert([
             ['name' => 'admin'],
-            ['name' => 'manager'],
-            ['name' => 'staff'],
+            ['name' => 'pimpinan'],
+            ['name' => 'customer service'],
             ['name' => 'customer'],
+            ['name' => 'inventoris'],
         ]);
 
         User::factory()->create(

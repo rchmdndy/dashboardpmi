@@ -2,15 +2,21 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Booking;
 use App\Models\Room;
+use App\Models\Booking;
 use App\Models\UserTransaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class StatsAssetBookingsOverview extends BaseWidget
 {
+    public static function canView(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
+    }
+
     protected function getStats(): array
     {
         $total_rooms_ordered_per_day =  Booking::whereDate('start_date', '<=', now()->toDateString())

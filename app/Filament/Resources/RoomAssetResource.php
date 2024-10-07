@@ -24,6 +24,25 @@ class RoomAssetResource extends Resource
     protected static ?string $model = RoomAsset::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    public static function canEdit(Model $record): bool
+    {
+        return Gate::allows('admin') || Gate::allows('inventoris');
+    }
+
+    public static function canCreate(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('inventoris');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return Gate::allows('admin') || Gate::allows('inventoris');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('inventoris');
+    }
 
     public static function form(Form $form): Form
     {
@@ -72,6 +91,7 @@ class RoomAssetResource extends Resource
                     return redirect()->to($url);
                 })
             ])
+            ->defaultSort('room_id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('room.room_name')
                     ->label('Room')
@@ -100,6 +120,7 @@ class RoomAssetResource extends Resource
                     ]),
             ])
             ->actions([
+                Gate::allows('admin') || Gate::allows('inventoris') ? 
                 ActionGroup::make([
                     Action::make('isBroken')
                         ->label(fn (Model $record) => $record->isBroken == false ? 'Item rusak ?' : 'Item sudah diperbaiki ?')
@@ -125,7 +146,7 @@ class RoomAssetResource extends Resource
 
                     Tables\Actions\EditAction::make()
                         ->label('Edit Item')
-                ]),
+                ]) : Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

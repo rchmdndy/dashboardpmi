@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Room;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
@@ -11,6 +12,10 @@ class StatsAssetRoomsOverview extends BaseWidget
 {
     protected int | string | array $column = 2;
 
+    public static function canView(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('inventoris');
+    }
 
     protected function getStats(): array
     {

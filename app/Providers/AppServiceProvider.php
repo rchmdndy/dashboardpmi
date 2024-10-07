@@ -37,8 +37,10 @@ class AppServiceProvider extends ServiceProvider
         Config::$is3ds = config('midtrans.is_3ds');
 
         Gate::define('admin', fn ($user) => $user->role_id === 1);
-        Gate::define('staff', fn ($user) => $user->role_id === 3);
+        Gate::define('pimpinan', fn ($user) => $user->role_id === 2);
+        Gate::define('customerService', fn ($user) => $user->role_id === 3);
         Gate::define('customer', fn ($user) => $user->role_id === 4);
+        Gate::define('inventoris', fn ($user) => $user->role_id === 5);
         UserTransaction::observe(UserTransactionObserver::class);
 
     }

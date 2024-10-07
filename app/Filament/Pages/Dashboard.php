@@ -2,20 +2,21 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\DashboardWidget;
-use App\Filament\Widgets\DashboardWidgetChartBar;
+use Filament\Forms\Get;
+use Filament\Forms\Form;
+use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Gate;
+use Filament\Forms\Components\Section;
 use App\Filament\Widgets\LastestOrders;
 use App\Filament\Widgets\RoomsMapChart;
-use App\Filament\Widgets\RoomsMapChartTreeMap;
-use App\Filament\Widgets\StatsAssetBookingsOverview;
-use App\Filament\Widgets\StatsAssetRoomsOverview;
-use App\Filament\Widgets\StatsOverviewWidget;
-use Filament\Facades\Filament;
+use App\Filament\Widgets\DashboardWidget;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
+use App\Filament\Widgets\StatsOverviewWidget;
+use App\Filament\Widgets\RoomsMapChartTreeMap;
 use Filament\Pages\Dashboard as BaseDashboard;
+use App\Filament\Widgets\DashboardWidgetChartBar;
+use App\Filament\Widgets\StatsAssetRoomsOverview;
+use App\Filament\Widgets\StatsAssetBookingsOverview;
 
 class Dashboard extends BaseDashboard
 {
@@ -29,6 +30,7 @@ class Dashboard extends BaseDashboard
     {
         return $form
             ->schema([
+                Gate::allows('admin') || Gate::allows('pimpinan') ?
                 Section::make()
                     ->schema([
                         DatePicker::make('startDate')
@@ -37,7 +39,7 @@ class Dashboard extends BaseDashboard
                             ->minDate(fn (Get $get) => $get('startDate') ?: now()),
                         // ->maxDate(now()),
                     ])
-                    ->columns(2),
+                    ->columns(2) : Section::make()->schema([]), // Ensure a valid Section is always returned
             ]);
     }
 

@@ -2,22 +2,43 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\InventoryResource\Pages;
-use App\Filament\Resources\InventoryResource\RelationManagers;
-use App\Models\Inventory;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Inventory;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\InventoryResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\InventoryResource\RelationManagers;
 
 class InventoryResource extends Resource
 {
     protected static ?string $model = Inventory::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard';
+    public static function canEdit(Model $record): bool
+    {
+        return Gate::allows('admin') || Gate::allows('inventoris');
+    }
+
+    public static function canCreate(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('inventoris');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return Gate::allows('admin') || Gate::allows('inventoris');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('inventoris');
+    }
 
     public static function form(Form $form): Form
     {

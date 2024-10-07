@@ -54,6 +54,11 @@ class UserResource extends Resource
         return Gate::allows('admin');
     }
 
+    public static function canViewAny(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -234,9 +239,13 @@ class UserResource extends Resource
     {
         if (Gate::allows('admin')) {
             return parent::getEloquentQuery()
-                ->whereIn('role_id', [2, 3, 4]);
+                ->whereIn('role_id', [2, 3, 4, 5]);
 
-        } elseif (Gate::allows('staff')) {
+        } elseif (Gate::allows('pimpinan')) {
+            return parent::getEloquentQuery()
+                ->whereIn('role_id', [3,4,5]);
+        } 
+        elseif (Gate::allows('customerService')) {
             return parent::getEloquentQuery()
                 ->whereIn('role_id', [4]);
         }

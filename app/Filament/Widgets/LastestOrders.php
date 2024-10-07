@@ -2,17 +2,23 @@
 
 namespace App\Filament\Widgets;
 
-use App\Filament\Resources\UserTransactionResource;
-use App\Models\UserTransaction;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Models\UserTransaction;
+use Illuminate\Support\Facades\Gate;
 use Filament\Widgets\TableWidget as BaseWidget;
+use App\Filament\Resources\UserTransactionResource;
 
 class LastestOrders extends BaseWidget
 {
     protected static ?int $sort = 4;
 
     protected int|string|array $columnSpan = 'full';
+
+    public static function canView(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
+    }
 
     public function table(Table $table): Table
     {

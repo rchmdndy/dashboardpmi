@@ -51,6 +51,11 @@ class BookingResource extends Resource
         return false;
     }
 
+    public static function canViewAny(): bool
+    {
+        return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -101,9 +106,9 @@ class BookingResource extends Resource
                                         $startDate = $get('start_date');
                                         $endDate = $get('end_date');
                                         // dd($roomId, $startDate, $endDate);
-                                        return [
-                                            new RoomAvailable($roomId, $startDate, $endDate)
-                                        ];
+                                        // return [
+                                        //     new RoomAvailable($roomId, $startDate, $endDate)
+                                        // ];
                                     })
                                     ->required(),
                                 Forms\Components\DatePicker::make('end_date')
