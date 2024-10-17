@@ -24,11 +24,12 @@ class RoomsMapChartTreeMap extends ApexChartWidget
     {
         return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
     }
-    
+
     protected function getOptions(): array
     {
         $rooms = Room::with('roomType', 'booking')->get();
         $today = now()->toDateString();
+
 
         $data = $rooms->map(function ($room) use ($today) {
             $capacity = $room->roomType->capacity;
@@ -49,7 +50,7 @@ class RoomsMapChartTreeMap extends ApexChartWidget
 
                 // Tentukan warna berdasarkan status transaksi
                 if ($usertransaction->transaction_status == 'pending') {
-                    $fillColor = '#00ff00'; // Hijau 
+                    $fillColor = '#00ff00'; // Hijau
                 } elseif ($usertransaction->transaction_status == 'success') {
                     if ($usertransaction->verifyCheckin == 1) {
                         $fillColor = '#ffa500'; // Orange untuk success dan verifyCheckin 1
@@ -62,10 +63,10 @@ class RoomsMapChartTreeMap extends ApexChartWidget
                         $fillColor = '#0000ff'; // Biru untuk success tanpa verifikasi
                     }
                 }elseif ($usertransaction->transaction_status == 'failed'){
-                    $fillColor = '#3d3c3b'; 
+                    $fillColor = '#3d3c3b';
                 }
             } else {
-                $fillColor = '#3d3c3b'; 
+                $fillColor = '#3d3c3b';
             }
 
             return [

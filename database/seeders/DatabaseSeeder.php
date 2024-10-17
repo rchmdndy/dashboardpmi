@@ -2,10 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Models\Inventory;
+use App\Models\Room;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\In;
 
 class DatabaseSeeder extends Seeder
 {
@@ -32,27 +35,45 @@ class DatabaseSeeder extends Seeder
                 'role_id' => 1,
             ]
         );
+        User::factory()->create(
+            [
+                'name' => 'pimpinan',
+                'email' => 'pimpinan@pimpinan.com',
+                'phone' => '08123456789',
+                'password' => 'pimpinan',
+                'role_id' => 2,
+            ]
+        );
 
         User::factory()->create(
             [
-                'name' => 'staff',
-                'email' => 'staff@staff.com',
+                'name' => 'cs',
+                'email' => 'cs@cs.com',
                 'phone' => '089213138001',
-                'password' => 'staffstaff',
+                'password' => 'cs',
                 'role_id' => 3,
             ]
         );
 
         User::factory()->create(
             [
-                'name' => 'customer1',
-                'email' => 'customer1@customer.com',
+                'name' => 'customer',
+                'email' => 'customer@customer.com',
                 'phone' => '08924324321',
-                'password' => 'customer1',
+                'password' => 'customer',
                 'role_id' => 4,
             ]
         );
 
+        User::factory()->create(
+            [
+                'name' => 'inventoris',
+                'email' => 'inventoris@inventoris.com',
+                'phone' => '08924324321',
+                'password' => 'inventoris',
+                'role_id' => 5,
+            ]
+        );
 
         DB::table('room_types')->insert([
             ['id' => 1, 'room_type' => 'Kamar Standard', 'capacity' => 2, 'price' => 200000.00, 'description' => 'Kamar dengan kapasitas 2 orang'],
@@ -98,5 +119,34 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Paket Meeting', 'price_per_person' => 200000.00, 'min_person_quantity' => 20, 'hasLodgeRoom' => false, 'hasMeetingRoom' => true, 'image' => 'package_room_1.jpeg'],
             ['name' => 'Paket Full Board', 'price_per_person' => 250000.00, 'min_person_quantity' => 20, 'hasLodgeRoom' => true, 'hasMeetingRoom' => true, 'image' => 'package_room_2.jpeg'],
         ]);
+
+        DB::table("inventories")->insert([
+            ["name" => "Kamar Mandi"],
+            ["name" => "Bangunan"],
+            ["name" => "Kamar Tidur"],
+            ["name" => "Perabotan"],
+            ["name" => "Elektronik"],
+            ["name" => "Dekorasi Ruangan"]
+        ]);
+        foreach (Inventory::select("id")->get()->toArray() as $inventory_id) {
+            foreach (Room::select("id")->where("id", "<=", 21)->get()->toArray() as $room_id) {
+                DB::table("room_assets")->insert([
+                    "room_id" => $room_id["id"],
+                    "inventory_id" => $inventory_id["id"],
+                    "isBroken" => false
+                ]);
+            }
+            foreach (Room::select("id")->where("id", ">", 21)->get()->toArray() as $room_id) {
+                if ($inventory_id['id'] == 3) continue;
+                else {
+                    DB::table("room_assets")->insert([
+                        "room_id" => $room_id["id"],
+                        "inventory_id" => $inventory_id["id"],
+                        "isBroken" => false
+                    ]);
+                }
+            }
+        }
+
     }
 }
