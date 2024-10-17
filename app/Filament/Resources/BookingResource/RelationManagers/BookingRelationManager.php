@@ -5,10 +5,22 @@ namespace App\Filament\Resources\BookingResource\RelationManagers;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class BookingRelationManager extends RelationManager
 {
     protected static string $relationship = 'booking';
+
+    protected function canView(Model $record): bool
+    {
+        return \Gate::allows("admin");
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return Auth::user()->role->name === "admin";
+    }
 
     public function table(Table $table): Table
     {

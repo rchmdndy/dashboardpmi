@@ -6,6 +6,7 @@ use App\Filament\Resources\BookingResource\RelationManagers\BookingRelationManag
 use App\Filament\Resources\RoomResource\Pages;
 use App\Filament\Resources\RoomResource\RelationManagers\RoomAssetsRelationManager;
 use App\Models\Room;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\SubNavigationPosition;
@@ -16,6 +17,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class RoomResource extends Resource
@@ -30,17 +32,17 @@ class RoomResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return Gate::allows('admin');
+        return Gate::allows("admin") || Gate::allows("inventoris");
     }
 
     public static function canCreate(): bool
     {
-        return Gate::allows('admin');
+        return Gate::allows("admin");
     }
 
     public static function canDelete(Model $record): bool
     {
-        return Gate::allows('admin');
+        return Gate::allows("admin");
     }
 
     public static function form(Form $form): Form
@@ -117,11 +119,9 @@ class RoomResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-            BookingRelationManager::class,
-            RoomAssetsRelationManager::class
-        ];
+//            if (Auth::user()->role->name == 'admin') return [RoomAssetsRelationManager::class, BookingRelationManager::class];
+//            else if (Auth::user()->role->name == "inventoris") return [RoomAssetsRelationManager::class];
+            return [BookingRelationManager::class, RoomAssetsRelationManager::class];
     }
 
     public static function getPages(): array

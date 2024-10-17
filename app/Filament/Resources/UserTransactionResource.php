@@ -59,6 +59,7 @@ class UserTransactionResource extends Resource
         return Gate::allows('admin') || Gate::allows('pimpinan') || Gate::allows('customerService');
     }
 
+
     public static function table(Table $table): Table
     {
         return $table
@@ -206,7 +207,7 @@ class UserTransactionResource extends Resource
                 //     ),
             ])
             ->actions([
-                Gate::allows('admin') || Gate::allows('customerService')? 
+                Gate::allows('admin') || Gate::allows('customerService')?
                 ActionGroup::make([
                      Action::make('verifyCheckin')
                         ->label(fn (Model $record) => $record->verifyCheckin ? 'Batalkan Check-In Tamu' : 'Check-In Tamu')
@@ -321,7 +322,7 @@ class UserTransactionResource extends Resource
                         ->color('gray')
                         ->button()
                         ->visible(fn () => Gate::allows('admin') || Gate::allows('customerService')),
-                ]) :  
+                ]) :
                 ViewAction::make()
                 ->icon('heroicon-o-eye'),
             ])
