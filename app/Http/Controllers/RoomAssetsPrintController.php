@@ -21,6 +21,6 @@ class RoomAssetsPrintController extends Controller
         $records = RoomAsset::whereIn('id', $recordIds)->orderBy('room_id', 'asc')->with(['room', 'inventory'])->get();
     //    dd($records);
 
-        return view('RoomAssets.print', ['records' => $records, 'user' => $user]);
+        return view('roomAssets.print', ['records' => $records, 'user' => $user]);
     }
 }
