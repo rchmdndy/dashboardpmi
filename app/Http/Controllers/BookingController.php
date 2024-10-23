@@ -109,7 +109,7 @@ class BookingController extends Controller
             $userTransaction = UserTransaction::create([
                 'user_email' => $userRequest['user_email'],
                 'channel' => 'direct',
-                'order_id' => 'PMI-BOOKING-'.Str::uuid(),
+                'order_id' => 'PMI-BOOKING-'.strtoupper(Str::random(6)),
                 'transaction_date' => now(),
                 'amount' => $userRequest['amount'],
                 'total_price' => $totalPrice,
@@ -257,7 +257,7 @@ class BookingController extends Controller
             $userTransaction = UserTransaction::create([
                 'user_email' => $request->user_email,
                 'channel' => 'packages',
-                'order_id' => 'PMI-BOOKING-'.Str::uuid(),
+                'order_id' => 'PMI-BOOKING-'.strtoupper(Str::random(6)),
                 'transaction_date' => now(),
                 'amount' => $personCount,
                 'total_price' => $total_price,
@@ -289,7 +289,7 @@ class BookingController extends Controller
             $userTransaction = UserTransaction::create([
                 'user_email' => $request->user_email,
                 'channel' => 'packages',
-                'order_id' => 'PMI-BOOKING-'.Str::uuid(),
+                'order_id' => 'PMI-BOOKING-'.strtoupper(Str::random(6)),
                 'transaction_date' => now(),
                 'amount' => $personCount,
                 'total_price' => $total_price,
