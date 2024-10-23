@@ -30,7 +30,7 @@ class RoomResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return Gate::allows('admin');
+        return Gate::allows('admin') || Gate::allows('inventoris');
     }
 
     public static function canCreate(): bool
